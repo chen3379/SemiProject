@@ -55,6 +55,20 @@ git push origin feature/본인이름-기능명
 feature/, commit message 규칙 정하기
 
 -----------------------------------------------------------------------------------------------------
+
+feature 작업 중 develop update 됐을 경우
+
+내 작업 저장: 먼저 하던 작업을 커밋합니다. (git commit)
+
+develop 이동: git checkout develop
+
+develop 업데이트: git pull origin develop (내 로컬의 develop을 최신으로 만듦)
+
+내 브랜치로 복귀: git checkout feature/내이름
+
+합치기: git merge develop (최신이 된 develop을 내 브랜치에 넣음)
+
+-----------------------------------------------------------------------------------------------------
 **1월8일:   aws Rds(각조가 사용할 공동db를 등록할 예정)_ 각조1명은 반드시 등록할 카드소지해야함**
 
 **1월9일:   이날까지는 각조가 하나의 프로젝트를 공유하여 테스트 완료**
