@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QnA - 시네필</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/qna.css">
+
+</head>
+
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <h1 class="logo">시네필</h1>
+                <ul class="nav-menu">
+                    <li><a href="main.html">홈</a></li>
+                    <li><a href="movie-list.html">영화</a></li>
+                    <li><a href="review.html">리뷰</a></li>
+                    <li><a href="qna.html" class="active">QnA</a></li>
+                </ul>
+            </div>
+            <div class="navbar-right">
+                <div class="search-box">
+                    <input type="text" placeholder="제목, 인물, 장르 검색">
+                    <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <div class="user-profile">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#E50914" />
+                        <text x="16" y="21" text-anchor="middle" fill="white" font-size="16">U</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- QnA 섹션 -->
+    <section class="qna-section">
+        <h1 class="section-title">자주 묻는 질문</h1>
+
+        <div class="qna-container" id="qnaContainer">
+            <!-- QnA 카드들이 JavaScript로 동적으로 생성됩니다 -->
+        </div>
+    </section>
+
+    <!-- 질문 작성 버튼 -->
+    <button class="ask-question-btn" title="질문 작성">?</button>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 시네필. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">이용약관</a>
+                <a href="#">개인정보처리방침</a>
+                <a href="#">고객센터</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 샘플 QnA 데이터
+        const qnaData = [
+            {
+                id: 1,
+                badge: "answered",
+                badgeText: "답변완료",
+                question: "영화 리뷰는 어떻게 작성하나요?",
+                author: "김시네마",
+                date: "2025-01-07",
+                views: 1250,
+                answer: "영화 상세 페이지에서 '리뷰 작성' 버튼을 클릭하시면 리뷰 작성 페이지로 이동합니다. 별점과 내용을 입력하고 '작성 완료' 버튼을 누르시면 됩니다."
+            },
+            {
+                id: 2,
+                badge: "answered",
+                badgeText: "답변완료",
+                question: "찜 목록은 어디서 확인할 수 있나요?",
+                author: "이영화",
+                date: "2025-01-06",
+                views: 980,
+                answer: "네비게이션 바의 '내 찜목록' 메뉴를 클릭하시면 찜해두신 영화 목록을 확인하실 수 있습니다. 또한 영화 카드의 하트 아이콘을 클릭해서 찜 목록에 추가/삭제할 수 있습니다."
+            },
+            {
+                id: 3,
+                badge: "answered",
+                badgeText: "답변완료",
+                question: "회원 탈퇴는 어떻게 하나요?",
+                author: "박시청자",
+                date: "2025-01-05",
+                views: 756,
+                answer: "회원 탈퇴는 마이페이지의 '계정 설정' 메뉴에서 진행할 수 있습니다. 탈퇴 시 작성하신 리뷰와 댓글은 모두 삭제되며, 이는 복구할 수 없습니다."
+            },
+            {
+                id: 4,
+                badge: "pending",
+                badgeText: "대기중",
+                question: "앱 버전은 언제 나오나요?",
+                author: "최모바일",
+                date: "2025-01-04",
+                views: 1523,
+                answer: null
+            },
+            {
+                id: 5,
+                badge: "answered",
+                badgeText: "답변완료",
+                question: "영화 정보는 어떻게 업데이트되나요?",
+                author: "정관리자",
+                date: "2025-01-03",
+                views: 645,
+                answer: "영화 정보는 매일 자동으로 업데이트됩니다. 영화진흥위원회와 TMDB API를 통해 최신 영화 정보를 가져와서 사용자들에게 제공합니다."
+            }
+        ];
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbarScroll();
+            renderQnA();
+        });
+
+        // 네비게이션 스크롤 효과
+        function initNavbarScroll() {
+            const navbar = document.querySelector('.navbar');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // QnA 렌더링
+        function renderQnA() {
+            const container = document.getElementById('qnaContainer');
+            container.innerHTML = '';
+
+            qnaData.forEach(qna => {
+                const card = createQnACard(qna);
+                container.appendChild(card);
+            });
+        }
+
+        // QnA 카드 생성
+        function createQnACard(qna) {
+            const card = document.createElement('div');
+            card.className = 'qna-card';
+
+            const badgeClass = qna.badge;
+            const badgeText = qna.badgeText;
+
+            card.innerHTML = `
+                <div class="qna-question" onclick="toggleAnswer(${qna.id})">
+                    <div class="qna-question-content">
+                        <span class="question-badge ${badgeClass}">${badgeText}</span>
+                        <span class="question-text">${qna.question}</span>
+                    </div>
+                    <div class="qna-toggle">▼</div>
+                </div>
+                <div class="qna-answer">
+                    <div class="answer-header">
+                        <span>📝 관리자 답변</span>
+                    </div>
+                    <p class="answer-content">${qna.answer || '아직 답변이 등록되지 않았습니다. 빠른 시일 내에 답변 드리겠습니다.'}</p>
+                </div>
+                <div class="qna-meta" style="padding: 25px; padding-top: 0; border-top: none;">
+                    <span>작성자: ${qna.author}</span>
+                    <span>|</span>
+                    <span>작성일: ${qna.date}</span>
+                    <span>|</span>
+                    <span>조회: ${qna.views}</span>
+                </div>
+            `;
+
+            return card;
+        }
+
+        // 답변 토글
+        function toggleAnswer(id) {
+            const allCards = document.querySelectorAll('.qna-card');
+            allCards.forEach(card => card.classList.remove('active'));
+
+            const card = event.currentTarget.parentElement;
+            card.classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,189 @@
+.qna-section {
+    padding: 100px 4% 50px 4%;
+    min-height: 100vh;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* QnA 컨테이너 */
+.qna-container {
+    display: grid;
+    gap: 15px;
+}
+
+/* QnA 카드 */
+.qna-card {
+    background-color: var(--background-lighter);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.qna-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.qna-question {
+    padding: 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--background-lighter);
+}
+
+.qna-question-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.question-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.question-badge.answered {
+    background-color: #46d369;
+}
+
+.question-badge.pending {
+    background-color: #ff9800;
+}
+
+.question-text {
+    flex: 1;
+    font-size: 16px;
+    color: var(--text-white);
+    line-height: 1.4;
+}
+
+.qna-toggle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--text-white);
+    transition: transform 0.3s;
+}
+
+.qna-card.active .qna-toggle {
+    transform: rotate(180deg);
+}
+
+.qna-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 13px;
+    color: var(--text-gray);
+}
+
+.qna-answer {
+    display: none;
+    padding: 25px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.qna-card.active .qna-answer {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.answer-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.answer-content {
+    color: var(--text-white);
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* 질문 작성 버튼 */
+.ask-question-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+    transition: transform 0.3s, box-shadow 0.3s;
+    z-index: 100;
+}
+
+.ask-question-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.6);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .qna-section {
+        padding: 80px 4% 50px 4%;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+    }
+
+    .qna-question {
+        padding: 20px;
+    }
+
+    .qna-answer {
+        padding: 20px;
+    }
+
+    .ask-question-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 25px;
+    }
+}

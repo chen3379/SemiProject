@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>영화 목록 - MovieReview</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/movie-list.css">
+
+</head>
+
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <h1 class="logo">시네필</h1>
+                <ul class="nav-menu">
+                    <li><a href="main.html">홈</a></li>
+                    <li><a href="movie-list.html" class="active">영화</a></li>
+                    <li><a href="review.html">리뷰</a></li>
+                    <li><a href="qna.html">QnA</a></li>
+                </ul>
+            </div>
+            <div class="navbar-right">
+                <div class="search-box">
+                    <input type="text" placeholder="제목, 인물, 장르 검색">
+                    <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <div class="user-profile">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#E50914" />
+                        <text x="16" y="21" text-anchor="middle" fill="white" font-size="16">U</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <header>
+
+    </header>
+
+    <div class="movie-grid" id="movieGrid">
+        <!-- 영화 카드들이 JavaScript로 동적으로 생성됩니다 -->
+    </div>
+
+    <script src="../script.js"></script>
+    <script>
+        // movies.json 데이터 로드
+        let allMovies = [];
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMovies();
+        });
+
+        // 영화 데이터 로드
+        async function loadMovies() {
+            try {
+                const response = await fetch('../movies.json');
+                const data = await response.json();
+
+                // 모든 섹션의 영화를 하나의 배열로 통합
+                allMovies = [
+                    ...data.popular,
+                    ...data.newReleases,
+                    ...data.action,
+                    ...data.drama,
+                    ...data.comedy,
+                    ...data.sfFantasy
+                ];
+
+                // 중복 제거 (id 기준)
+                const uniqueMovies = allMovies.filter((movie, index, self) =>
+                    index === self.findIndex(m => m.id === movie.id)
+                );
+
+                renderMovieGrid(uniqueMovies);
+            } catch (error) {
+                console.error('영화 데이터 로드 실패:', error);
+                // JSON 로드 실패 시 기본 데이터 사용
+                renderMovieGrid(getFallbackData());
+            }
+        }
+
+        // 영화 그리드 렌더링
+        function renderMovieGrid(movies) {
+            const grid = document.getElementById('movieGrid');
+            grid.innerHTML = '';
+
+            movies.forEach(movie => {
+                const card = createMovieCard(movie);
+                grid.appendChild(card);
+            });
+        }
+
+        // 영화 카드 생성
+        function createMovieCard(movie) {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.dataset.movieId = movie.id;
+
+            card.innerHTML = `
+    <img class="movie-poster" src="${movie.image}" alt="${movie.title}">
+    <div class="movie-info">
+        <div class="movie-title">${movie.title}</div>
+        <div class="movie-meta">
+            <span class="rating">★ ${movie.rating}</span>
+            <span class="year">${movie.year}</span>
+            ${movie.ageRating ? `<span class="age-rating">${movie.ageRating}</span>` : ''}
+        </div>
+    </div>
+    `;
+
+            // 클릭 이벤트
+            card.addEventListener('click', () => {
+                console.log('영화 클릭:', movie.title);
+                // TODO: 영화 상세 페이지로 이동
+                // window.location.href = `movie-detail.html?id=${movie.id}`;
+            });
+
+            return card;
+        }
+
+        // 실패 시 사용할 기본 데이터
+        function getFallbackData() {
+            return [
+                {
+                    id: 1,
+                    title: "인터스텔라",
+                    image: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80",
+                    year: "2014",
+                    rating: "9.2",
+                    ageRating: "12+"
+                },
+                {
+                    id: 2,
+                    title: "다크 나이트",
+                    image: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80",
+                    year: "2008",
+                    rating: "9.0",
+                    ageRating: "15+"
+                },
+                {
+                    id: 3,
+                    title: "어벤져스",
+                    image: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80",
+                    year: "2012",
+                    rating: "8.0",
+                    ageRating: "12+"
+                },
+                {
+                    id: 4,
+                    title: "라라랜드",
+                    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&q=80",
+                    year: "2016",
+                    rating: "8.0",
+                    ageRating: "12+"
+                },
+                {
+                    id: 5,
+                    title: "쇼생크 탈출",
+                    image: "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?w=400&q=80",
+                    year: "1994",
+                    rating: "9.3",
+                    ageRating: "15+"
+                },
+                {
+                    id: 6,
+                    title: "그랜드 부다페스트",
+                    image: "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400&q=80",
+                    year: "2014",
+                    rating: "8.1",
+                    ageRating: "12+"
+                },
+                {
+                    id: 7,
+                    title: "바비",
+                    image: "https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=400&q=80",
+                    year: "2023",
+                    rating: "7.4",
+                    ageRating: "12+"
+                },
+                {
+                    id: 8,
+                    title: "오펜하이머",
+                    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+                    year: "2023",
+                    rating: "8.5",
+                    ageRating: "15+"
+                }
+            ];
+        }
+    </script>
+</body>
+
+</html>

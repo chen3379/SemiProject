@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 - 시네필</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/review.css">
+
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <!-- 네비게이션 바 -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <h1 class="logo">시네필</h1>
+                <ul class="nav-menu">
+                    <li><a href="main.html">홈</a></li>
+                    <li><a href="movie-list.html">영화</a></li>
+                    <li><a href="review.html" class="active">리뷰</a></li>
+                    <li><a href="qna.html">QnA</a></li>
+                </ul>
+            </div>
+            <div class="navbar-right">
+                <div class="search-box">
+                    <input type="text" placeholder="제목, 인물, 장르 검색">
+                    <svg class="search-icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <div class="user-profile">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="16" fill="#E50914" />
+                        <text x="16" y="21" text-anchor="middle" fill="white" font-size="16">U</text>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 리뷰 섹션 -->
+    <section class="reviews-section">
+        <h1 class="section-title">최신 리뷰</h1>
+
+        <div class="reviews-container" id="reviewsContainer">
+            <!-- 리뷰 카드들이 JavaScript로 동적으로 생성됩니다 -->
+        </div>
+    </section>
+
+    <!-- 리뷰 작성 버튼 -->
+    <button class="write-review-btn" title="리뷰 작성">+</button>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 시네필. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="#">이용약관</a>
+                <a href="#">개인정보처리방침</a>
+                <a href="#">고객센터</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 샘플 리뷰 데이터
+        const reviewData = [
+            {
+                id: 1,
+                userName: "김영화",
+                userAvatar: "김",
+                movieTitle: "인터스텔라",
+                rating: 5,
+                date: "2025-01-07",
+                content: "정말 감동적인 영화였습니다. 시공간을 넘나드는 이야기가 너무나 아름다웠고, 마지막 장면에서 눈물을 멈출 수 없었습니다. 크리스토퍼 놀란 감독의 연출이 빛을 발하는 작품입니다.",
+                likes: 245,
+                comments: 32
+            },
+            {
+                id: 2,
+                userName: "이시네마",
+                userAvatar: "이",
+                movieTitle: "다크 나이트",
+                rating: 5,
+                date: "2025-01-06",
+                content: "히어로 영화의 새로운 기준을 세운 작품입니다. 조커의 연기는 압도적이었고, 브루스 웨인의 내면 갈등을 깊이 있게 그려냈습니다. 이 영화는 단순한 액션 영화가 아닌, 인간성에 대한 깊은 고찰입니다.",
+                likes: 189,
+                comments: 28
+            },
+            {
+                id: 3,
+                userName: "박코믹",
+                userAvatar: "박",
+                movieTitle: "어벤져스",
+                rating: 4,
+                date: "2025-01-05",
+                content: "마블 히어로들이 모여서 시각적 즐거움은 만점입니다. 하지만 너무 많은 캐릭터 때문에 각 캐릭터의 서사가 부족하다는 느낌이 들었습니다. 그래도 재미있게 보았습니다!",
+                likes: 156,
+                comments: 19
+            },
+            {
+                id: 4,
+                userName: "최드라마",
+                userAvatar: "최",
+                movieTitle: "라라랜드",
+                rating: 5,
+                date: "2025-01-04",
+                content: "뮤지컬 영화 중 최고입니다. 음악과 색감이 너무나 아름다웠고, 두 주인공의 사랑 이야기가 가슴 찡하게 다가왔습니다. 결말은 슬프지만 현실적이었어요.",
+                likes: 203,
+                comments: 41
+            },
+            {
+                id: 5,
+                userName: "정액션",
+                userAvatar: "정",
+                movieTitle: "존 윅",
+                rating: 4,
+                date: "2025-01-03",
+                content: "액션 연출이 정말 뛰어납니다. 키아누 리브스의 액션은 보는 맛이 있습니다. 하지만 스토리는 다소 단순한 편입니다. 액션 영화를 좋아하신다면 추천합니다!",
+                likes: 134,
+                comments: 22
+            }
+        ];
+
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavbarScroll();
+            renderReviews();
+        });
+
+        // 네비게이션 스크롤 효과
+        function initNavbarScroll() {
+            const navbar = document.querySelector('.navbar');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // 리뷰 렌더링
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            container.innerHTML = '';
+
+            reviewData.forEach(review => {
+                const card = createReviewCard(review);
+                container.appendChild(card);
+            });
+        }
+
+        // 리뷰 카드 생성
+        function createReviewCard(review) {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+
+            // Random avatar color
+            const hue = Math.floor(Math.random() * 360);
+            const avatarColor = `linear-gradient(135deg, hsl(${hue}, 70%, 50%), hsl(${hue + 40}, 70%, 50%))`;
+
+            // 별점 생성
+            let starsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= review.rating) {
+                    starsHTML += '<span class="star">★</span>';
+                } else {
+                    starsHTML += '<span class="star empty">★</span>';
+                }
+            }
+
+            card.innerHTML = `
+                <div class="review-header">
+                    <div class="review-user">
+                        <div class="user-avatar" style="background: ${avatarColor}">${review.userAvatar}</div>
+                        <div class="user-info">
+                            <span class="user-name">${review.userName}</span>
+                            <span class="review-date">${review.date}</span>
+                        </div>
+                    </div>
+                    <span class="review-movie-title">${review.movieTitle}</span>
+                </div>
+                <div class="review-rating">
+                    ${starsHTML}
+                </div>
+                <p class="review-text">${review.content}</p>
+                <div class="review-actions">
+                    <div class="review-action">
+                        <span>👍</span>
+                        <span>${review.likes}</span>
+                    </div>
+                    <div class="review-action">
+                        <span>💬</span>
+                        <span>${review.comments}</span>
+                    </div>
+                    <div class="review-action">
+                        <span>🔗</span>
+                        <span>공유</span>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+    </script>
+</body>
+
+</html>

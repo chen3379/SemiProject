@@ -1,0 +1,262 @@
+{
+  "hero": {
+    "title": "인터스텔라",
+    "description": "지구 환경이 악화된 미래, 인류를 구하기 위해 떠나는 우주 여정. 시공간을 넘어서는 감동적인 스토리와 놀라운 시각 효과로 여러분을 설득합니다.",
+    "image": "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80",
+    "year": "2014",
+    "rating": "9.2",
+    "ageRating": "12+"
+  },
+  "popular": [
+    {
+      "id": 1,
+      "title": "인터스텔라",
+      "image": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80",
+      "year": "2014",
+      "rating": "9.2",
+      "ageRating": "12+"
+    },
+    {
+      "id": 2,
+      "title": "다크 나이트",
+      "image": "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80",
+      "year": "2008",
+      "rating": "9.0",
+      "ageRating": "15+"
+    },
+    {
+      "id": 3,
+      "title": "어벤져스",
+      "image": "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80",
+      "year": "2012",
+      "rating": "8.0",
+      "ageRating": "12+"
+    },
+    {
+      "id": 4,
+      "title": "라라랜드",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&q=80",
+      "year": "2016",
+      "rating": "8.0",
+      "ageRating": "12+"
+    },
+    {
+      "id": 5,
+      "title": "쇼생크 탈출",
+      "image": "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?w=400&q=80",
+      "year": "1994",
+      "rating": "9.3",
+      "ageRating": "15+"
+    },
+    {
+      "id": 6,
+      "title": "그랜드 부다페스트",
+      "image": "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400&q=80",
+      "year": "2014",
+      "rating": "8.1",
+      "ageRating": "12+"
+    },
+    {
+      "id": 26,
+      "title": "듄: 파트2",
+      "image": "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=400&q=80",
+      "year": "2024",
+      "rating": "8.8",
+      "ageRating": "12+"
+    },
+    {
+      "id": 27,
+      "title": "파묘",
+      "image": "https://images.unsplash.com/photo-1626814026160-2237a95fc5a0?w=400&q=80",
+      "year": "2024",
+      "rating": "7.9",
+      "ageRating": "15+"
+    },
+    {
+      "id": 28,
+      "title": "서울의 봄",
+      "image": "https://images.unsplash.com/photo-1533488765986-dfa2a9939acd?w=400&q=80",
+      "year": "2023",
+      "rating": "9.4",
+      "ageRating": "12+"
+    },
+    {
+      "id": 29,
+      "title": "엘리멘탈",
+      "image": "https://images.unsplash.com/photo-1568821116266-9c7295320ca1?w=400&q=80",
+      "year": "2023",
+      "rating": "8.5",
+      "ageRating": "All"
+    },
+    {
+      "id": 30,
+      "title": "스즈메의 문단속",
+      "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80",
+      "year": "2023",
+      "rating": "8.0",
+      "ageRating": "12+"
+    }
+  ],
+  "newReleases": [
+    {
+      "id": 7,
+      "title": "바비",
+      "image": "https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=400&q=80",
+      "year": "2023",
+      "rating": "7.4",
+      "ageRating": "12+"
+    },
+    {
+      "id": 8,
+      "title": "오펜하이머",
+      "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "year": "2023",
+      "rating": "8.5",
+      "ageRating": "15+"
+    },
+    {
+      "id": 9,
+      "title": "아바타 2",
+      "image": "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400&q=80",
+      "year": "2022",
+      "rating": "7.6",
+      "ageRating": "12+"
+    },
+    {
+      "id": 10,
+      "title": "탑건",
+      "image": "https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=400&q=80",
+      "year": "2022",
+      "rating": "8.2",
+      "ageRating": "12+"
+    },
+    {
+      "id": 11,
+      "title": "에브리씽",
+      "image": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&q=80",
+      "year": "2023",
+      "rating": "8.1",
+      "ageRating": "12+"
+    }
+  ],
+  "action": [
+    {
+      "id": 12,
+      "title": "존윅",
+      "image": "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80",
+      "year": "2014",
+      "rating": "7.4",
+      "ageRating": "18+"
+    },
+    {
+      "id": 13,
+      "title": "매드맥스",
+      "image": "https://images.unsplash.com/photo-1506318137071-a8bcbf6755dd?w=400&q=80",
+      "year": "2015",
+      "rating": "8.1",
+      "ageRating": "15+"
+    },
+    {
+      "id": 14,
+      "title": "글래디에이터",
+      "image": "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&q=80",
+      "year": "2000",
+      "rating": "8.5",
+      "ageRating": "15+"
+    },
+    {
+      "id": 15,
+      "title": "마블 시리즈",
+      "image": "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80",
+      "year": "2023",
+      "rating": "7.8",
+      "ageRating": "12+"
+    }
+  ],
+  "drama": [
+    {
+      "id": 16,
+      "title": "셰이프 오브 워터",
+      "image": "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&q=80",
+      "year": "2017",
+      "rating": "7.3",
+      "ageRating": "15+"
+    },
+    {
+      "id": 17,
+      "title": "미나리",
+      "image": "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?w=400&q=80",
+      "year": "2020",
+      "rating": "8.3",
+      "ageRating": "12+"
+    },
+    {
+      "id": 18,
+      "title": "패러사이트",
+      "image": "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=400&q=80",
+      "year": "2019",
+      "rating": "8.6",
+      "ageRating": "15+"
+    },
+    {
+      "id": 19,
+      "title": "그린북",
+      "image": "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400&q=80",
+      "year": "2018",
+      "rating": "8.2",
+      "ageRating": "12+"
+    }
+  ],
+  "comedy": [
+    {
+      "id": 20,
+      "title": "쏘우",
+      "image": "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&q=80",
+      "year": "2023",
+      "rating": "7.5",
+      "ageRating": "12+"
+    },
+    {
+      "id": 21,
+      "title": "해리포터",
+      "image": "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9?w=400&q=80",
+      "year": "2001",
+      "rating": "7.6",
+      "ageRating": "12+"
+    },
+    {
+      "id": 22,
+      "title": "레미제라블",
+      "image": "https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=400&q=80",
+      "year": "2012",
+      "rating": "7.8",
+      "ageRating": "12+"
+    }
+  ],
+  "sfFantasy": [
+    {
+      "id": 23,
+      "title": "스타워즈",
+      "image": "https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=400&q=80",
+      "year": "1977",
+      "rating": "8.6",
+      "ageRating": "12+"
+    },
+    {
+      "id": 24,
+      "title": "마블",
+      "image": "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=400&q=80",
+      "year": "2023",
+      "rating": "7.9",
+      "ageRating": "12+"
+    },
+    {
+      "id": 25,
+      "title": "반지의 제왕",
+      "image": "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&q=80",
+      "year": "2001",
+      "rating": "8.8",
+      "ageRating": "12+"
+    }
+  ]
+}
