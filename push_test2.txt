@@ -1,0 +1,8 @@
+1. Eclipse 실행
+2. `File → Import`
+3. **Git → Projects from Git → Next**
+4. **Clone URI → Next**
+5. Repository URI 입력  
+
+
+   
