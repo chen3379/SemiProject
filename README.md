@@ -1,82 +1,98 @@
-<h1>WhatFlix</h1>
-<br>
-<h3>Class4 A조</h3>
-<b>팀장</b>: 김성주  <b>팀원</b>: 임소희, 백진욱, 김현능, 조성진
+# 🎬 WhatFlix
 
-<b>주제</b>: 영화 커뮤니티 웹사이트
+### Class4 A조
 
-<hr>
+**팀장**  
+- 김성주  
 
-<h3>브랜치 규칙</h3>
+**팀원**  
+- 임소희  
+- 백진욱  
+- 김현능  
+- 조성진  
 
-최종 브랜치 (main): 프로젝트 완성 분기별 배포용 브랜치. 
+---
 
-기본 브랜치 (develop): 모든 작업의 기준점입니다. 직접 push X 
+## 📌 프로젝트 주제
+**영화 커뮤니티 웹사이트**
 
-개별 브랜치 (영문 이름 이니셜_담당 기능): 개별 작업을 진행하기 위한 브랜치
+---
 
-- 규칙에 맞게 생성 후 작업
+## 🌿 브랜치 규칙
 
-- ex> ksj_movie, git checkout -b ksj_movie
+### 1️⃣ 최종 브랜치 (main)
+- 프로젝트 **완성 단계** 및 **분기별 배포용 브랜치**
+- develop 브랜치의 안정 버전만 병합
 
-- 프로젝트 분기별 완성 후 develop -> main
+### 2️⃣ 기본 브랜치 (develop)
+- 모든 작업의 **기준 브랜치**
+- ❌ 직접 push 금지
 
-<hr>
+### 3️⃣ 개별 브랜치 (영문이니셜_담당기능)
+- 개인 작업용 브랜치
+- 브랜치명 규칙을 반드시 준수
 
-<h3>develop에서 pull받는 과정</h3>
-<br>
-본인 작업 저장 (본인 브랜치에 저장)
-<br>↓<br>
-develop 이동 (본인 로컬의 develop 브랜치로 이동)
-<br>↓<br>
-develop pull (본인 로컬의 develop을 최신으로 만듦)
-<br>↓<br>
-본인 브랜치로 복귀
-<br>↓<br>
-본인 브랜치에 develop 업데이트 내용 합치기 (최신이 된 develop을 본인 브랜치에 반영)
-<br>
-<h4>[git bash]</h4>
+**예시**
+```bash
+git checkout -b ksj_movie
+````
 
+* 작업 완료 후 PR을 통해 develop 브랜치에 병합
+
+---
+
+## 🔄 develop 브랜치 최신 내용 가져오기 (pull 과정)
+
+### 작업 흐름
+
+1. 본인 브랜치에서 작업 내용 저장
+2. develop 브랜치로 이동
+3. develop 최신화
+4. 다시 본인 브랜치로 이동
+5. develop 내용을 본인 브랜치에 병합
+
+### Git Bash 명령어
+
+```bash
 git add .
-<br>↓<br>
-git commit -m "본인 브랜치 저장"
-<br>↓<br>
+git commit -m "본인 브랜치 작업 저장"
+
 git checkout develop
-<br>↓<br>
 git pull origin develop
-<br>↓<br>
-git checkout 본인 브랜치
-<br>↓<br>
+
+git checkout 본인브랜치명
 git merge develop
+```
 
-<hr>
+---
 
-<h3>본인 작업 완료 후 develop으로 push하는 과정</h3>
-<br>
-본인 작업 저장 (본인 브랜치에 저장)
-<br>↓<br>
-본인 브랜치를 origin에 push
-<br>↓<br>
-GitHub 저장소에서 develop에 본인 브랜치 합치기 요청 (PR)
-<br>↓<br>
-팀 전체 확인 후 팀장이 승인 시 develop 반영
-<br>
-<h4>[git bash]</h4>
+## 🚀 작업 완료 후 develop 브랜치로 반영하는 과정
 
+### 작업 흐름
+
+1. 본인 브랜치에 작업 내용 커밋
+2. 원격 저장소(origin)에 push
+3. GitHub에서 develop 브랜치로 PR 생성
+4. 팀원 검토 후 팀장이 승인
+5. develop 브랜치에 반영
+
+### Git Bash 명령어
+
+```bash
 git add .
-<br>↓<br>
 git commit -m "변경사항"
-<br>↓<br>
-git push origin 본인 브랜치
-<br>↓<br>
-합치기 (PR): GitHub 저장소에서 본인 브랜치 → develop으로 Pull Request를 생성합니다.
-<br>↓<br>
-팀 전체 확인 후 팀장이 승인 시 develop 반영
+git push origin 본인브랜치명
+```
 
-<hr>
+👉 이후 **GitHub 저장소에서**
+`본인 브랜치 → develop` 방향으로 **Pull Request(PR)** 생성
 
-<h5>[git 명령어 정리]</h5>
+---
 
-git checkout -b test : test라는 브랜치를 생성하고 이동
-<br>
-git checkout test: test라는 브랜치로 이동
+## 🛠 Git 명령어 정리
+
+```bash
+git checkout -b test   # test 브랜치 생성 + 이동
+git checkout test      # test 브랜치로 이동
+```
+
