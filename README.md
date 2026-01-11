@@ -1,5 +1,5 @@
 <h1>WhatFlix</h1>
-
+<br>
 <h3>Class4 A조</h3>
 <b>팀장</b>: 김성주  <b>팀원</b>: 임소희, 백진욱, 김현능, 조성진
 
@@ -23,50 +23,60 @@
 
 <hr>
 
-<h3>Slack에 merge 알림이 왔을 때</h3>
-<h3>pull받는 과정</h3>
-
-내 작업 저장 (내 브랜치 저장)
-↓
-develop 이동 (내 로컬의 develop 브랜치로 이동)
-↓
-develop pull (내 로컬의 develop을 최신으로 만듦)
-↓
-내 브랜치로 복귀
-↓
-내 브랜치에 develop 업데이트 내용 합치기 (최신이 된 develop을 내 브랜치에 반영)
-
-<b>git bash</b>
+<h3>develop에서 pull받는 과정</h3>
+<br>
+본인 작업 저장 (본인 브랜치에 저장)
+<br>↓<br>
+develop 이동 (본인 로컬의 develop 브랜치로 이동)
+<br>↓<br>
+develop pull (본인 로컬의 develop을 최신으로 만듦)
+<br>↓<br>
+본인 브랜치로 복귀
+<br>↓<br>
+본인 브랜치에 develop 업데이트 내용 합치기 (최신이 된 develop을 본인 브랜치에 반영)
+<br>
+<h4>[git bash]</h4>
 
 git add .
-↓
-git commit -m "내 브랜치 저장"
-↓
+<br>↓<br>
+git commit -m "본인 브랜치 저장"
+<br>↓<br>
 git checkout develop
-↓
+<br>↓<br>
 git pull origin develop
-↓
-git checkout 내 브랜치
-↓
+<br>↓<br>
+git checkout 본인 브랜치
+<br>↓<br>
 git merge develop
-↓
 
 <hr>
 
-<h3>본인 작업 완료 후</h3>
-<h3>develop에 push하는 과정</h3>
-
-<b>git bash</b>
+<h3>본인 작업 완료 후 develop으로 push하는 과정</h3>
+<br>
+본인 작업 저장 (본인 브랜치에 저장)
+<br>↓<br>
+본인 브랜치를 origin에 push
+<br>↓<br>
+GitHub 저장소에서 develop에 본인 브랜치 합치기 요청 (PR)
+<br>↓<br>
+팀 전체 확인 후 팀장이 승인 시 develop 반영
+<br>
+<h4>[git bash]</h4>
 
 git add .
-↓
+<br>↓<br>
 git commit -m "변경사항"
-↓
-git push origin 내 브랜치
-↓
-합치기 (PR): GitHub 저장소에서 feature/.. → develop으로 Pull Request를 생성합니다.
-↓
+<br>↓<br>
+git push origin 본인 브랜치
+<br>↓<br>
+합치기 (PR): GitHub 저장소에서 본인 브랜치 → develop으로 Pull Request를 생성합니다.
+<br>↓<br>
 팀 전체 확인 후 팀장이 승인 시 develop 반영
 
+<hr>
 
+<h5>[git 명령어 정리]</h5>
 
+git checkout -b test : test라는 브랜치를 생성하고 이동
+<br>
+git checkout test: test라는 브랜치로 이동
