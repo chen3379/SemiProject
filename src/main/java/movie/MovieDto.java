@@ -6,8 +6,9 @@ import java.sql.Timestamp;
 public class MovieDto {
 
 	private int movieIdx;
+	private String movieId;
 	private String title;
-	private Date releaseDay;
+	private String releaseDay;
 	private String genre;
 	private String country;
 	private String director;
@@ -18,6 +19,8 @@ public class MovieDto {
 	private Timestamp createDay;
 	private Timestamp updateDay;
 	private int readcount;
+	private String createId;
+	private String updateId;
 
 	public int getMovieIdx() {
 		return movieIdx;
@@ -35,11 +38,11 @@ public class MovieDto {
 		this.title = title;
 	}
 
-	public Date getReleaseDay() {
+	public String getReleaseDay() {
 		return releaseDay;
 	}
 
-	public void setReleaseDay(Date releaseDay) {
+	public void setReleaseDay(String releaseDay) {
 		this.releaseDay = releaseDay;
 	}
 
@@ -121,5 +124,29 @@ public class MovieDto {
 
 	public void setReadcount(int readcount) {
 		this.readcount = readcount;
+	}
+
+	public String getMovieId() {
+		return movieId;
+	}
+
+	public void setMovieId(String movieId) {
+		this.movieId = movieId;
+	}
+
+	public String getCreateId() {
+		return createId;
+	}
+
+	public void setCreateId(String createId) {
+		this.createId = createId;
+	}
+
+	public String getUpdateId() {
+		return updateId;
+	}
+
+	public void setUpdateId(String updateId) {
+		this.updateId = updateId;
 	}
 }
