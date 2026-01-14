@@ -1,34 +1,46 @@
-<%@page import="login.LoginDao"%>
-<%@ page language="java" contentType="application/json; charset=UTF-8" pageEncoding="UTF-8" %><%
-  	String id = request.getParameter("id");
-  	String pass = request.getParameter("pass");
-  	String saveId = request.getParameter("saveid");
-  	
-  	LoginDao dao = new LoginDao();
-  	boolean isSuccess = dao.isLogin(id, pass);
-  	String jsonResponse = "";
-  	
-  	if(isSuccess){
-  		session.setAttribute("id", id);
-  		session.setAttribute("saveId", (saveId != null ? "true" : "false"));
-  		session.setAttribute("loginStatus", true);
-  		
-  		session.setMaxInactiveInterval(60*60*8);
-  		jsonResponse = """
-  			{
-  				"status": "success",
-  		        "message": "로그인 성공"
-  			}
-  			""";
-  	} else {
-  		jsonResponse = """
-  	  			{
-  	  				"status": "fail",
-  	  		        "message": "아이디 또는 비밀번호를 확인하세요."
-  	  			}
-  	  			""";
-  	}
-  	out.print(jsonResponse);
-    out.flush();
- 	
+
+<%@page import="org.json.simple.JSONObject"%>
+<%@ page language="java" contentType="application/json; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="org.mindrot.jbcrypt.BCrypt" %>
+<%@page import="member.MemberDao"%>
+<%
+response.setContentType("application/json");
+request.setCharacterEncoding("UTF-8");
+JSONObject json = new JSONObject();
+
+String inputId = request.getParameter("id");
+String inputPassword = request.getParameter("password");
+String saveId = request.getParameter("saveid");
+
+if (inputId == null || inputPassword == null || inputId.trim().isEmpty() || inputPassword.trim().isEmpty()) {
+    json.put("status", "FAIL");
+    out.print(json.toString());
+    return; 
+}
+
+try {
+
+MemberDao dao = new MemberDao();
+
+String dbHashedPassword = dao.getHashedPassword(inputId);
+
+	// BCrypt.checkpw(pw, hashedPw) : 입력된 비밀번호와 데이터베이스에 저장된 해시된 비밀번호가 일치하는지 확인
+	if (dbHashedPassword != null && BCrypt.checkpw(inputPassword, dbHashedPassword)) {
+		session.setAttribute("id", inputId);
+		session.setAttribute("saveId", (saveId != null ? "true" : "false"));
+		session.setAttribute("loginStatus", true);
+		session.setMaxInactiveInterval(60 * 60 * 8);
+
+		json.put("status", "SUCCESS");
+	} else {
+		json.put("status", "FAIL");
+	} 
+}
+catch (Exception e) {
+    e.printStackTrace();
+    json.put("status", "ERROR");
+}
+out.print(json.toString());
+out.flush();
 %>
