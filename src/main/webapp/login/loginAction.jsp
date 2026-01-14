@@ -21,16 +21,20 @@ if (inputId == null || inputPassword == null || inputId.trim().isEmpty() || inpu
 
 try {
 
-MemberDao dao = new MemberDao();
+MemberDao memberDao = new MemberDao();
 
-String dbHashedPassword = dao.getHashedPassword(inputId);
+String roleType = memberDao.getRoleType(inputId);
+String dbHashedPassword = memberDao.getHashedPassword(inputId);
 
 	// BCrypt.checkpw(pw, hashedPw) : 입력된 비밀번호와 데이터베이스에 저장된 해시된 비밀번호가 일치하는지 확인
 	if (dbHashedPassword != null && BCrypt.checkpw(inputPassword, dbHashedPassword)) {
 		session.setAttribute("id", inputId);
 		session.setAttribute("saveId", (saveId != null ? "true" : "false"));
 		session.setAttribute("loginStatus", true);
+		session.setAttribute("roleType", roleType);
 		session.setMaxInactiveInterval(60 * 60 * 8);
+
+		session.removeAttribute("guestUUID");
 
 		json.put("status", "SUCCESS");
 	} else {

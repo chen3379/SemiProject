@@ -18,7 +18,13 @@
 
 					<div>
 						<input type="checkbox" id="loginSaveID" name="saveid">
-						<label for="loginSaveID">로그인 상태 유지</label>
+						<!-- 
+						session.invalidate()로 싹 날려야 보안이 강화되는데
+						그러면 saveId session도 날아가서 세션으로는 구현 불가능
+						쿠키로 구현 예정
+						-->
+						<label for="loginSaveID">아이디 저장(쿠키로 구현 예정)</label>
+
 					</div>
 					<div>
 						<a href="../signUp/signUpPage.jsp">회원가입</a>
@@ -30,8 +36,7 @@
 		</div>
 	</div>
 
-<!-- 모달 bootstrap -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
 
 	<script>
 		$(document).ready(function () {

@@ -47,7 +47,7 @@
         var idMsg = document.getElementById('idMsg');
         var pwMsg = document.getElementById('pwMsg');
 
-        // 실시간 비밀번호 확인
+        // 실시간 비밀번호 일치 불일치 확인
         function checkPassword() {
             if (!signUpPassword.value || !signUpPasswordConfirm.value) {
                 pwMsg.classList.remove('show');
