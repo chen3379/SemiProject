@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>영화 등록</title>
+<title>WhatFlix</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
@@ -58,7 +58,7 @@
     <div class="row">
         <div class="col-md-5 mb-4 mb-md-0">
             <div class="preview-container shadow-sm">
-                <img id="posterPreview" src="../save/no-image.jpg" alt="포스터 preview" class="img-fluid rounded">
+                <img id="posterPreview" src="../save/no_image.jpg" alt="포스터 preview" class="img-fluid rounded">
             </div>
             <p class="text-center text-muted mt-2 small">* 5MB 이하의 jpg, png 파일 업로드</p>
         </div>
@@ -170,7 +170,7 @@ $(document).ready(function() {
             reader.readAsDataURL(this.files[0]);
         } else {
              // 파일 선택 취소 시 기본 이미지로 복구
-             $('#posterPreview').attr('src', '../save/no-image.jpg');
+             $('#posterPreview').attr('src', '../save/no_image.jpg');
         }
     });
 
@@ -234,7 +234,7 @@ $(document).ready(function() {
                     $("#insertForm")[0].reset();
                     
                     // 4-2. ★중요★ 이미지 미리보기 초기화 (기본 이미지로)
-                    $('#posterPreview').attr('src', 'https://via.placeholder.com/400x600?text=No+Image+Selected');
+                    $('#posterPreview').attr('src', '../save/no_image.jpg');
                     
                     // 4-3. ★중요★ 유튜브 미리보기 숨기고 iframe src 비우기
                     $("#videoPreviewFrame").hide();
@@ -251,7 +251,7 @@ $(document).ready(function() {
             },
             complete: function() {
                  // 완료 후 버튼 다시 활성화
-                 $("button[type=submit]").prop("disabled", false).text("✨ 영화 정보 등록하기");
+                 $("button[type=submit]").prop("disabled", false).text("영화 정보 등록하기");
             }
         });
     });

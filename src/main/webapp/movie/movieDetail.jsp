@@ -19,6 +19,22 @@ dao.updateReadCount(movie_idx);
 
 // 3. 영화 정보 가져오기
 MovieDto dto = dao.getMovie(movie_idx);
+
+String dbPosterPath= dto.getPosterPath();
+String fullPosterPath="";
+//값이 없거나 || 값이 할당되었지만 길이가 0, 포스터가 없을 때
+if(dbPosterPath==null||dbPosterPath.isEmpty()){
+    fullPosterPath="../save/no_image.jpg";
+}
+//포스터가 API 데이터인 경우(http로 시작할 때)
+else if(dbPosterPath.startsWith("http")){
+    fullPosterPath=dbPosterPath;
+}
+//포스터를 직접 업로드한 경우
+else{
+    fullPosterPath="../save/"+dbPosterPath;
+}
+
 %>
 <!DOCTYPE html>
 <html>
@@ -87,7 +103,7 @@ MovieDto dto = dao.getMovie(movie_idx);
 
 		<div class="row">
 			<div class="col-md-4 mb-4 poster-area">
-				<img src="../save/<%=dto.getPosterPath()%>"
+				<img src="<%=fullPosterPath%>"
 					onerror="this.src='../save/no_image.jpg'"
 					alt="<%=dto.getTitle()%> 포스터">
 			</div>

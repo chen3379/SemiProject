@@ -48,7 +48,7 @@ public class MovieDao {
 
     // 전체 영화 개수 구하기 (페이징 처리용)
     public int getTotalCount() {
-        int n = 0;
+        int totalCount = 0;
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -60,14 +60,14 @@ public class MovieDao {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                n = rs.getInt(1);
+                totalCount = rs.getInt(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
         }
-        return n;
+        return totalCount;
     }
 
     // 장르별갯수(페이징용)
@@ -99,6 +99,54 @@ public class MovieDao {
         }
 
         return total;
+    }
+
+    // 영화 list-전체
+    public List<MovieDto> getAllList(int startNum, int perPage) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "select * from movie m order by m.movie_idx desc ";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, startNum);
+            pstmt.setInt(2, perPage);
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+
+                list.add(dto);
+            }
+
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+
+        return list;
     }
 
     // 영화 list-별점순(전체)
@@ -212,7 +260,7 @@ public class MovieDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "order by release_day, m.movie_idx desc " + "limit ?, ?";
+        String sql = "select * from movie m order by m.release_day desc, m.movie_idx desc limit ?,? ";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -260,7 +308,7 @@ public class MovieDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "where genre=?" + "order by release_day, m.movie_idx desc "
+        String sql = "select * from movie m " + "where genre=?" + " order by m.release_day desc, m.movie_idx desc "
                 + "limit ?, ?";
 
         try {
@@ -310,7 +358,7 @@ public class MovieDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "order by create_day, m.movie_idx desc " + "limit ?, ?";
+        String sql = "select * from movie m " + "order by m.create_day desc, m.movie_idx desc " + "limit ?, ?";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -358,7 +406,7 @@ public class MovieDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "where genre=?" + "order by create_day, m.movie_idx desc "
+        String sql = "select * from movie m " + "where genre=?" + " order by m.create_day desc, m.movie_idx desc "
                 + "limit ?, ?";
 
         try {
@@ -512,4 +560,31 @@ public class MovieDao {
         }
     }
 
+    // ID 중복 체크 메서드 (있으면 true, 없으면 false 반환)
+    public boolean isMovieExist(String movieId) {
+        boolean isExist = false;
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        // count(*)가 1이면 존재하는 것
+        String sql = "SELECT count(*) FROM movie WHERE movie_id = ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, movieId);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                if (rs.getInt(1) > 0)
+                    isExist = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+
+        return isExist;
+    }
 }

@@ -2,11 +2,33 @@
 <%@page import="movie.MovieDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%
+    // 1. 수정할 영화 데이터 가져오기
+    String movieIdx = request.getParameter("movie_idx");
+    MovieDao dao = new MovieDao();
+    MovieDto dto = dao.getMovie(movieIdx);
+
+    // ★★★ [수정 핵심] 포스터 경로 판별 로직 추가 ★★★
+    String dbPosterPath = dto.getPosterPath(); // DB 원본 값
+    String fullPosterPath = "";                // 화면 출력용 전체 경로
+    
+    // null 처리 및 경로 판별
+    if(dbPosterPath == null || dbPosterPath.isEmpty()) {
+        dbPosterPath = "no_image.jpg";
+        fullPosterPath = "../save/no_image.jpg";
+    } else if(dbPosterPath.startsWith("http")) {
+        // API 데이터인 경우 (http로 시작) -> 경로 그대로 사용
+        fullPosterPath = dbPosterPath;
+    } else {
+        // 직접 업로드한 경우 -> save 폴더 경로 붙임
+        fullPosterPath = "../save/" + dbPosterPath;
+    }
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>영화 수정</title>
+<title>WhatFlix</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
@@ -55,11 +77,6 @@
 }
 </style>
 </head>
-<%
-    String movieIdx = request.getParameter("movie_idx");
-    MovieDao dao = new MovieDao();
-    MovieDto dto = dao.getMovie(movieIdx);
-%>
 <body>
 	<div class="container-fluid">
 		<h2 class="mb-4 fw-bold text-center">영화 수정</h2>
@@ -68,7 +85,7 @@
 		<div class="row">
 			<div class="col-md-5 mb-4 mb-md-0">
 				<div class="preview-container shadow-sm">
-					<img id="posterPreview" src="../save/<%=dto.getPosterPath()%>"
+					<img id="posterPreview" src="<%=fullPosterPath%>"
 						onerror="this.src='../save/no_image.jpg'" alt="포스터 preview"
 						class="img-fluid rounded">
 				</div>
@@ -80,7 +97,7 @@
 					<form id="updateForm" enctype="multipart/form-data">
 
 						<input type="hidden" name="movie_idx" value="<%=movieIdx%>">
-						<input type="hidden" name="existing_poster" value="<%=dto.getPosterPath()%>"> 
+                        <input type="hidden" name="existing_poster" value="<%=dbPosterPath%>"> 
                         <input type="hidden" name="update_id" value="admin">
 
 						<h5 class="mb-3 fw-bold">기본 정보</h5>
@@ -111,6 +128,7 @@
 									<option value="공포" <%=dto.getGenre().equals("공포") ? "selected" : ""%>>공포</option>
 									<option value="스릴러" <%=dto.getGenre().equals("스릴러") ? "selected" : ""%>>스릴러</option>
 									<option value="로맨스" <%=dto.getGenre().equals("로맨스") ? "selected" : ""%>>로맨스(멜로)</option>
+                                    <option value="로맨스(멜로)" <%=dto.getGenre().equals("로맨스(멜로)") ? "selected" : ""%>>로맨스(멜로)</option>
 									<option value="드라마" <%=dto.getGenre().equals("드라마") ? "selected" : ""%>>드라마</option>
 									<option value="판타지" <%=dto.getGenre().equals("판타지") ? "selected" : ""%>>판타지</option>
 									<option value="뮤지컬" <%=dto.getGenre().equals("뮤지컬") ? "selected" : ""%>>뮤지컬</option>
@@ -177,15 +195,15 @@
                 }
                 reader.readAsDataURL(this.files[0]);
             } else {
-                // [수정] 줄바꿈 에러 제거 및 기존 이미지 경로 설정
-                var originalSrc = "../save/<%=dto.getPosterPath()%>";
+                // ★ [수정] 파일 선택 취소 시 원래 경로(URL or 파일)로 복구
+                var originalSrc = "<%=fullPosterPath%>";
                 $('#posterPreview').attr('src', originalSrc);
             }
         });
 
         // ================= [2] 유튜브 URL에서 Video ID 추출하는 함수 =================
         function getYoutubeId(url) {
-            // 다양한 유튜브 URL 패턴에 대응하는 정규식
+            if(!url) return null;
             var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             var match = url.match(regExp);
             // ID는 보통 11자리입니다.
