@@ -247,7 +247,7 @@ td.title {
     </table>
 
     <div class="write-btn">
-        <a href="write.jsp"><i class="bi bi-pen"></i>글쓰기</a>
+        <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;글쓰기</a>
     </div>
 </div>
 

@@ -41,3 +41,6 @@ local.properties
 .classpath
 /build/
 !*.jar
+
+# Secret files (DO NOT COMMIT)
+secret.properties

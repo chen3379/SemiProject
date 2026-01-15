@@ -136,6 +136,114 @@ FreeBoardDto dto = dao.getBoard(board_idx);
   color: #666;
   font-size: 14px;
 }
+
+.comment-section {
+  margin-top: 50px;
+  border-top: 1px solid #eee;
+  padding-top: 30px;
+}
+
+.comment-header {
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.comment-write textarea {
+  width: 100%;
+  height: 90px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  resize: none;
+}
+
+.comment-write-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-upload {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+.right-actions button {
+  margin-left: 8px;
+}
+
+.btn-like {
+  background: #ffecec;
+  color: #ff5b5b;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.btn-submit {
+  background: #f2f2f2;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.comment-list {
+  margin-top: 30px;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.comment-item.reply {
+  margin-left: 50px;
+}
+
+.comment-profile {
+  width: 36px;
+  height: 36px;
+  background: #eee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.comment-body {
+  flex: 1;
+}
+
+.comment-info {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+.comment-writer {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.comment-text {
+  line-height: 1.6;
+}
+
+.comment-actions {
+  margin-top: 6px;
+  display: flex;
+  gap: 10px;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 </style>
 <body>
 <div class="post-container">
@@ -191,6 +299,72 @@ FreeBoardDto dto = dao.getBoard(board_idx);
     <span>🔗 공유</span>
   </div>
 
+	<!-- 댓글 영역 -->
+	<div class="comment-section">
+	
+	  <!-- 댓글 수 -->
+	  <div class="comment-header">
+	    댓글 <span class="comment-count">19</span>
+	  </div>
+	
+	  <!-- 댓글 입력 -->
+	  <div class="comment-write">
+	    <textarea placeholder="내용을 입력해주세요.
+	드래그 앤 드롭으로 이미지/파일 업로드가 가능합니다."></textarea>
+	
+	    <div class="comment-write-actions">
+	      <button class="btn-upload">
+	        <i class="bi bi-image"></i> 이미지 업로드
+	      </button>
+	
+	      <div class="right-actions">
+	        <button class="btn-like">
+	          <i class="bi bi-hand-thumbs-up"></i> 추천+등록
+	        </button>
+	        <button class="btn-submit">등록</button>
+	      </div>
+	    </div>
+	  </div>
+	
+	  <!-- 댓글 리스트 -->
+	  <div class="comment-list">
+	
+	    <!-- 댓글 1 -->
+	    <div class="comment-item">
+	      <div class="comment-profile">🐻</div>
+	      <div class="comment-body">
+	        <div class="comment-info">
+	          <span class="comment-writer">넝이</span>
+	          <span class="comment-time">4개월 전</span>
+	        </div>
+	        <div class="comment-text">
+	          아 저때도 한번정도는간거같은데..  
+	          여기 커플들 별로없는데 ㅠㅠ
+	        </div>
+	        <div class="comment-actions">
+	          <i class="bi bi-hand-thumbs-up"></i>
+	          <i class="bi bi-reply"></i>
+	          <i class="bi bi-exclamation-triangle"></i>
+	        </div>
+	      </div>
+	    </div>
+	
+	    <!-- 대댓글 -->
+	    <div class="comment-item reply">
+	      <div class="comment-profile">👨</div>
+	      <div class="comment-body">
+	        <div class="comment-info">
+	          <span class="comment-writer">디제이비버</span>
+	          <span class="comment-time">4개월 전</span>
+	        </div>
+	        <div class="comment-text">
+	          근데 보니까 롯데시네마는 혼자여도 사용 가능하다고 하네요?
+	        </div>
+	      </div>
+	    </div>
+	
+	  </div>
+	</div>
 </div>
 <script>
   const copyBtn = document.getElementById('copyUrlBtn');
