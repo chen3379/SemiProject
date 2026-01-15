@@ -4,6 +4,7 @@
 	pageEncoding="UTF-8"%>
 <%@ page import="org.mindrot.jbcrypt.BCrypt" %>
 <%@page import="member.MemberDao"%>
+<%@page import="member.MemberDto"%>
 <%
 response.setContentType("application/json");
 request.setCharacterEncoding("UTF-8");
@@ -12,6 +13,8 @@ JSONObject json = new JSONObject();
 String inputId = request.getParameter("id");
 String inputPassword = request.getParameter("password");
 String saveId = request.getParameter("saveid");
+MemberDao memberDao = new MemberDao();
+
 
 if (inputId == null || inputPassword == null || inputId.trim().isEmpty() || inputPassword.trim().isEmpty()) {
     json.put("status", "FAIL");
@@ -21,17 +24,15 @@ if (inputId == null || inputPassword == null || inputId.trim().isEmpty() || inpu
 
 try {
 
-MemberDao memberDao = new MemberDao();
-
-String roleType = memberDao.getRoleType(inputId);
 String dbHashedPassword = memberDao.getHashedPassword(inputId);
 
 	// BCrypt.checkpw(pw, hashedPw) : 입력된 비밀번호와 데이터베이스에 저장된 해시된 비밀번호가 일치하는지 확인
 	if (dbHashedPassword != null && BCrypt.checkpw(inputPassword, dbHashedPassword)) {
+		MemberDto memberDto = memberDao.selectOneMemberbyId(inputId);
 		session.setAttribute("id", inputId);
 		session.setAttribute("saveId", (saveId != null ? "true" : "false"));
 		session.setAttribute("loginStatus", true);
-		session.setAttribute("roleType", roleType);
+		session.setAttribute("memberInfo", memberDto);
 		session.setMaxInactiveInterval(60 * 60 * 8);
 
 		session.removeAttribute("guestUUID");

@@ -14,6 +14,11 @@
     <div class="container">
         <form id="signUpForm" action="generalAction.jsp" method="post">
             <div>
+                <label for="signUpNickname">닉네임</label>
+                <input type="text" id="signUpNickname" name="nickname" required>
+                <span class="error-msg" id="nickMsg"></span>
+            </div>
+            <div>
                 <label for="signUpId">ID</label>
                 <input type="email" id="signUpId" name="id" required
                     pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
@@ -22,10 +27,10 @@
             </div>
             <div>
                 <label for="signUpPassword">비밀번호</label>
-                <input type="password" id="signUpPassword" name="password" required 
+                <input type="password" id="signUpPassword" name="password" required
                     pattern="^[a-zA-Z0-9!@#$%^&amp;*()_+|~=`{}\[\] :;&lt;&gt;?,.\/\-]+$"
                     title="영문, 숫자, 특수문자만 입력 가능합니다.">
-                
+
             </div>
             <div>
                 <label for="signUpPasswordConfirm">비밀번호 확인</label>
@@ -41,13 +46,57 @@
     <script>
 
         var signUpForm = document.getElementById('signUpForm');
+        var nickTimer;
+        var signUpNickname = document.getElementById('signUpNickname');
         var signUpId = document.getElementById('signUpId');
         var signUpPassword = document.getElementById('signUpPassword');
         var signUpPasswordConfirm = document.getElementById('signUpPasswordConfirm');
+        var nickMsg = document.getElementById('nickMsg');
         var idMsg = document.getElementById('idMsg');
         var pwMsg = document.getElementById('pwMsg');
 
-        // 실시간 비밀번호 일치 불일치 확인
+        signUpNickname.addEventListener('input', function () {
+            var nickname = this.value.trim();
+
+            if (nickTimer) {
+                clearTimeout(nickTimer);
+            }
+
+            nickTimer = setTimeout(function () {
+                if (nickname === "") {
+                    nickMsg.innerText = "";
+                    nickMsg.classList.remove('show');
+                    return;
+                } else if (nickname.length < 2) {
+                    nickMsg.innerText = '닉네임은 2글자 이상 입력해주세요.';
+                    nickMsg.style.color = 'red';
+                    nickMsg.classList.add('show');
+                    return;
+                }
+
+                $.ajax({
+                    url: 'checkNicknameAction.jsp',
+                    type: 'POST',
+                    data: { nickname: nickname },
+                    dataType: 'json',
+                    success: function (res) {
+                        nickMsg.classList.add('show');
+
+                        if (res.isDuplicate === true) {
+                            nickMsg.innerText = "이미 사용 중인 닉네임입니다.";
+                            nickMsg.style.color = "red";
+                        } else if (res.isDuplicate === false) {
+                            nickMsg.innerText = "사용 가능한 닉네임 입니다.";
+                            nickMsg.style.color = "green";
+                        } else if (res.isDuplicate === null) {
+                            nickMsg.innerText = "닉네임 중복 확인 중 오류가 발생했습니다.";
+                            nickMsg.style.color = "red";
+                        }
+                    }
+                });
+            }, 500);
+        });
+
         function checkPassword() {
             if (!signUpPassword.value || !signUpPasswordConfirm.value) {
                 pwMsg.classList.remove('show');
@@ -56,10 +105,10 @@
 
             if (signUpPassword.value !== signUpPasswordConfirm.value) {
                 pwMsg.style.color = 'red';
-                pwMsg.innerHTML = 'x 비밀번호가 일치하지 않습니다.';
+                pwMsg.innerHTML = '비밀번호가 일치하지 않습니다.';
             } else {
                 pwMsg.style.color = 'green';
-                pwMsg.innerHTML = 'o 비밀번호가 일치합니다.';
+                pwMsg.innerHTML = '비밀번호가 일치합니다.';
             }
             pwMsg.classList.add('show');
         }
@@ -102,9 +151,11 @@
                             idMsg.innerText = '이미 사용 중인 이메일 주소입니다.';
                             idMsg.style.color = 'red';
                             idMsg.classList.add('show');
-                        } else {
-                            alert(res.message || '가입에 실패했습니다.');
-                        }
+                        } else if (res.status === 'FAIL') {
+                            alert('가입에 실패했습니다.');
+                        } else if (res.status === 'ERROR') {
+                            alert('에러 발생.');
+                        } 
                     }
                 },
                 error: function (xhr, status, error) {

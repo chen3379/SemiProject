@@ -4,9 +4,10 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="main-profile-container">
-                    <img src="${sessionScope.user.profileImage}" alt="프로필 이미지">
-                    <a href="../profile/profilePage.jsp">프로필</a>
-                    <form action="../logout/logoutAction.jsp" method="post">
+                    <img src="${sessionScope.memberInfo.photo}" alt="프로필 이미지">
+                    <div id="nickname">${sessionScope.memberInfo.nickname}</div>
+                    <a href="../profile/profilePage.jsp?id=${sessionScope.memberInfo.id}">프로필</a>
+                    <form action="../login/logoutAction.jsp" method="post">
                         <button type="submit" class="" id="logoutBtn">로그아웃</button>
                     </form>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>

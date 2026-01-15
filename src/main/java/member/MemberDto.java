@@ -4,14 +4,15 @@ import java.sql.Timestamp;
 
 public class MemberDto {
 	// member table
-	private int idx;
+	private int memberIdx;
 	private String id;
 	private String password;
-	private int roleType;
+	private String roleType;
 	private String status;
 	private String joinType;
 	private String nickname;
-	private Timestamp signUpDay;
+	private Timestamp createDay;
+	private Timestamp updateDay;
 	private String email;
 	private int age;
 	private String name;
@@ -21,8 +22,8 @@ public class MemberDto {
 	private String photo;
 
 
-	public int getIdx() {
-		return idx;
+	public int getMemberIdx() {
+		return memberIdx;
 	}
 
 	public String getId() {
@@ -33,7 +34,7 @@ public class MemberDto {
 		return password;
 	}
 
-	public int getRoleType() {
+	public String getRoleType() {
 		return roleType;
 	}
 
@@ -49,8 +50,12 @@ public class MemberDto {
 		return nickname;
 	}
 
-	public Timestamp getSignUpDay() {
-		return signUpDay;
+	public Timestamp getCreateDay() {
+		return createDay;
+	}
+
+	public Timestamp getUpdateDay() {
+		return updateDay;
 	}
 
 	public String getEmail() {
@@ -81,8 +86,8 @@ public class MemberDto {
 		return photo;
 	}
 
-	public void setIdx(int idx) {
-		this.idx = idx;
+	public void setMemberIdx(int memberIdx) {
+		this.memberIdx = memberIdx;
 	}
 
 	public void setId(String id) {
@@ -93,7 +98,7 @@ public class MemberDto {
 		this.password = password;
 	}
 
-	public void setRoleType(int roleType) {
+	public void setRoleType(String roleType) {
 		this.roleType = roleType;
 	}
 
@@ -109,8 +114,12 @@ public class MemberDto {
 		this.nickname = nickname;
 	}
 
-	public void setSignUpDay(Timestamp signUpDay) {
-		this.signUpDay = signUpDay;
+	public void setCreateDay(Timestamp createDay) {
+		this.createDay = createDay;
+	}
+
+	public void setUpdateDay(Timestamp updateDay) {
+		this.updateDay = updateDay;
 	}
 
 	public void setEmail(String email) {

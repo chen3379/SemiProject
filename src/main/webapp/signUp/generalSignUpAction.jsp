@@ -9,12 +9,13 @@
 response.setContentType("application/json");
 request.setCharacterEncoding("UTF-8");
 
+String inputNickname = request.getParameter("nickname");
 String inputId = request.getParameter("id");
 String inputPassword = request.getParameter("password");
 
 JSONObject json = new JSONObject();
 
-if (inputId == null || inputPassword == null || inputId.trim().isEmpty() || inputPassword.trim().isEmpty()) {
+if (inputNickname == null || inputId == null || inputPassword == null || inputNickname.trim().isEmpty() || inputId.trim().isEmpty() || inputPassword.trim().isEmpty()) {
     json.put("status", "FAIL");
     out.print(json.toString());
     return; 
@@ -28,6 +29,7 @@ String hashedPassword = BCrypt.hashpw(inputPassword, BCrypt.gensalt());
 MemberDto memberDto = new MemberDto();
 memberDto.setId(inputId);
 memberDto.setPassword(hashedPassword); 
+memberDto.setNickname(inputNickname);
 
 MemberDao memberDao = new MemberDao();
 
