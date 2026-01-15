@@ -2,13 +2,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-	int movieIdx=Integer.parseInt(request.getParameter("movieIdx"));
-	String loginok=(String)session.getAttribute("loginok");
-	String id=(String)session.getAttribute("idok");
+	request.setCharacterEncoding("utf-8");	
+
+	int movieIdx=Integer.parseInt(request.getParameter("movie_idx"));
+	String id=(String)session.getAttribute("id");
 	
-	//session.setAttribute("loginStatus", true);
+	//로그인 체크
 	Boolean loginStatus=(Boolean)session.getAttribute("loginStatus");
-	if(loginStatus==null || id==null){
+	if(loginStatus==null || !loginStatus || id==null){
 		response.sendRedirect("../login/loginForm.jsp");
 		return;
 	}

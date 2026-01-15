@@ -1,5 +1,6 @@
 package movie;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class MovieReviewDto {
@@ -11,6 +12,15 @@ public class MovieReviewDto {
 	private Timestamp createDay;
 	private Timestamp updateDay;
 	
+	private BigDecimal score;
+	
+	
+	public BigDecimal getScore() {
+		return score;
+	}
+	public void setScore(BigDecimal score) {
+		this.score = score;
+	}
 	
 	public int getReviewIdx() {
 		return reviewIdx;
