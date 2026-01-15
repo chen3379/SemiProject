@@ -1,13 +1,16 @@
 package movie;
 
 import java.io.BufferedReader;
+import java.io.IOException; // 추가
+import java.io.InputStream; // 추가
 import java.io.InputStreamReader;
-import java.io.StringReader; // ★필수
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties; // 추가
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -15,13 +18,39 @@ import org.json.simple.parser.JSONParser;
 
 public class TmdbApi {
 
-    private static final String API_KEY = "ad1da2a3deb0224907e6338100b5177d";
+    // 1. 값을 여기서 바로 넣지 않고 비워둡니다. (static 블록에서 채울 예정)
+    private static final String API_KEY;
 
-    // 1. 영화 검색 (ID 찾기용 - 기존 유지)
+    // 2. 스태틱 초기화 블록: 클래스가 로딩될 때 딱 1번 실행됨
+    static {
+        String key = "";
+        try {
+            // secret.properties 파일 읽기
+            InputStream input = TmdbApi.class.getClassLoader().getResourceAsStream("secret.properties");
+
+            if (input != null) {
+                Properties prop = new Properties();
+                prop.load(input);
+
+                // 파일에 저장한 이름("TMDB_KEY")으로 값을 가져옴
+                key = prop.getProperty("TMDB_KEY");
+            } else {
+                System.out.println("❌ 오류: secret.properties 파일을 찾을 수 없습니다.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 가져온 키를 변수에 저장
+        API_KEY = key;
+    }
+
+    // 1. 영화 검색 (ID 찾기용)
     public List<MovieDto> searchMovie(String query) {
         List<MovieDto> list = new ArrayList<>();
         try {
             String encodedQuery = URLEncoder.encode(query, "UTF-8");
+            // ★ 위에서 로딩된 API_KEY가 자동으로 들어갑니다.
             String apiURL = "https://api.themoviedb.org/3/search/movie?api_key=" + API_KEY + "&query=" + encodedQuery
                     + "&language=ko-KR&page=1";
 
@@ -53,7 +82,7 @@ public class TmdbApi {
                     dto.setPosterPath("");
 
                 Long id = (Long) movie.get("id");
-                dto.setMovieId(String.valueOf(id)); // 이 ID가 중요함
+                dto.setMovieId(String.valueOf(id));
 
                 list.add(dto);
             }
@@ -63,13 +92,12 @@ public class TmdbApi {
         return list;
     }
 
-    // 2. ★ 영화 상세 정보 조회 (여기가 핵심입니다!) ★
-    // ID를 받아서 모든 정보를 긁어옵니다.
+    // 2. 영화 상세 정보 조회
     public MovieDto getMovieDetail(String movieId) {
         MovieDto dto = new MovieDto();
 
         try {
-            // URL 생성: credits(출연진), videos(트레일러)를 한번에 요청 (append_to_response)
+            // ★ API_KEY 사용
             String apiURL = "https://api.themoviedb.org/3/movie/" + movieId + "?api_key=" + API_KEY
                     + "&language=ko-KR&append_to_response=credits,videos";
 
@@ -97,9 +125,9 @@ public class TmdbApi {
             if (posterPath != null)
                 dto.setPosterPath("https://image.tmdb.org/t/p/w500" + posterPath);
             else
-                dto.setPosterPath("no_image.jpg"); // 대체 이미지 처리
+                dto.setPosterPath("no_image.jpg");
 
-            // --- 1. 장르 (대표 장르 1개만) ---
+            // --- 1. 장르 ---
             JSONArray genres = (JSONArray) movie.get("genres");
             if (genres != null && genres.size() > 0) {
                 JSONObject firstGenre = (JSONObject) genres.get(0);
@@ -108,32 +136,30 @@ public class TmdbApi {
                 dto.setGenre("기타");
             }
 
-            // --- 2. 국가 (제작 국가 1개만) ---
+            // --- 2. 국가 ---
             JSONArray countries = (JSONArray) movie.get("production_countries");
             if (countries != null && countries.size() > 0) {
                 JSONObject firstCountry = (JSONObject) countries.get(0);
-                dto.setCountry((String) firstCountry.get("name")); // 한국어 이름 (예: 대한민국)
+                dto.setCountry((String) firstCountry.get("name"));
             } else {
                 dto.setCountry("");
             }
 
-            // --- 3. 출연진/감독 (credits) ---
+            // --- 3. 출연진/감독 ---
             JSONObject credits = (JSONObject) movie.get("credits");
 
-            // 3-1. 감독 찾기 (crew 배열에서 job이 Director인 사람)
             JSONArray crew = (JSONArray) credits.get("crew");
             for (int i = 0; i < crew.size(); i++) {
                 JSONObject person = (JSONObject) crew.get(i);
                 if ("Director".equals(person.get("job"))) {
                     dto.setDirector((String) person.get("name"));
-                    break; // 감독 한 명만 찾으면 탈출
+                    break;
                 }
             }
 
-            // 3-2. 출연진 찾기 (cast 배열에서 상위 5명만 뽑아서 콤마로 연결)
             JSONArray cast = (JSONArray) credits.get("cast");
             String castList = "";
-            int limit = 5; // 최대 5명
+            int limit = 5;
             if (cast.size() < 5)
                 limit = cast.size();
 
@@ -145,21 +171,20 @@ public class TmdbApi {
             }
             dto.setCast(castList);
 
-            // --- 4. 트레일러 (videos) ---
+            // --- 4. 트레일러 ---
             JSONObject videos = (JSONObject) movie.get("videos");
             JSONArray results = (JSONArray) videos.get("results");
             String trailerUrl = "";
 
-            // YouTube이면서 Trailer인 영상 찾기
             for (int i = 0; i < results.size(); i++) {
                 JSONObject video = (JSONObject) results.get(i);
                 String site = (String) video.get("site");
                 String type = (String) video.get("type");
 
                 if ("YouTube".equals(site) && "Trailer".equals(type)) {
-                    String key = (String) video.get("key"); // 유튜브 영상 ID
+                    String key = (String) video.get("key");
                     trailerUrl = "https://www.youtube.com/watch?v=" + key;
-                    break; // 하나 찾으면 탈출
+                    break;
                 }
             }
             dto.setTrailerUrl(trailerUrl);
@@ -171,12 +196,12 @@ public class TmdbApi {
         return dto;
     }
 
-    // 3. 인기 영화 목록 가져오기 (대량 등록용)
+    // 3. 인기 영화 목록 가져오기
     public List<MovieDto> getPopularMovies(int page) {
         List<MovieDto> list = new ArrayList<>();
 
         try {
-            // 인기 영화 목록 요청 URL (page 파라미터로 1페이지(1~20위), 2페이지(21~40위) 조절 가능)
+            // ★ API_KEY 사용
             String apiURL = "https://api.themoviedb.org/3/movie/popular?api_key=" + API_KEY + "&language=ko-KR&page="
                     + page;
 
@@ -195,12 +220,10 @@ public class TmdbApi {
             JSONObject jsonObj = (JSONObject) parser.parse(new StringReader(sb.toString()));
             JSONArray results = (JSONArray) jsonObj.get("results");
 
-            // 목록에서 ID만 뽑아서 상세 조회(getMovieDetail)를 다시 실행 (그래야 감독, 트레일러 등이 완벽하게 들어옴)
             for (int i = 0; i < results.size(); i++) {
                 JSONObject movie = (JSONObject) results.get(i);
                 Long id = (Long) movie.get("id");
 
-                // ★ 위에서 만든 상세 조회 메서드 재활용! (감독, 배우, 트레일러 다 가져옴)
                 MovieDto detailDto = getMovieDetail(String.valueOf(id));
                 list.add(detailDto);
             }

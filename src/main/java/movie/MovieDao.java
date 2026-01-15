@@ -46,6 +46,55 @@ public class MovieDao {
 
     }
 
+    // Gemini를 통해 영화를 추천받을 때 해당 영화가 DB에 없으면 자동 등록하는 insert
+    public int insertMovieApi(MovieDto dto) {
+        int generatedKey = 0; // return할 movie_idx
+
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "INSERT INTO movie (movie_id, title, release_day, genre, country, director, `cast`, summary, poster_path, trailer_url, create_id) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+            pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+
+            pstmt.setString(1, dto.getMovieId()); // TMDB ID
+            pstmt.setString(2, dto.getTitle());
+            pstmt.setString(3, dto.getReleaseDay());
+            pstmt.setString(4, dto.getGenre());
+            pstmt.setString(5, dto.getCountry());
+            pstmt.setString(6, dto.getDirector());
+            pstmt.setString(7, dto.getCast());
+            pstmt.setString(8, dto.getSummary());
+
+            // 포스터 경로 처리: 전체 URL이 들어오면 저장, 아니면 빈 값
+            String poster = dto.getPosterPath();
+            if (poster == null)
+                poster = "";
+            pstmt.setString(9, poster);
+
+            pstmt.setString(10, dto.getTrailerUrl());
+
+            // create_id는 'WhatFlix AI bot' - gemini 자동 생성
+            pstmt.setString(11, "WhatFlix AI bot");
+
+            pstmt.executeUpdate();
+
+            // 방금 생성된 Auto Increment 키(movie_idx) 가져오기
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                generatedKey = rs.getInt(1); // 첫 번째 컬럼(PK) 반환
+            }
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return generatedKey; // 생성된 movie_idx return (실패시 0)
+    }
+
     // 전체 영화 개수 구하기 (페이징 처리용)
     public int getTotalCount() {
         int totalCount = 0;
@@ -78,7 +127,7 @@ public class MovieDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select count(*) from myboard order by genre=?";
+        String sql = "select count(*) from movie order by genre=?";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -586,5 +635,45 @@ public class MovieDao {
         }
 
         return isExist;
+    }
+
+    // 제목으로 영화 찾기 (정확히 일치하거나 포함되는 것) - gemini에서 제목을 받아오면 DB에서 제목 검색
+    public MovieDto getMovieByTitle(String title) {
+        MovieDto dto = null;
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        // 제목이 비슷하면 가져오도록 like 검색
+        String sql = "SELECT * FROM movie WHERE title LIKE ? LIMIT 1";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + title + "%");
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                dto = new MovieDto();
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return dto;
     }
 }
