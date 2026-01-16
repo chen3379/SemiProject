@@ -24,35 +24,58 @@
 
     <body>
 
-
+        <form action="">
         <div class="photo-upload">
             <label for="photo">프로필 사진</label>
             <input type="file" id="photo" accept="image/*" onchange="previewImage(this)">
             <div class="preview-container" style="margin-top: 10px;">
-                <img id="preview" src="https://ui-avatars.com/api/?color=random&?background=random" alt="기본 프로필" />
+                <img id="preview" src="https://ui-avatars.com/api/?
+                color=random&
+                background=random&
+                name=${sessionScope.memberInfo.nickname}" alt="기본 프로필" />
             </div>
         </div>
-        <div>
-            <label for="name">이름</label>
-            <input type="text" id="name">
-        </div>
-        <div>
-            <label for="nickname">닉네임</label>
-            <input type="text" id="nickname">
-        </div>
-        <div>
-            <label for="email">이메일</label>
-            <input type="email" id="email">
-        </div>
-        <div>
-            <label for="hp">전화번호</label>
-            <input type="text" id="hp">
-        </div>
-        <div>
-            <label for="addr">주소</label>
-            <input type="text" id="addr">
-        </div>
-
+        <dl>
+            <dt>회원번호</dt>
+            <dd><span>${sessionScope.memberInfo.memberIdx}</span></dd>
+            <dt>아이디</dt>
+            <dd id="memberId">
+                <span>${sessionScope.memberInfo.id}</span>
+            </dd>
+            <dt>비밀번호</dt>
+            <dd>
+                <input type="password" value="" id="memberPassword" required>
+            </dd>
+            <dt>닉네임</dt>
+            <dd>
+                <input type="text" value="${sessionScope.memberInfo.nickname}" id="memberNickname">
+            </dd>
+            <dt>이름</dt>
+            <dd>
+                <input type="text" value="${sessionScope.memberInfo.name}" id="memberName">
+            </dd>
+            <dt>성별</dt>
+            <dd>
+                <input type="text" value="${sessionScope.memberInfo.gender}" id="memberGender">
+            </dd>
+            <dt>나이</dt>
+            <dd>
+                <input type="text" value="${sessionScope.memberInfo.age}" id="memberAge">
+            </dd>
+            <dt>전화번호</dt>
+            <dd>
+                <input type="text" value="${sessionScope.memberInfo.hp}" id="memberHp">
+            </dd>
+            <dt>주소</dt>
+            <dd>    
+                <input type="text" value="${sessionScope.memberInfo.addr}" id="memberAddr">
+            </dd>
+            <dt>가입일</dt>
+            <dd>
+                <span>${sessionScope.memberInfo.createDay}</span>
+            </dd>
+        </dl>
+        </form>
         <!-- 프로필 사진 미리보기 js -->
         <script>
             function previewImage(input) {
@@ -70,6 +93,7 @@
                 }
             }
         </script>
+        
     </body>
 
     </html>

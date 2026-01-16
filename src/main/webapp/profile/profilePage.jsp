@@ -34,9 +34,9 @@
 				</nav>
 
 
-				<main id="content-area">
-					<jsp:include page="profile-nav-list/memberProfile.jsp" />
-				</main>
+				<div id="content-area">
+					<jsp:include page="profile-nav-list/memberInfo.jsp" />
+				</div>
 			</div>
 
 			<script>

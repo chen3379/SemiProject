@@ -1,8 +1,13 @@
 <%@ page import="member.MemberDto" %> 
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<style>
 
+    ul {
+        list-style: none;
+    }
+</style>
 <div class="nav-container">
-    <h2>메뉴</h2>
+    <hr>
     <ul>
         <% 
             Object obj = session.getAttribute("memberInfo");
@@ -14,7 +19,7 @@
         %>
         <% if (member != null) { %>
             <li>
-                <a href="#" class="nav-link" data-page="memberProfile.jsp?id=${sessionScope.memberInfo.id}">
+                <a href="#" class="nav-link" data-page="memberInfo?id=${sessionScope.memberInfo.id}">
                     내 정보 보기
                 </a>
             </li>
