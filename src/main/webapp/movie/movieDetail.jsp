@@ -1,3 +1,4 @@
+<%@page import="movie.MovieReviewDao"%>
 <%@page import="movie.MovieDto"%>
 <%@page import="movie.MovieDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -33,6 +34,11 @@ else if(dbPosterPath.startsWith("http")){
 else{
     fullPosterPath="../save/"+dbPosterPath;
 }
+
+//한줄평 갯수
+int movieIdx=Integer.parseInt(movie_idx);
+MovieReviewDao reviewDao=new MovieReviewDao();
+int reviewCount=reviewDao.totalReview(movieIdx);
 %>
 <!DOCTYPE html>
 <html>
@@ -110,14 +116,16 @@ else{
 			<h4 class="fw-bold mb-4"><i class="bi bi-chat-dots-fill"></i> 관람객 한줄평</h4>
 
 			<div id="reviewForm" class="mb-3"></div>
-
+			
+			<% if(reviewCount==0){%>
 			<div class="card p-5 text-center bg-white border-0 shadow-sm" id="reviewBox">
 				<h5 class="text-muted">아직 등록된 한줄평이 없습니다.</h5>
 				<p class="text-muted small">첫 번째로 별점과 코멘트를 남겨보세요!</p>
 				<button class="btn btn-warning text-white fw-bold mt-2"
 					id="btnReviewWrite" data-movie-idx="<%=movie_idx%>">한줄평 작성하기</button>
 			</div>
-
+			<%} %>
+			
 			<div class="mt-3" id="reviewList"></div>
 		</div>
 	</div>
