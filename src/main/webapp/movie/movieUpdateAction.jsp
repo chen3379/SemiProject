@@ -14,10 +14,10 @@
 
         MovieDto dto = new MovieDto();
         
-        // PK (수정 조건)
+        // 영화 고유번호 (수정 조건)
         dto.setMovieIdx(Integer.parseInt(multi.getParameter("movie_idx")));
         
-        // 일반 정보
+        // 영화 세부정보
         dto.setTitle(multi.getParameter("title"));
         dto.setReleaseDay(multi.getParameter("release_day"));
         dto.setGenre(multi.getParameter("genre"));
@@ -28,23 +28,22 @@
         dto.setTrailerUrl(multi.getParameter("trailer_url"));
         dto.setUpdateId(multi.getParameter("update_id")); // 수정자
 
-        // ★★★ 파일 처리 핵심 로직 ★★★
+        // 포스터 경로 처리 로직
         String newFileName = multi.getFilesystemName("poster_path");
         String existingFileName = multi.getParameter("existing_poster");
 
         if (newFileName != null) {
-            // 1. 새 파일이 업로드 됨 -> 새 파일명 사용
+            // 새로운 파일이 업로드 됨 -> 새 파일명 사용
             dto.setPosterPath(newFileName);
             
-            // (선택사항) 여기서 기존 파일(existingFileName)을 File 객체로 삭제해주는 코드를 넣으면 더 완벽함
         } else {
-            // 2. 파일 업로드 안 함 -> 기존 파일명 그대로 유지
+            // 파일 업로드 안 함 -> 기존 파일명 그대로 유지
             dto.setPosterPath(existingFileName);
         }
 
         // DB 업데이트 실행
         MovieDao dao = new MovieDao();
-        dao.updateMovie(dto); // 이 메서드가 DAO에 있어야 함
+        dao.updateMovie(dto);
 
         out.print("success");
 

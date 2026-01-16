@@ -51,6 +51,7 @@
 </style>
 </head>
 <body>
+<!-- Local 영화 등록창/save에 있는 이미지 파일 별도로 공유해야함 -->
 <div class="container-fluid">
     <h2 class="mb-4 fw-bold text-center">영화 등록</h2>
     <hr class="mb-5">
@@ -154,7 +155,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     
-    // ================= [1] 이미지 미리보기 기능 =================
+    // 이미지 preview
     $("#posterInput").change(function() {
         // 파일이 선택되었다면
         if (this.files && this.files[0]) {
@@ -175,16 +176,17 @@ $(document).ready(function() {
     });
 
 
-    // ================= [2] 유튜브 URL에서 Video ID 추출하는 함수 =================
+    // 유튜브 URL에서 Video ID 추출하는 함수 - 변환 처리 과정
+    // 퍼가기를 통한 embed url을 직접 넣지 않을 시 youtube에서 일반 url로 띄우는 게 막혀있음
     function getYoutubeId(url) {
         // 다양한 유튜브 URL 패턴에 대응하는 정규식
         var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
         var match = url.match(regExp);
-        // ID는 보통 11자리입니다.
+        // ID는 보통 11자리
         return (match && match[2].length === 11) ? match[2] : null;
     }
 
-    // ================= [3] 유튜브 미리보기 기능 =================
+    // 영상 preview
     // 입력창에서 포커스가 벗어나거나 값이 변경될 때 실행
     $("#trailerInput").on('blur change paste input', function() {
         var url = $(this).val();
@@ -208,7 +210,7 @@ $(document).ready(function() {
     });
 
 
-    // ================= [4] 폼 AJAX 제출 기능 =================
+    // 폼 AJAX 제출
     $("#insertForm").submit(function(e){
         e.preventDefault(); // 새로고침 막기
 
@@ -230,17 +232,17 @@ $(document).ready(function() {
                 if(res.trim() === "success"){
                     alert("영화가 정상적으로 등록되었습니다.");
                     
-                    // 4-1. 입력창 텍스트 모두 비우기
+                    // 입력창 텍스트 모두 비우기
                     $("#insertForm")[0].reset();
                     
-                    // 4-2. ★중요★ 이미지 미리보기 초기화 (기본 이미지로)
+                    // 이미지 미리보기 초기화 (기본 이미지로 - save 공유 필요)
                     $('#posterPreview').attr('src', '../save/no_image.jpg');
                     
-                    // 4-3. ★중요★ 유튜브 미리보기 숨기고 iframe src 비우기
+                    // 유튜브 미리보기 숨기고 iframe src 비우기
                     $("#videoPreviewFrame").hide();
                     $("#youtubeIframe").attr('src', '');
                     
-                    // 4-4. 커서 이동
+                    // 커서 이동
                     $("#movie_id").focus();
                 } else {
                     alert("등록 실패! 관리자에게 문의하세요.\n(에러내용: " + res.trim() + ")");

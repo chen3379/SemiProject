@@ -14,7 +14,7 @@ public class MovieDao {
 
     DBConnect db = new DBConnect();
 
-    // 영화 등록(insert) - cast ` 백틱으로 감싸야 함(예약어)
+    // Local 영화 등록(insert) - cast ` 백틱으로 감싸야 함(예약어)
     public void insertMovie(MovieDto dto) {
 
         Connection conn = db.getDBConnect();
@@ -46,7 +46,8 @@ public class MovieDao {
 
     }
 
-    // Gemini를 통해 영화를 추천받을 때 해당 영화가 DB에 없으면 자동 등록하는 insert
+    // API 영화 등록(insert) - cast ` 백틱으로 감싸야 함(예약어)
+    // Gemini를 통해 영화를 추천받을 때 해당 영화가 DB에 없으면 자동 등록할 때 쓰이는 insert
     public int insertMovieApi(MovieDto dto) {
         int generatedKey = 0; // return할 movie_idx
 
@@ -58,6 +59,7 @@ public class MovieDao {
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
+            // pstmt에 sql문과 함께 generatedkey(movie_idx)를 넘겨준다
             pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
 
             pstmt.setString(1, dto.getMovieId()); // TMDB ID
@@ -77,7 +79,7 @@ public class MovieDao {
 
             pstmt.setString(10, dto.getTrailerUrl());
 
-            // create_id는 'WhatFlix AI bot' - gemini 자동 생성
+            // create_id는 'WhatFlix AI bot'으로 지정 <- gemini 자동 등록 영화
             pstmt.setString(11, "WhatFlix AI bot");
 
             pstmt.executeUpdate();
@@ -119,7 +121,7 @@ public class MovieDao {
         return totalCount;
     }
 
-    // 장르별갯수(페이징용)
+    // 장르별갯수(페이징 처리용)
     public int getTotalCountByGenre(String genre) {
         int total = 0;
 
@@ -609,7 +611,7 @@ public class MovieDao {
         }
     }
 
-    // ID 중복 체크 메서드 (있으면 true, 없으면 false 반환)
+    // 영화 중복 체크 메서드 (movie_id 기준 있으면 true, 없으면 false 반환)
     public boolean isMovieExist(String movieId) {
         boolean isExist = false;
         Connection conn = db.getDBConnect();
@@ -637,7 +639,7 @@ public class MovieDao {
         return isExist;
     }
 
-    // 제목으로 영화 찾기 (정확히 일치하거나 포함되는 것) - gemini에서 제목을 받아오면 DB에서 제목 검색
+    // 제목으로 영화 찾기 bot에서 사용 (정확히 일치하거나 포함되는 것) - Gemini 에서 제목을 받아오면 DB에서 제목 검색
     public MovieDto getMovieByTitle(String title) {
         MovieDto dto = null;
         Connection conn = db.getDBConnect();

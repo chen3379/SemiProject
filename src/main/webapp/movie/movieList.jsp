@@ -61,7 +61,7 @@
             </select>
         </div>
     </div>
-    
+    <!-- 로딩 중 빨간색 원 나옴 -->
     <div id="movie-list-container">
         <div class="text-center py-5">
             <div class="spinner-border text-danger" role="status">
@@ -75,20 +75,20 @@
 <jsp:include page="chatWidget.jsp"/>
 
 <script>
-    // 1. 페이지 로드 시 자동으로 1페이지 불러오기
+    // 페이지 로드 시 자동으로 1페이지 로드
     $(document).ready(function(){
         loadMovieList(1);
     });
 
-    // 2. 목록 불러오기 함수 (AJAX)
-    // - page: 이동할 페이지 번호
+    // 목록 불러오기 함수 (AJAX)
+    // page: 이동할 페이지 번호
     function loadMovieList(page) {
         
-        // 현재 사용자가 선택해놓은 필터값들을 읽어옵니다.
+        // 현재 사용자가 선택해놓은 필터값들을 읽어온다
         var genreVal = $("#genreSelect").val();
         var sortVal = $("#sortSelect").val();
         
-        // 알맹이 파일(Result.jsp)에게 조건과 페이지를 보냅니다.
+        // movieListResult.jsp에게 필터와 현재 페이지 넘김
         $.ajax({
             type: "post",
             url: "movieListResult.jsp",
@@ -99,7 +99,7 @@
             },
             dataType: "html",
             success: function(res) {
-                // 받아온 영화 목록 HTML을 갈아끼웁니다.
+                // 받아온 영화 목록 HTML 변경
                 $("#movie-list-container").html(res);
                 
                 // (선택사항) 페이지 이동 시 스크롤 살짝 위로

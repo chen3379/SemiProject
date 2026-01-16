@@ -3,9 +3,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
-    // movieApiInsertAction.jsp
     // API에서 넘어온 데이터를 DB에 저장하는 역할 (파일 업로드 X, 텍스트만 처리)
-    
     request.setCharacterEncoding("utf-8");
 
     MovieDto dto = new MovieDto();
@@ -20,7 +18,7 @@
     dto.setReleaseDay(request.getParameter("release_day"));
     dto.setSummary(request.getParameter("summary"));
     
-    // ★ 중요: 여기서는 파일명 대신 "이미지 URL 전체"가 들어옵니다.
+    // 파일명 대신 "이미지 URL 전체"가 들어온다
     // 예: https://image.tmdb.org/t/p/w500/abcd.jpg
     dto.setPosterPath(request.getParameter("poster_path"));
     

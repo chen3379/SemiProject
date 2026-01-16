@@ -141,7 +141,7 @@
 
 	<div class="chat-footer">
 		<input type="text" id="chat-input" class="form-control"
-			placeholder="예: 우울할 때 볼만한 영화..." onkeypress="handleEnter(event)">
+			placeholder="예: 우울할 때 볼만한 영화..., 기분 좋아지는 내용" onkeypress="handleEnter(event)">
 		<button type="button" style="min-width: 80px; white-space: nowrap;"
 			class="btn btn-primary" onclick="sendMessage()">전송</button>
 	</div>
@@ -152,10 +152,9 @@
 	// 채팅창 켜고 끄기
 	function toggleChat() {
 		$("#chat-box").fadeToggle("fast", function() {
-			// 켜질 때 스크롤 맨 아래로, 입력창 포커스
 			if ($("#chat-box").is(":visible")) {
-				scrollToBottom();
-				$("#chat-input").focus();
+				scrollToBottom(); // 켜질 때 스크롤 맨 아래로 이동
+				$("#chat-input").focus(); // 입력창 누른 상태
 			}
 		});
 	}
@@ -183,9 +182,9 @@
 				+ '<div class="message-content">' + msg + '</div></div>';
 		$("#chat-body").append(userHtml);
 		$("#chat-input").val(""); // 입력창 비우기
-		scrollToBottom();
+		scrollToBottom(); // 화면 아래로
 
-		// 2. 로딩 표시 (점점점...)
+		// 2. 로딩 표시 (Gemini 돌리는 중)
 		var loadingHtml = '<div class="chat-message ai-message" id="loading-msg">'
 				+ '<div class="message-content">Thinking... 🤔</div></div>';
 		$("#chat-body").append(loadingHtml);
@@ -195,12 +194,12 @@
 		$
 				.ajax({
 					type : "post",
-					url : "movieChatAction.jsp", // 백엔드 파일 경로 (prompt 처리)
+					url : "movieChatAction.jsp", // 백엔드 파일 경로 (작성해놓은 prompt+메세지 처리)
 					data : {
 						msg : msg
 					},
 					success : function(response) {
-						$("#loading-msg").remove(); // 로딩 제거
+						$("#loading-msg").remove(); // 로딩 표시 제거
 						$("#chat-body").append(response); // AI 답변(영화카드 포함) 추가
 						scrollToBottom();
 						
@@ -223,8 +222,5 @@
 		var chatBody = document.getElementById("chat-body");
 		chatBody.scrollTop = chatBody.scrollHeight;
 	}
-	
-
-
 
 </script>

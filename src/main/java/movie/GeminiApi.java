@@ -18,14 +18,14 @@ import org.json.simple.parser.JSONParser;
 
 public class GeminiApi {
 
-    // 1. 변수 선언 (값은 아직 없음)
+    // 변수 선언(초기화는 static 블록 안에서)
     private static final String API_KEY;
 
-    // 2. 스태틱 초기화 블록: 서버 켜질 때 딱 한 번 실행되어 파일을 읽어옴
+    // 스태틱 초기화 블록: 서버 켜질 때 딱 한 번 실행되어 파일을 읽어옴
     static {
         String key = "";
         try {
-            // secret.properties 파일을 찾아서 엽니다.
+            // secret.properties 파일을 찾아서 연다
             InputStream input = GeminiApi.class.getClassLoader().getResourceAsStream("secret.properties");
 
             if (input == null) {
@@ -41,15 +41,15 @@ public class GeminiApi {
             ex.printStackTrace();
         }
 
-        // 다 읽은 키를 상수에 저장 (이제부터 이 키를 씀)
+        // 다 읽은 키를 상수에 저장 (API_KEY 값이 적용되고 상태 유지)
         API_KEY = key;
 
-        // (확인용) 키가 잘 들어갔는지 콘솔에 살짝 찍어보기 (앞 5자리만)
+        // 키가 잘 들어갔는지 콘솔로 확인 (앞 5자리만)
         if (API_KEY != null && API_KEY.length() > 5) {
             System.out.println("✅ API Key 로드 성공: " + API_KEY.substring(0, 5) + "...");
         }
     }
-    // 모델 - 'gemini-2.0-flash'로 지정 (1.5ver 도 가능)
+    // 모델 - 'gemini-2.0-flash'로 지정 (1.5ver가 요청수 많은데 적용시 오류 발생 <- 아직 원인 못 찾음)
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="
             + API_KEY;
 
@@ -63,16 +63,16 @@ public class GeminiApi {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            // 타임아웃 설정 (AI가 생각할 시간 확보)
+            // 타임아웃 설정 (AI가 생각할 시간 부여 - 아마 모델 낮추면 늘려야 할 수도)
             conn.setConnectTimeout(5000); // 5초
             conn.setReadTimeout(30000); // 30초
 
-            // --- [프롬프트 설정] ---
+            // 프롬프트 설정 - 수정 가능
             String prompt = "Recommend 5 movies for this request: '" + userQuery + "'. "
                     + "Only return a JSON array of strings containing the Korean movie titles. "
                     + "No other text. Example: [\"Movie A\", \"Movie B\"]";
 
-            // --- [JSON 생성] ---
+            // JSON 생성
             JSONObject textPart = new JSONObject();
             textPart.put("text", prompt);
 
@@ -88,13 +88,13 @@ public class GeminiApi {
             JSONObject requestBody = new JSONObject();
             requestBody.put("contents", contents);
 
-            // --- [전송] ---
+            // 전송
             OutputStream os = conn.getOutputStream();
             os.write(requestBody.toString().getBytes("UTF-8"));
             os.flush();
             os.close();
 
-            // --- [응답 코드 확인] ---
+            // 응답 코드 확인
             int responseCode = conn.getResponseCode();
             BufferedReader br;
 
@@ -118,7 +118,7 @@ public class GeminiApi {
                 return titleList;
             }
 
-            // --- [파싱] ---
+            // gemini가 응답한 내용 json형태로 파싱
             JSONParser parser = new JSONParser();
             JSONObject responseObj = (JSONObject) parser.parse(new StringReader(sb.toString()));
             JSONArray candidates = (JSONArray) responseObj.get("candidates");
@@ -132,7 +132,7 @@ public class GeminiApi {
             // 마크다운 제거 (```json [ ] ``` 형태일 경우 대비)
             aiText = aiText.replace("```json", "").replace("```", "").trim();
 
-            // [ ] 부분만 추출 (가장 안전한 방법)
+            // [ ] 부분만 추출 - 불필요한 전달이 있을 수 있으므로 확실히 json 형태인 것만 받아오도록 처리
             int start = aiText.indexOf("[");
             int end = aiText.lastIndexOf("]");
             if (start != -1 && end != -1) {
@@ -143,13 +143,13 @@ public class GeminiApi {
                     titleList.add((String) t);
                 }
             } else {
-                System.out.println("⚠AI 응답이 JSON 형식이 아닙니다: " + aiText);
+                System.out.println("AI 응답이 JSON 형식이 아닙니다: " + aiText);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return titleList;
+        return titleList; // 영화리스트 return
     }
 }

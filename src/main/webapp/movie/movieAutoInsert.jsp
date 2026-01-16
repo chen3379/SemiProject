@@ -29,15 +29,14 @@
         int successCount = 0;
         int failCount = 0; // 중복 포함
         
-        // 1페이지당 20개씩 옴. (필요하면 for문 돌려서 page 1, 2, 3... 늘리면 됩니다)
-        // 현재는 1페이지(상위 20개)만 가져옴
+        // 1페이지(상위 20개)만 가져옴
         List<MovieDto> list = api.getPopularMovies(1); 
         
         for(MovieDto dto : list) {
             
-            // ★ [개선된 로직] 먼저 DB에 있는지 물어본다.
+            // DB에 등록되어 있는지 확인
             if (dao.isMovieExist(dto.getMovieId())) {
-                // 1. 이미 있으면 -> 중복 카운트 증가하고 건너뜀 (continue)
+                // 존재 -> 중복 카운트 증가하고 건너뜀 (continue)
                 failCount++;
     %>
                 <li class="list-group-item list-group-item-warning">
@@ -47,7 +46,7 @@
                 continue; // 다음 영화로 넘어감
             }
 
-            // 2. 없으면 -> 그제서야 저장 시도
+            // 2. DB에 없을 경우 -> 등록
             try {
                 dto.setCreateId("admin");
                 dao.insertMovie(dto);
@@ -58,7 +57,7 @@
                 </li>
     <%
             } catch (Exception e) {
-                // 여기서 잡히는 에러는 '중복'이 아니라 '진짜 DB 에러'입니다.
+                // DB 에러
     %>
                 <li class="list-group-item list-group-item-danger">
                     <b>[에러]</b> <%=dto.getTitle() %> 저장 실패 (마스터관리자 문의 필요)

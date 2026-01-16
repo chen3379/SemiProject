@@ -3,12 +3,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%
-    // 1. 수정할 영화 데이터 가져오기
+    // 수정할 영화 데이터 가져오기
     String movieIdx = request.getParameter("movie_idx");
     MovieDao dao = new MovieDao();
     MovieDto dto = dao.getMovie(movieIdx);
 
-    // ★★★ [수정 핵심] 포스터 경로 판별 로직 추가 ★★★
+    // 포스터 경로 설정(http or save)
     String dbPosterPath = dto.getPosterPath(); // DB 원본 값
     String fullPosterPath = "";                // 화면 출력용 전체 경로
     
@@ -186,7 +186,7 @@
 	<script type="text/javascript">
 	$(document).ready(function() {
 
-        // ================= [1] 이미지 미리보기 기능 =================
+        // 이미지 preview
         $("#posterInput").change(function() {
             if (this.files && this.files[0]) {
                 var reader = new FileReader();
@@ -195,22 +195,23 @@
                 }
                 reader.readAsDataURL(this.files[0]);
             } else {
-                // ★ [수정] 파일 선택 취소 시 원래 경로(URL or 파일)로 복구
+                // 파일 선택 취소 시 원래 경로(URL or 파일)로 복구
                 var originalSrc = "<%=fullPosterPath%>";
                 $('#posterPreview').attr('src', originalSrc);
             }
         });
 
-        // ================= [2] 유튜브 URL에서 Video ID 추출하는 함수 =================
+        // 유튜브 URL에서 Video ID 추출하는 함수 - 변환 처리 과정
+        // 퍼가기를 통한 embed url을 직접 넣지 않을 시 youtube에서 일반 url로 띄우는 게 막혀있음
         function getYoutubeId(url) {
             if(!url) return null;
             var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
             var match = url.match(regExp);
-            // ID는 보통 11자리입니다.
+            // ID는 보통 11자리
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // ================= [3] 유튜브 미리보기 기능 =================
+        // 영상(트레일러) preview
         function updateVideoPreview() {
             var url = $("#trailerInput").val();
             var videoId = getYoutubeId(url);
@@ -227,15 +228,15 @@
             }
         }
 
-        // [초기 실행] 페이지 열리자마자 기존 URL로 미리보기 실행
+        // 페이지 열렸을 때 바로 영상 preview 가 보이도록
         updateVideoPreview();
 
-        // [이벤트] 입력값 변경 시 실행
+        // 입력값 변경 시 실행
         $("#trailerInput").on('blur change paste input', function() {
             updateVideoPreview();
         });
 
-        // ================= [4] 폼 AJAX 수정 제출 기능 =================
+        // 폼 AJAX 수정 제출
         $("#updateForm").submit(function(e) {
             e.preventDefault(); // 새로고침 막기
 
@@ -254,7 +255,7 @@
                 },
                 success : function(res) {
                     if (res.trim() === "success") {
-                        alert("✅ 영화 정보가 정상적으로 수정되었습니다.");
+                        alert("영화 정보가 정상적으로 수정되었습니다.");
 
                         // [수정완료] reset()을 제거하고 상세 페이지로 이동하게 변경!
                         location.href = "movieDetail.jsp?movie_idx=<%=movieIdx%>";

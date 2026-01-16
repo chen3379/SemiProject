@@ -17,7 +17,7 @@
         searchList = api.searchMovie(query);
     }
     
-    // 2. ID가 넘어왔으면 상세 조회 실행
+    // 2. 선택 시 ID가 넘어왔으면 상세 조회 실행
     if(selectedId != null && !selectedId.isEmpty()){
         detailDto = api.getMovieDetail(selectedId);
     }

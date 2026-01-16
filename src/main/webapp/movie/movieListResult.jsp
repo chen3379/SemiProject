@@ -6,7 +6,7 @@
 <%
 
 	request.setCharacterEncoding("UTF-8");
-    // 1. 파라미터 수신 (없으면 기본값)
+    // 파라미터 수신 (없으면 기본값)
     String genre = request.getParameter("genre");
     String sortBy = request.getParameter("sortBy");
     String currentPageStr = request.getParameter("currentPage");
@@ -19,13 +19,13 @@
         currentPage = Integer.parseInt(currentPageStr);
     }
 
-    // 2. DB 연결 및 데이터 조회
+    // DB 연결 및 데이터 조회
     MovieDao dao = new MovieDao();
     int perPage = 20; // 한 페이지당 영화 수
     int perBlock = 5; // 페이지 번호 묶음 (1~5, 6~10)
     int startNum = (currentPage - 1) * perPage;
     
-    // 2-1. 전체 개수 구하기 / 장르별 개수
+    // 전체 개수 구하기 / 장르별 개수
     int totalCount = 0;
     if(genre.equals("all")) {
         totalCount = dao.getTotalCount();
@@ -33,7 +33,7 @@
         totalCount = dao.getTotalCountByGenre(genre);
     }
     
-    // 2-2. 페이지 계산 (데이터가 없으면 1페이지로 처리해 에러 방지)
+    // 페이지 계산 (데이터가 없으면 1페이지로 처리해 에러 방지)
     int totalPage = totalCount / perPage + (totalCount % perPage == 0 ? 0 : 1);
     if(totalPage == 0) totalPage = 1;
     
@@ -41,7 +41,7 @@
     int endPage = startPage + perBlock - 1;
     if (endPage > totalPage) endPage = totalPage;
 
-    // 2-3. 리스트 가져오기
+    // 리스트 가져오기
     List<MovieDto> list = null;
     if(genre.equals("all")) {
         if(sortBy.equals("rating")) list = dao.getRatingList(startNum, perPage);
@@ -92,6 +92,7 @@
     %>
 </div>
 
+<!-- 페이징 처리 -->
 <% if(totalCount > 0) { %>
 <div class="mt-5">
     <nav aria-label="Page navigation">
