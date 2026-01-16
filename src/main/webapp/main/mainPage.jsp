@@ -17,7 +17,7 @@
 				<h1>WHATFLIX</h1>
 				<ul>
 					<li><a href="mainPage.jsp">홈</a></li>
-					<li><a href="movieList.jsp">영화</a></li>
+					<li><a href="../movie/movieList.jsp">영화</a></li>
 					<li><a href="community.jsp">커뮤니티</a></li>
 					<li><a href="support.jsp">지원</a></li>
 

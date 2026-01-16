@@ -1,93 +1,77 @@
 package mysql.db;
 
+import java.io.InputStream; // 파일 읽기용
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties; // 프로퍼티 사용
 
 public class DBConnect {
-	// url 경로 확인 필요 - schema 등
-	static final String MYSQLDRIVER = "com.mysql.cj.jdbc.Driver";
-	static final String MYSQL_URL = "jdbc:mysql://myhee.che2a2mk0gqm.ap-northeast-2.rds.amazonaws.com/semiproject?serverTimezone=Asia/Seoul";
 
-	public DBConnect() {
+    static final String MYSQLDRIVER = "com.mysql.cj.jdbc.Driver";
+    static final String MYSQL_URL = "jdbc:mysql://myhee.che2a2mk0gqm.ap-northeast-2.rds.amazonaws.com/moviereview?serverTimezone=Asia/Seoul";
 
-		try {
-			Class.forName(MYSQLDRIVER);
-			System.out.println("#MYSQL 드라이버 성공");
-		} catch (ClassNotFoundException e) {
+    // ★ 비밀번호를 담아둘 변수 선언
+    private String dbPassword = "";
 
-			System.out.println("#MYSQL 드라이버 실패");
-			e.printStackTrace();
-		}
-	}
+    public DBConnect() {
+        // 1. 드라이버 로딩
+        try {
+            Class.forName(MYSQLDRIVER);
+            System.out.println("#MYSQL 드라이버 성공");
+        } catch (ClassNotFoundException e) {
+            System.out.println("#MYSQL 드라이버 실패");
+            e.printStackTrace();
+        }
 
-	// MySQL서버연결메서드(Connection)
-	public Connection getDBConnect() {
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(MYSQL_URL, "adminhee", "비밀번호 수정 필요");
-			System.out.println("#MYSQL 서버연결 성공");
-		} catch (SQLException e) {
-			System.out.println("#MYSQL 서버연결 실패");
+        // 2. ★ secret.properties 파일에서 비밀번호 읽어오기
+        try {
+            // 파일을 찾아서 엽니다 (src/main/java/secret.properties)
+            InputStream input = getClass().getClassLoader().getResourceAsStream("secret.properties");
 
-			e.printStackTrace();
-		}
-		return conn;
-	}
+            if (input != null) {
+                Properties prop = new Properties();
+                prop.load(input);
 
-	// close메서드
-	public void dbClose(ResultSet rs, Statement stmt, Connection conn) {
-		try {
-			rs.close();
-			stmt.close();
-			conn.close();
-		} catch (SQLException e) {
+                // 파일에 저장한 이름("AWS_ACCESS_KEY")으로 값을 꺼내서 변수에 저장
+                this.dbPassword = prop.getProperty("AWS_ACCESS_KEY");
+            } else {
+                System.out.println("❌ 오류: secret.properties 파일을 찾을 수 없습니다.");
+            }
 
-			e.printStackTrace();
-		}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	}
+    // MySQL서버연결메서드(Connection)
+    public Connection getDBConnect() {
+        Connection conn = null;
+        try {
+            // ★ "aws비밀번호" 대신 위에서 읽어온 this.dbPassword 변수를 넣습니다.
+            conn = DriverManager.getConnection(MYSQL_URL, "adminhee", this.dbPassword);
 
-	public void dbClose(Statement stmt, Connection conn) {
-		try {
-			stmt.close();
-			conn.close();
-		} catch (SQLException e) {
+            System.out.println("#MYSQL 서버연결 성공");
+        } catch (SQLException e) {
+            System.out.println("#MYSQL 서버연결 실패");
+            e.printStackTrace();
+        }
+        return conn;
+    }
 
-			e.printStackTrace();
-		}
-
-	}
-
-	public void dbClose(ResultSet rs, PreparedStatement pstmt, Connection conn) {
-		try {
-			rs.close();
-			pstmt.close();
-			conn.close();
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
-
-	}
-
-	public void dbClose(PreparedStatement pstmt, Connection conn) {
-		try {
-			pstmt.close();
-			conn.close();
-		} catch (SQLException e) {
-
-			e.printStackTrace();
-		}
-
-	}
-
-	public static void main(String[] args) {
-		DBConnect db = new DBConnect();
-		db.getDBConnect();
-
-	}
+    // close메서드
+    public void dbClose(ResultSet rs, Statement stmt, Connection conn) {
+        try {
+            if (rs != null)
+                rs.close();
+            if (stmt != null)
+                stmt.close();
+            if (conn != null)
+                conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
