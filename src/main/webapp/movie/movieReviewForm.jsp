@@ -30,13 +30,12 @@
 </style>
 
 <div class="text-start" id="reviewFormRoot">
-
+  
+  <input type="hidden" id="movieIdxHidden" value="<%=movieIdx%>">
+  
   <h5 class="fw-bold mb-3">
     <i class="bi bi-pencil-square"></i> 한줄평 작성
   </h5>
-
-  <!-- movie_idx는 서버로 보낼 때 사용 -->
-  <input type="hidden" id="movieIdxHidden" value="<%=movieIdx%>">
 
   <!-- 별점 UI -->
   <div class="mb-3">
@@ -77,51 +76,51 @@
 <script>
 $(function(){
 
-  var currentRating = 0.0;
-  var hoverRating = 0.0;
+	var currentRating = 0.0;
+	var hoverRating = 0.0;
+	
+	function updateRatingUI(){
+	  var percent = (currentRating / 5.0) * 100;
+	  $("#starFill").css("width", percent + "%");
+	  $("#myScoreText").text(currentRating.toFixed(1));
+	  $("#reviewScore").val(currentRating.toFixed(1));
+	}
+	
+	updateRatingUI();
+	
+	$("#starWrap").on("mousemove", function(e){
+	  var offset = $(this).offset();
+	  var x = e.pageX - offset.left;
+	  var w = $(this).width();
+	
+	  var raw = (x / w) * 5.0;
+	  raw = Math.round(raw * 2) / 2;
+	
+	  if (raw < 0.5) raw = 0.5;
+	  if (raw > 5.0) raw = 5.0;
+	
+	  hoverRating = raw;
+	
+	  var percent = (hoverRating / 5.0) * 100;
+	  $("#starFill").css("width", percent + "%");
+	  $("#myScoreText").text(hoverRating.toFixed(1));
+	});
+	
+	$("#starWrap").on("mouseleave", function(){
+		updateRatingUI();
+	});
+	
+	$("#starWrap").on("click", function(){
+	  if (hoverRating < 0.5) hoverRating = 0.5;
+	  currentRating = hoverRating;
+	  updateRatingUI();
+	});
+	
+	$("#reviewContent").on("input", function(){
+	  $("#reviewLen").text($(this).val().length);
+	});
 
-  function render(){
-    var percent = (currentRating / 5.0) * 100;
-    $("#starFill").css("width", percent + "%");
-    $("#myScoreText").text(currentRating.toFixed(1));
-    $("#reviewScore").val(currentRating.toFixed(1));
-  }
-
-  render();
-
-  $("#starWrap").on("mousemove", function(e){
-    var offset = $(this).offset();
-    var x = e.pageX - offset.left;
-    var w = $(this).width();
-
-    var raw = (x / w) * 5.0;
-    raw = Math.round(raw * 2) / 2;
-
-    if (raw < 0.5) raw = 0.5;
-    if (raw > 5.0) raw = 5.0;
-
-    hoverRating = raw;
-
-    var percent = (hoverRating / 5.0) * 100;
-    $("#starFill").css("width", percent + "%");
-    $("#myScoreText").text(hoverRating.toFixed(1));
-  });
-
-  $("#starWrap").on("mouseleave", function(){
-    render();
-  });
-
-  $("#starWrap").on("click", function(){
-    if (hoverRating < 0.5) hoverRating = 0.5;
-    currentRating = hoverRating;
-    render();
-  });
-
-  $("#reviewContent").on("input", function(){
-    $("#reviewLen").text($(this).val().length);
-  });
-
-  // 등록 (중복 이벤트 방지: off/on)
+  // 한줄평 등록
   $(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
 
 	  var movieIdx = $("#movieIdxHidden").val();
@@ -140,8 +139,8 @@ $(function(){
 
 	  // 1) 한줄평 저장
 	  $.ajax({
-	    type: "POST",
-	    url: "movieReviewInsert.jsp",
+	    type: "post",
+	    url: "movieReviewInsertAction.jsp",
 	    data: { movie_idx: movieIdx, content: content },
 	    dataType: "json",
 	    success: function (r1) {
@@ -152,8 +151,8 @@ $(function(){
 
 	      // 2) 별점 저장 (movieRatingInsert.jsp)
 	      $.ajax({
-	        type: "POST",
-	        url: "movieRatingInsert.jsp",
+	        type: "post",
+	        url: "movieRatingInsertAction.jsp",
 	        data: { movie_idx: movieIdx, score: score },
 	        dataType: "json",
 	        success: function (r2) {
@@ -163,7 +162,8 @@ $(function(){
 	          }
 
 	          // 3) 목록 갱신 (별점까지 같이 보이게)
-	          $("#reviewList").load("movieReviewList.jsp?movie_idx=" + movieIdx);
+	          loadReviewListAlways();
+	          $("#reviewForm").empty();
 
 	          // 입력 초기화(원하면)
 	          $("#reviewContent").val("");

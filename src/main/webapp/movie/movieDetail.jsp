@@ -84,12 +84,13 @@ else{
 
 				<div class="mt-4">
 					<h5 class="fw-bold">줄거리</h5>
-					<p class="text-secondary" style="white-space: pre-line; line-height: 1.6;"><%=dto.getSummary()%></p>
+					<p class="text-secondary" style="white-space: pre-line; line-height: 1.6;"><%=dto.getSummary().equals("")?"등록된 내용이 없습니다":dto.getSummary()%></p>
 				</div>
 
 				<% if (dto.getTrailerUrl() != null && !dto.getTrailerUrl().isEmpty()) { %>
 				<div class="mt-4">
 					<h5 class="fw-bold mb-3"><i class="bi bi-youtube text-danger"></i> 공식 트레일러</h5>
+					
 					<div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
 						<iframe id="youtubePlayer" src="" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
 					</div>
@@ -170,12 +171,12 @@ else{
 		loadReviewListAlways();
 	});
 
-	// 작성하기 클릭 -> 폼 로드(카드 숨김)
+	// 한줄평 작성하기 클릭 -> 폼 로드(박스 숨김)
 	$(document).on("click", "#btnReviewWrite", function () {
 		var movieIdx = $("#movieIdx").val();
 
 		$.ajax({
-			type: "GET",
+			type: "get",
 			url: "movieReviewForm.jsp",
 			data: { movie_idx: movieIdx },
 			success: function (html) {
@@ -188,80 +189,23 @@ else{
 		});
 	});
 
-	// 취소 -> 폼 비우고 카드 다시 보여줌
+	// 취소 -> 폼 비우고 박스 다시 보여줌
 	$(document).on("click", "#btnReviewCancel", function () {
 		$("#reviewForm").empty();
 		$("#reviewBox").show();
 	});
 
-	// 등록 (리뷰 저장 -> 별점 저장 -> 목록 갱신)
-	$(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
-		var movieIdx = $("#movieIdx").val();
-		var content = $("#reviewContent").val();
-		var score = $("#reviewScore").val();
-
-		if (!content || $.trim(content).length === 0) {
-			alert("코멘트를 입력해 주세요.");
-			$("#reviewContent").focus();
-			return;
-		}
-		if (score === "0.0") {
-			alert("별점을 선택해 주세요.");
-			return;
-		}
-
-		// 1) 한줄평 저장
-		$.ajax({
-			type: "POST",
-			url: "movieReviewInsert.jsp",
-			data: { movie_idx: movieIdx, content: content },
-			dataType: "json",
-			success: function (res) {
-				if (res.status !== "OK") {
-					alert(res.message || "리뷰 등록 실패");
-					return;
-				}
-
-				// 2) 별점 저장
-				$.ajax({
-					type: "POST",
-					url: "movieRatingInsert.jsp",
-					data: { movie_idx: movieIdx, score: score },
-					dataType: "json",
-					success: function (res2) {
-						if (res2.status !== "OK") {
-							alert(res2.message || "별점 저장 실패");
-							return;
-						}
-
-						// 3) 목록 무조건 갱신
-						loadReviewListAlways();
-
-						// UI 정리
-						$("#reviewBox").hide();
-
-						alert("등록 완료");
-					},
-					error: function (xhr) {
-						console.log(xhr.status, xhr.responseText);
-						alert("별점 저장 서버 오류");
-					}
-				});
-			},
-			error: function (xhr) {
-				console.log(xhr.status, xhr.responseText);
-				alert("리뷰 저장 서버 오류");
-			}
-		});
-	});
-
-	// 리뷰 삭제 (movieReviewList.jsp의 버튼에서 호출)
+	
+	// 한줄평 삭제
 	function deleteReview(reviewIdx) {
+		
+		var movieIdx = $("#movieIdx").val();
+		
 		if (!confirm("정말 삭제할까요?")) return;
 
 		$.ajax({
-			type: "POST",
-			url: "movieReviewDelete.jsp",
+			type: "post",
+			url: "movieReviewDeleteAction.jsp",
 			data: { movie_idx: movieIdx, review_idx: reviewIdx },
 			dataType: "json",
 			success: function(res) {
@@ -280,7 +224,7 @@ else{
 		});
 	}
 
-	// 리뷰 수정 (movieReviewList.jsp의 버튼에서 호출)
+	// 한줄평 수정
 	function updateReview(reviewIdx, oldContent) {
 		var newContent = prompt("한줄평 수정", oldContent);
 		if (newContent == null) return;
@@ -292,8 +236,8 @@ else{
 		}
 
 		$.ajax({
-			type: "POST",
-			url: "movieReviewUpdate.jsp",
+			type: "post",
+			url: "movieReviewUpdateAction.jsp",
 			data: { review_idx: reviewIdx, content: newContent },
 			dataType: "json",
 			success: function(res) {

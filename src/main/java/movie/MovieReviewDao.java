@@ -13,7 +13,7 @@ public class MovieReviewDao {
 	
 	DBConnect db=new DBConnect();
 	
-	//insert
+	//한줄평 insert
 	public boolean insertReview(MovieReviewDto dto)
 	{
 	    Connection conn = db.getDBConnect();
@@ -38,7 +38,7 @@ public class MovieReviewDao {
 	    }
 	}
 	
-	//리뷰+별점 같이 가져오기 (join)
+	//한줄평 전체 list + 별점 같이 가져오기 (join)
 	public List<MovieReviewDto> getAllReviewsWithScore(int movieIdx)
 	{
 	    List<MovieReviewDto> list = new ArrayList<>();
@@ -79,7 +79,7 @@ public class MovieReviewDao {
 	}
 
 	
-	//한줄평갯수
+	//한줄평 갯수
 	public int totalReview(int movieIdx) 
 	{	
 		int total=0;
@@ -110,12 +110,10 @@ public class MovieReviewDao {
 		}
 		
 		return total;
-		
-		
-		
+
 	}
 	
-	//한줄편삭제
+	//한줄평 delete
 	public void deleteReview(int reviewIdx)
 	{
 		Connection conn=db.getDBConnect();
@@ -138,7 +136,7 @@ public class MovieReviewDao {
 		}
 	}
 	
-	//한줄평수정 update
+	//한줄평 update
 	public void updateReview(MovieReviewDto dto)
 	{
 		Connection conn=db.getDBConnect();

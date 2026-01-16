@@ -5,21 +5,21 @@
     pageEncoding="UTF-8"%>
 
 <%
-request.setCharacterEncoding("UTF-8");
-
-int movieIdx = Integer.parseInt(request.getParameter("movie_idx"));
-
-MovieReviewDao dao = new MovieReviewDao();
-List<MovieReviewDto> list = dao.getAllReviewsWithScore(movieIdx);
-
-String id = (String)session.getAttribute("id");
-//test용 아래 코드 삭제필요
-if(id == null) id = "guest";
-
-if(list == null || list.size() == 0){
-  // 아무것도 없으면 movieDetail.js에서 "없음" 문구를 넣게 해놨으니 return 가능
-  return;
-}
+	request.setCharacterEncoding("UTF-8");
+	
+	int movieIdx = Integer.parseInt(request.getParameter("movie_idx"));
+	
+	MovieReviewDao dao = new MovieReviewDao();
+	List<MovieReviewDto> list = dao.getAllReviewsWithScore(movieIdx);
+	
+	String id = (String)session.getAttribute("id");
+	//test용 아래 코드 삭제필요
+	if(id == null) id = "guest";
+	
+	//목록 없으면 아무것도 출력 안 함 
+	if(list == null || list.size() == 0){
+	  return;
+	}
 %>
 
 <input type="hidden" id="movie_idx" value="<%=movieIdx%>">
@@ -31,7 +31,31 @@ if(list == null || list.size() == 0){
       <div class="d-flex justify-content-between align-items-center">
         <div>
           <b><%=r.getId()%></b>
-          <%-- 점수까지 보여줄 거면(있으면) 예: <span class="text-warning ms-2">★ <%=r.getScore()%></span> --%>
+
+          <%
+            double score = (r.getScore() == null) ? 0.0 : r.getScore().doubleValue();
+            int full = (int)Math.floor(score);
+            boolean half = (score - full) >= 0.5;
+            int empty = 5 - full - (half ? 1 : 0);
+          %>
+
+          <span class="ms-1 align-middle" style="font-size:14px;">
+            <% for(int i=0;i<full;i++){ %>
+              <i class="bi bi-star-fill text-warning"></i>
+            <% } %>
+
+            <% if(half){ %>
+              <i class="bi bi-star-half text-warning"></i>
+            <% } %>
+
+            <% for(int i=0;i<empty;i++){ %>
+              <i class="bi bi-star text-warning"></i>
+            <% } %>
+          </span>
+          
+          <span class="ms-2 text-warning fw-semibold">
+            <%=String.format("%.1f", score)%>
+          </span>
         </div>
 
         <div class="d-flex align-items-center gap-2">

@@ -38,7 +38,7 @@ public class MovieRatingStatDao {
     }
 
     // movie_rating에서 평균/개수 계산해서 stat 갱신
-    // 존재하면 update, 없으면 insert
+    // 평균 별점 존재하면 update, 없으면 insert
     public void refreshStat(int movieIdx) {
 
         // 1) movie_rating에서 평균/개수 계산
@@ -78,7 +78,7 @@ public class MovieRatingStatDao {
         }
     }
 
-    // insert
+    // 평균 별점 insert
     public void insertStat(int movieIdx, double avgRating, int countRating) {
 
         Connection conn = db.getDBConnect();
@@ -103,7 +103,7 @@ public class MovieRatingStatDao {
         }
     }
 
-    // update
+    // 평균 별점 update
     public void updateStat(int movieIdx, double avgRating, int countRating) {
 
         Connection conn = db.getDBConnect();

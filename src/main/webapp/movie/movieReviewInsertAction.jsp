@@ -17,8 +17,8 @@ try {
         return;
     }
 
-    // 임시: 로그인 전까지 guest 처리
     String id = (String)session.getAttribute("id");
+	//test용 아래 코드 삭제필요
     if (id == null) id = "guest";
 
     MovieReviewDto dto = new MovieReviewDto();

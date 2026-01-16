@@ -1,7 +1,3 @@
-//move_rating
-//score
-//db-decimal, dto-BigDecimal로 변경해!!!!
-
 package movie;
 
 import java.math.BigDecimal;
@@ -79,7 +75,7 @@ public class MovieRatingDao {
     	return score;
     }
     
-    // 별점 등록
+    // 별점 insert
     public void insertRating(int movieIdx, String id, BigDecimal score) {
     	
     	if (score == null) 
@@ -106,7 +102,7 @@ public class MovieRatingDao {
         }
     }
     
-    // 별점 수정
+    // 별점 update
     public void updateRating(int movieIdx, String id, BigDecimal score) {
     	
     	if (score == null) 
@@ -142,7 +138,7 @@ public class MovieRatingDao {
         	insertRating(movieIdx, id, score);
     }
     
-    // 별점 삭제
+    // 별점 delete
     public boolean deleteRating(int movieIdx, String id) {
         boolean flag = false;
 

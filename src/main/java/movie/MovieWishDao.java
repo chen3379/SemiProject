@@ -45,7 +45,7 @@ public class MovieWishDao {
 		return flag;
 	}
 	
-	//위시 추가
+	//위시 insert
 	public void insertWish(int movieIdx, String id)
 	{
 		//중복 방지
@@ -73,7 +73,7 @@ public class MovieWishDao {
 		}
 	}
 	
-	//위시 삭제
+	//위시 delete
 	public void deleteWish(int movieIdx, String id)
 	{
 		Connection conn=db.getDBConnect();
