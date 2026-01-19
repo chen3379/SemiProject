@@ -29,7 +29,7 @@ public class DBConnect {
         // 2. ★ secret.properties 파일에서 비밀번호 읽어오기
         try {
             // 파일을 찾아서 엽니다 (src/main/java/secret.properties)
-            InputStream input = getClass().getClassLoader().getResourceAsStream("secret.properties");
+            InputStream input = getClass().getClassLoader().getResourceAsStream("secret2.properties");
 
             if (input != null) {
                 Properties prop = new Properties();

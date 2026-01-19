@@ -92,6 +92,8 @@ public class MovieDao {
         } catch (SQLException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
         }
 
         return generatedKey; // 생성된 movie_idx return (실패시 0)
@@ -129,7 +131,7 @@ public class MovieDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select count(*) from movie order by genre=?";
+        String sql = "select count(*) from movie where genre=?";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -152,55 +154,43 @@ public class MovieDao {
         return total;
     }
 
-    // 영화 list-전체
-    public List<MovieDto> getAllList(int startNum, int perPage) {
-        List<MovieDto> list = new ArrayList<MovieDto>();
+    /*
+     * // 영화 list-전체 public List<MovieDto> getAllList(int startNum, int perPage) {
+     * List<MovieDto> list = new ArrayList<MovieDto>();
+     * 
+     * Connection conn = db.getDBConnect(); PreparedStatement pstmt = null;
+     * ResultSet rs = null;
+     * 
+     * String sql = "select * from movie m order by m.movie_idx desc limit ?, ?";
+     * 
+     * try { pstmt = conn.prepareStatement(sql);
+     * 
+     * pstmt.setInt(1, startNum); pstmt.setInt(2, perPage);
+     * 
+     * rs = pstmt.executeQuery();
+     * 
+     * while (rs.next()) { MovieDto dto = new MovieDto();
+     * 
+     * dto.setMovieIdx(rs.getInt("movie_idx")); dto.setTitle(rs.getString("title"));
+     * dto.setReleaseDay(rs.getString("release_day"));
+     * dto.setGenre(rs.getString("genre")); dto.setCountry(rs.getString("country"));
+     * dto.setDirector(rs.getString("director")); dto.setCast(rs.getString("cast"));
+     * dto.setSummary(rs.getString("summary"));
+     * dto.setPosterPath(rs.getString("poster_path"));
+     * dto.setTrailerUrl(rs.getString("trailer_url"));
+     * dto.setCreateDay(rs.getTimestamp("create_day"));
+     * dto.setUpdateDay(rs.getTimestamp("update_day"));
+     * dto.setReadcount(rs.getInt("readcount"));
+     * 
+     * list.add(dto); }
+     * 
+     * } catch (SQLException e) { // TODO Auto-generated catch block
+     * e.printStackTrace(); } finally { db.dbClose(rs, pstmt, conn); }
+     * 
+     * return list; }
+     */
 
-        Connection conn = db.getDBConnect();
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        String sql = "select * from movie m order by m.movie_idx desc ";
-
-        try {
-            pstmt = conn.prepareStatement(sql);
-
-            pstmt.setInt(1, startNum);
-            pstmt.setInt(2, perPage);
-
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                MovieDto dto = new MovieDto();
-
-                dto.setMovieIdx(rs.getInt("movie_idx"));
-                dto.setTitle(rs.getString("title"));
-                dto.setReleaseDay(rs.getString("release_day"));
-                dto.setGenre(rs.getString("genre"));
-                dto.setCountry(rs.getString("country"));
-                dto.setDirector(rs.getString("director"));
-                dto.setCast(rs.getString("cast"));
-                dto.setSummary(rs.getString("summary"));
-                dto.setPosterPath(rs.getString("poster_path"));
-                dto.setTrailerUrl(rs.getString("trailer_url"));
-                dto.setCreateDay(rs.getTimestamp("create_day"));
-                dto.setUpdateDay(rs.getTimestamp("update_day"));
-                dto.setReadcount(rs.getInt("readcount"));
-
-                list.add(dto);
-            }
-
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } finally {
-            db.dbClose(rs, pstmt, conn);
-        }
-
-        return list;
-    }
-
-    // 영화 list-별점순(전체)
+    // 영화 list-평점 높은순(전체)
     public List<MovieDto> getRatingList(int startNum, int perPage) {
         List<MovieDto> list = new ArrayList<MovieDto>();
 
@@ -238,6 +228,8 @@ public class MovieDao {
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
 
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
                 list.add(dto);
             }
 
@@ -251,7 +243,7 @@ public class MovieDao {
         return list;
     }
 
-    // 영화 list-별점순(장르별)
+    // 영화 list-평점 높은순(장르별)
     public List<MovieDto> getRatingListByGenre(String genre, int startNum, int perPage) {
         List<MovieDto> list = new ArrayList<MovieDto>();
 
@@ -290,6 +282,8 @@ public class MovieDao {
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
 
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
                 list.add(dto);
             }
 
@@ -306,24 +300,24 @@ public class MovieDao {
     // 영화 list-개봉순(전체)
     public List<MovieDto> getReleaseDayList(int startNum, int perPage) {
         List<MovieDto> list = new ArrayList<MovieDto>();
-
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m order by m.release_day desc, m.movie_idx desc limit ?,? ";
+        // [수정 1] SQL에 평점 계산 로직(서브쿼리) 추가
+        String sql = "SELECT m.*, "
+                + " (SELECT IFNULL(AVG(score), 0) FROM movie_rating r WHERE r.movie_idx = m.movie_idx) as avg_rating "
+                + " FROM movie m " + " ORDER BY m.release_day DESC, m.movie_idx DESC LIMIT ?, ?";
 
         try {
             pstmt = conn.prepareStatement(sql);
-
             pstmt.setInt(1, startNum);
             pstmt.setInt(2, perPage);
-
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 MovieDto dto = new MovieDto();
-
+                // ... 기존 컬럼 세팅 (그대로 두세요) ...
                 dto.setMovieIdx(rs.getInt("movie_idx"));
                 dto.setTitle(rs.getString("title"));
                 dto.setReleaseDay(rs.getString("release_day"));
@@ -338,42 +332,41 @@ public class MovieDao {
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
 
+                // [수정 2] 계산된 평점을 DTO에 담기 (이 한 줄이 핵심!)
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
                 list.add(dto);
             }
-
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
         }
-
         return list;
     }
 
     // 영화 list-개봉순(장르별)
     public List<MovieDto> getReleaseDayListByGenre(String genre, int startNum, int perPage) {
         List<MovieDto> list = new ArrayList<MovieDto>();
-
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "where genre=?" + " order by m.release_day desc, m.movie_idx desc "
-                + "limit ?, ?";
+        // [수정 1] SQL 변경
+        String sql = "SELECT m.*, "
+                + " (SELECT IFNULL(AVG(score), 0) FROM movie_rating r WHERE r.movie_idx = m.movie_idx) as avg_rating "
+                + " FROM movie m " + " WHERE genre=? " + " ORDER BY m.release_day DESC, m.movie_idx DESC LIMIT ?, ?";
 
         try {
             pstmt = conn.prepareStatement(sql);
-
             pstmt.setString(1, genre);
             pstmt.setInt(2, startNum);
             pstmt.setInt(3, perPage);
-
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 MovieDto dto = new MovieDto();
-
+                // 기존 세팅 생략 (위와 동일하게 유지)
                 dto.setMovieIdx(rs.getInt("movie_idx"));
                 dto.setTitle(rs.getString("title"));
                 dto.setReleaseDay(rs.getString("release_day"));
@@ -388,40 +381,40 @@ public class MovieDao {
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
 
+                // [수정 2] 평점 추가
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
                 list.add(dto);
             }
-
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
         }
-
         return list;
     }
 
     // 영화 list-최신등록순(전체)
     public List<MovieDto> getCreateDayList(int startNum, int perPage) {
         List<MovieDto> list = new ArrayList<MovieDto>();
-
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "order by m.create_day desc, m.movie_idx desc " + "limit ?, ?";
+        // [수정 1] SQL 변경
+        String sql = "SELECT m.*, "
+                + " (SELECT IFNULL(AVG(score), 0) FROM movie_rating r WHERE r.movie_idx = m.movie_idx) as avg_rating "
+                + " FROM movie m " + " ORDER BY m.create_day DESC, m.movie_idx DESC LIMIT ?, ?";
 
         try {
             pstmt = conn.prepareStatement(sql);
-
             pstmt.setInt(1, startNum);
             pstmt.setInt(2, perPage);
-
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 MovieDto dto = new MovieDto();
-
+                // ... 기존 세팅 ...
                 dto.setMovieIdx(rs.getInt("movie_idx"));
                 dto.setTitle(rs.getString("title"));
                 dto.setReleaseDay(rs.getString("release_day"));
@@ -436,42 +429,41 @@ public class MovieDao {
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
 
+                // [수정 2] 평점 추가
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
                 list.add(dto);
             }
-
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
         }
-
         return list;
     }
 
     // 영화 list-최신등록순(장르별)
     public List<MovieDto> getCreateDayListByGenre(String genre, int startNum, int perPage) {
         List<MovieDto> list = new ArrayList<MovieDto>();
-
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from movie m " + "where genre=?" + " order by m.create_day desc, m.movie_idx desc "
-                + "limit ?, ?";
+        // [수정 1] SQL 변경
+        String sql = "SELECT m.*, "
+                + " (SELECT IFNULL(AVG(score), 0) FROM movie_rating r WHERE r.movie_idx = m.movie_idx) as avg_rating "
+                + " FROM movie m " + " WHERE genre=? " + " ORDER BY m.create_day DESC, m.movie_idx DESC LIMIT ?, ?";
 
         try {
             pstmt = conn.prepareStatement(sql);
-
             pstmt.setString(1, genre);
             pstmt.setInt(2, startNum);
             pstmt.setInt(3, perPage);
-
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 MovieDto dto = new MovieDto();
-
+                // ... 기존 세팅 ...
                 dto.setMovieIdx(rs.getInt("movie_idx"));
                 dto.setTitle(rs.getString("title"));
                 dto.setReleaseDay(rs.getString("release_day"));
@@ -486,16 +478,16 @@ public class MovieDao {
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
 
+                // [수정 2] 평점 추가
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
                 list.add(dto);
             }
-
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
         }
-
         return list;
     }
 
