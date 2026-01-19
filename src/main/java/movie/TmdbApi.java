@@ -25,8 +25,8 @@ public class TmdbApi {
     static {
         String key = "";
         try {
-            // secret.properties 파일 읽기
-            InputStream input = TmdbApi.class.getClassLoader().getResourceAsStream("secret.properties");
+            // secret2.properties 파일 읽기
+            InputStream input = TmdbApi.class.getClassLoader().getResourceAsStream("secret2.properties");
 
             if (input != null) {
                 Properties prop = new Properties();
@@ -35,7 +35,7 @@ public class TmdbApi {
                 // 파일에 저장한 이름("TMDB_KEY")으로 값을 가져옴
                 key = prop.getProperty("TMDB_KEY");
             } else {
-                System.out.println("❌ 오류: secret.properties 파일을 찾을 수 없습니다.");
+                System.out.println("❌ 오류: secret2.properties 파일을 찾을 수 없습니다.");
             }
         } catch (IOException e) {
             e.printStackTrace();
