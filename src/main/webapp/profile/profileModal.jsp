@@ -8,7 +8,7 @@
                     <div id="nickname">${sessionScope.memberInfo.nickname}</div>
                     <a href="../profile/profilePage.jsp?id=${sessionScope.memberInfo.id}">프로필</a>
                     <form action="../login/logoutAction.jsp" method="post">
-                        <button type="submit" class="" id="logoutBtn">로그아웃</button>
+                        <button type="submit" class="" id="modalLogoutBtn">로그아웃</button>
                     </form>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>

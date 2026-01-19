@@ -29,7 +29,7 @@ public class DBConnect {
         // 2. ★ secret.properties 파일에서 비밀번호 읽어오기
         try {
             // 파일을 찾아서 엽니다 (src/main/java/secret.properties)
-            InputStream input = getClass().getClassLoader().getResourceAsStream("secret.properties");
+            InputStream input = getClass().getClassLoader().getResourceAsStream("secret2.properties");
 
             if (input != null) {
                 Properties prop = new Properties();
@@ -38,7 +38,7 @@ public class DBConnect {
                 // 파일에 저장한 이름("AWS_ACCESS_KEY")으로 값을 꺼내서 변수에 저장
                 this.dbPassword = prop.getProperty("AWS_ACCESS_KEY");
             } else {
-                System.out.println("❌ 오류: secret.properties 파일을 찾을 수 없습니다.");
+                System.out.println("❌ 오류: secret2.properties 파일을 찾을 수 없습니다.");
             }
 
         } catch (Exception e) {

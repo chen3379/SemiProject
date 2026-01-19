@@ -8,12 +8,12 @@
 
 					<div>
 						<label for="loginId">이메일</label>
-						<input type="email" id="loginId" name="id">
+						<input type="email" id="loginId" name="id" required>
 					</div>
 
 					<div>
 						<label for="loginPassword">비밀번호</label>
-						<input type="password" id="loginPassword" name="password">
+						<input type="password" id="loginPassword" name="password" required>
 					</div>
 
 					<div>
@@ -29,7 +29,9 @@
 					<div>
 						<a href="../signUp/signUpPage.jsp">회원가입</a>
 					</div>
-
+					<div>
+						<a href="../login/findAccountPage.jsp">계정 찾기</a>
+					</div>
 					<button type="submit" class="btn-login" id="loginBtn">로그인</button>
 				</form>
 			</div>
@@ -62,6 +64,9 @@
 					},
 					success: function (res) {
 						if (res.status === "SUCCESS") {
+							var modalEl = document.getElementById('loginModal');
+        var modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
 							location.replace('../main/mainPage.jsp');
 						} else if (res.status === "FAIL") {
 							alert(res.message || "로그인 정보가 일치하지 않습니다.");

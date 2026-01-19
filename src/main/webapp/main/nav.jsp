@@ -31,7 +31,7 @@
 			<li><a href="#" id="openProfile" data-bs-toggle="modal"
 				data-bs-target="#profileModal">프로필</a></li>
 			<li><form action="../login/logoutAction.jsp" method="post">
-			<button id="logoutBtn" type="submit">로그아웃</button></form></li>
+			<button id="navLogoutBtn" type="submit">로그아웃</button></form></li>
 			<% } else { 
 				%>
 			<li><a href="#" id="openLoginModal" data-bs-toggle="modal"

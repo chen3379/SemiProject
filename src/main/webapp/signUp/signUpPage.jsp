@@ -12,6 +12,7 @@
         <title>WHATFLIX</title>
         <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     </head>
 
 
@@ -23,14 +24,14 @@
         </header>
         <main>
             <div>
-                <h1>회원가입</h1>
+                <h3>회원가입</h3>
             </div>
             <div id="selection-area">
                 <div>
                     <button class="btn-load-form" data-type="general">WHATFLIX 회원가입 하기</button>
                 </div>
                 <div>
-                    <h1>소셜 계정으로 가입하기</h1>
+                    <h3>소셜 계정으로 가입하기</h3>
                     <button class="btn-load-form" data-type="google">구글</button>
                     <button class="btn-load-form" data-type="kakao">카카오</button>
                     <button class="btn-load-form" data-type="naver">네이버</button>

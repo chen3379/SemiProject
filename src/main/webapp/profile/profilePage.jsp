@@ -21,13 +21,6 @@
 		</header>
 
 		<main>
-			<div class="container">
-				<form id="searchForm">
-					<input type="text" name="id" id="searchId" placeholder="아이디 입력">
-					<button type="submit" id="btnSearch">프로필 검색</button>
-				</form>
-			</div>
-
 			<div class="wrapper">
 				<nav id="side-nav">
 					<jsp:include page="profileNav.jsp" />
@@ -35,15 +28,9 @@
 
 
 				<div id="content-area">
-					<jsp:include page="profile-nav-list/memberInfo.jsp" />
+					<jsp:include page="memberInfo.jsp" />
 				</div>
 			</div>
-
-			<script>
-				$(document).ready(function () {
-
-				})
-			</script>
 		</main>
 
 		<footer>

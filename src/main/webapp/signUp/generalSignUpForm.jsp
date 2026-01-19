@@ -46,7 +46,7 @@
     <script>
 
         var signUpForm = document.getElementById('signUpForm');
-        var nickTimer;
+        var nickTimer, idTimer;
         var signUpNickname = document.getElementById('signUpNickname');
         var signUpId = document.getElementById('signUpId');
         var signUpPassword = document.getElementById('signUpPassword');
@@ -54,6 +54,43 @@
         var nickMsg = document.getElementById('nickMsg');
         var idMsg = document.getElementById('idMsg');
         var pwMsg = document.getElementById('pwMsg');
+
+        signUpId.addEventListener('input', function () {
+            var id = this.value.trim();
+
+            if (idTimer) {
+                clearTimeout(idTimer);
+            }
+
+            idTimer = setTimeout(function () {
+                if (id === "") {
+                    idMsg.innerText = "";
+                    idMsg.classList.remove('show');
+                    return;
+                }
+
+                $.ajax({
+                    url: 'checkIdAction.jsp',
+                    type: 'POST',
+                    data: { id: id },
+                    dataType: 'json',
+                    success: function (res) {
+                        idMsg.classList.add('show');
+
+                        if (res.isDuplicate === true) {
+                            idMsg.innerText = "이미 사용 중인 ID입니다.";
+                            idMsg.style.color = "red";
+                        } else if (res.isDuplicate === false) {
+                            idMsg.innerText = "사용 가능한 ID 입니다.";
+                            idMsg.style.color = "green";
+                        } else if (res.isDuplicate === null) {
+                            idMsg.innerText = "ID 중복 확인 중 오류가 발생했습니다.";
+                            idMsg.style.color = "red";
+                        }
+                    }
+                });
+            }, 500);
+        });
 
         signUpNickname.addEventListener('input', function () {
             var nickname = this.value.trim();
@@ -145,13 +182,20 @@
                         signUpPasswordConfirm.value = '';
                         pwMsg.classList.remove('show');
 
-                        if (res.status === 'DUPLICATE') {
-                            alert('이미 등록된 이메일입니다.');
+                        if (res.status === 'DUPLICATE_ID') {
+                            alert('이미 등록된 아이디입니다.');
                             signUpId.focus();
-                            idMsg.innerText = '이미 사용 중인 이메일 주소입니다.';
+                            idMsg.innerText = '이미 사용 중인 아이디입니다.';
                             idMsg.style.color = 'red';
                             idMsg.classList.add('show');
-                        } else if (res.status === 'FAIL') {
+                        } else if (res.status === 'DUPLICATE_NICKNAME') {
+                            alert('이미 등록된 닉네임입니다.');
+                            signUpNickname.focus();
+                            nickMsg.innerText = '이미 사용 중인 닉네임입니다.';
+                            nickMsg.style.color = 'red';
+                            nickMsg.classList.add('show');
+                        } 
+                        else if (res.status === 'FAIL') {
                             alert('가입에 실패했습니다.');
                         } else if (res.status === 'ERROR') {
                             alert('에러 발생.');
