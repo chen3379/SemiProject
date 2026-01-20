@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class FaqDto {
 	
-	private int fagIdx;
+	private int faqIdx;
 	private String title;
 	private String content;
 	private String activeType; //0:N, 1:Y
@@ -13,11 +13,11 @@ public class FaqDto {
 	private Timestamp updateDay;
 	private String updateId;
 	
-	public int getFagIdx() {
-		return fagIdx;
+	public int getFaqIdx() {
+		return faqIdx;
 	}
-	public void setFagIdx(int fagIdx) {
-		this.fagIdx = fagIdx;
+	public void setFaqIdx(int faqIdx) {
+		this.faqIdx = faqIdx;
 	}
 	public String getTitle() {
 		return title;
