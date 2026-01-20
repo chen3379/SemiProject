@@ -31,7 +31,7 @@
             <h2 class="section-title">🗣️ 왓플릭스 라운지</h2>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;">영화 수다, 스포일러 리뷰, 추천 요청까지!</p>
         </div>
-        <a href="../community/community.jsp" class="more-link btn btn-outline-light btn-sm" 
+        <a href="../board/community.jsp" class="more-link btn btn-outline-light btn-sm" 
            style="border-radius: 20px; padding: 8px 20px; font-size: 0.85rem;">
            커뮤니티 바로가기 <i class="bi bi-arrow-right"></i>
         </a>

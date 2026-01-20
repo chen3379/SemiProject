@@ -170,7 +170,7 @@
             <ul class="nav-links">
                 <li><a href="../main/mainPage.jsp" class="nav-item">홈</a></li>
                 <li><a href="../movie/movieList.jsp" class="nav-item">영화</a></li>
-                <li><a href="../community/community.jsp" class="nav-item">커뮤니티</a></li>
+                <li><a href="../board/community.jsp" class="nav-item">커뮤니티</a></li>
                 <li><a href="../support/support.jsp" class="nav-item">지원</a></li>
             </ul>
         </div>
