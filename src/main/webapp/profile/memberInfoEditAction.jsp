@@ -20,7 +20,7 @@
         }
     MemberDto memberInfo = (MemberDto) obj;
 
-    String savePath = request.getServletContext().getRealPath("/save"); 
+    String savePath = request.getServletContext().getRealPath("/profile_photo"); 
     System.out.println("DEBUG: 실제 저장될 물리적 경로: " + savePath); // 콘솔 출력
 
     // 3. MultipartRequest 생성 (여기서 예외가 발생할 가능성이 높습니다.)
@@ -65,7 +65,7 @@
     
     if (fileName != null) {
         // 새로운 사진을 올린 경우
-        photoPath = "/save/" + fileName;
+        photoPath = "/profile_photo/" + fileName;
     } else {
         // 사진을 새로 올리지 않은 경우 기존 사진 유지
         photoPath = memberInfo.getPhoto();

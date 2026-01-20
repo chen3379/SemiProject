@@ -34,7 +34,7 @@ public class MemberDao {
             pstmt.setString(1, memberDto.getNickname().trim());
             pstmt.setString(2, memberDto.getId().trim());
             pstmt.setString(3, memberDto.getPassword());
-            pstmt.setString(4, "/save/default_photo.jpg");
+            pstmt.setString(4, "/profile_photo/default_photo.jpg");
             int result = pstmt.executeUpdate();
 
             if (result > 0)
