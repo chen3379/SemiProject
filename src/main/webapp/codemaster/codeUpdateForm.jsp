@@ -4,34 +4,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<%
-	request.setCharacterEncoding("UTF-8");
-
-	//프로젝트의 경로
-	String root=request.getContextPath();
-	
-	String groupCode=request.getParameter("groupCode");
-	String codeId=request.getParameter("codeId");
-	String currentPage=request.getParameter("currentPage");
-
-	System.out.println("groupCode=" + groupCode);
-	System.out.println("codeId= " + codeId);
-	
-/* 	if (groupCode == null || codeId == null) {
-	    response.sendRedirect("index.jsp?main=codemaster/codeList.jsp");
-	    return;
-	}
- */
-	CodeDao dao=new CodeDao();
-	CodeDto dto=dao.getCode(groupCode, codeId);
-	
- 	if (dto == null) {
- 		 response.sendRedirect("index.jsp?main=codemaster/codeList.jsp&groupCode=" + groupCode);
- 	     return;
-	} 
-	
-%>
-
 <html>
 <head>
 <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
@@ -45,6 +17,24 @@
     }
 </style>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+<%
+	request.setCharacterEncoding("UTF-8");
+
+	String groupCode=request.getParameter("groupCode");
+	String codeId=request.getParameter("codeId");
+	String currentPage=request.getParameter("currentPage");
+
+  /* 	if (groupCode == null || codeId == null) {
+	    response.sendRedirect("../codemaster/codeList.jsp?groupCode="+ groupCode);
+	    return;
+	} */
+
+	CodeDao dao=new CodeDao();
+	CodeDto dto=dao.getCode(groupCode, codeId);
+	
+%>
+
 
 <script type="text/javascript">
 function check(f) {
@@ -63,14 +53,12 @@ function check(f) {
 
 <div class="container mt-4" style="max-width:600px;">
 	
-<form action="codemaster/codeUpdateAction.jsp" method="post" accept-charset="UTF-8" onsubmit="return check(this)">
-    <input type="hidden" name="main" value="codemaster/codeUpdateAction.jsp">
+<form action="../codemaster/codeUpdateAction.jsp" method="post" accept-charset="UTF-8" onsubmit="return check(this)">
     <input type="hidden" name="currentPage" value="<%=currentPage%>">
     
 	<table class="table table-bordered">
 	<caption align="top"><b>코드수정</b></caption>
-	
-	        <tr>
+        <tr>
             <th class="table-secondary">그룹코드</th>
             <td><input type="text" name="groupCode" value="<%=dto.getGroup_code()%>" readonly class="form-control readonly-input"></td>
         </tr>
@@ -104,7 +92,7 @@ function check(f) {
             <td colspan="2" class="text-center">
                 <button type="submit" class="btn btn-primary">수정</button>
                 <button type="button" class="btn btn-secondary"
-                    onclick="location.href='index.jsp?main=codemaster/codeList.jsp&groupCode=<%=dto.getGroup_code()%>&currentPage=<%=currentPage%>'">
+                    onclick="location.href='../codemaster/codeList.jsp?groupCode=<%=dto.getGroup_code()%>&currentPage=<%=currentPage%>'">
                     목록
                 </button>
             </td>

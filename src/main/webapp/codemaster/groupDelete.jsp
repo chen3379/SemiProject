@@ -16,7 +16,7 @@
 		//delete 메서드 호출
 		dao.deleteGroup(groupCode); // DAO 삭제 메서드
 	}
-	response.sendRedirect("../index.jsp?main=codemaster/groupList.jsp?currentPage="+currentPage);
+	response.sendRedirect("../codemaster/groupList.jsp?currentPage="+currentPage);
 	//response.sendRedirect("index.jsp?main=codemaster/groupList.jsp?currentPage="+currentPage);
 
 %>

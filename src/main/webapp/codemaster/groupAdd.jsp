@@ -27,6 +27,6 @@
 	dao.insertGroup(dto);
 
 	//이동(gaipsuccess)
-	response.sendRedirect("../index.jsp?main=codemaster/groupList.jsp");
+	response.sendRedirect("../codemaster/groupList.jsp");
 
 %>

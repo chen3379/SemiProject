@@ -27,7 +27,7 @@
 	CodeDto dto=new CodeDto();
 	
     dto.setGroup_code(groupCode);
-    dto.setGroup_name(dto.getGroup_name());
+    dto.setGroup_name(dtog.getGroup_name());
     dto.setCode_id(codeId);
     dto.setCode_name(codeName);
     dto.setSort_order(sortOrder);
@@ -40,6 +40,6 @@
 	//update호출
 	int result = dao.updateCode(dto);
 	
-	response.sendRedirect("../index.jsp?main=codemaster/codeList.jsp?groupCode="+ groupCode);
+	response.sendRedirect("../codemaster/codeList.jsp?groupCode="+ groupCode);
 	
 %>

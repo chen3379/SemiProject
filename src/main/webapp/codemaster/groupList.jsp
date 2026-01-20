@@ -67,7 +67,7 @@
 
 <div  style="margin: 10px 30px; width: 800px; float:right;">
 	<button type="button" class="btn btn-warning"
-	onclick="location.href='index.jsp?main=codemaster/groupForm.jsp'">등록</button>
+	onclick="location.href='../codemaster/groupForm.jsp'">등록</button>
 
 </div> 
 
@@ -98,7 +98,7 @@
 		<tr align="center">
 		
 			<td>
-    		    <a href="index.jsp?main=codemaster/codeList.jsp?groupCode=<%=dto.getGroup_code()%>"><%=dto.getGroup_code()%></a>
+    		    <a href="../codemaster/codeList.jsp?groupCode=<%=dto.getGroup_code()%>"><%=dto.getGroup_code()%></a>
 			</td>
 			<td><%=dto.getGroup_name() %></td>
 			<td><%=dto.getUse_yn() %></td>
@@ -107,12 +107,10 @@
 			<td>
     	      	<div style="float: center;">
  					<button type="button" class="btn btn-outline-info"
-						onclick="location.href='index.jsp?main=codemaster/groupUpdateForm.jsp?groupCode=<%=dto.getGroup_code() %>&currentPage=<%=currentPage%>'">수정</button>&nbsp;&nbsp;
+						onclick="location.href='../codemaster/groupUpdateForm.jsp?groupCode=<%=dto.getGroup_code() %>&currentPage=<%=currentPage%>'">수정</button>&nbsp;&nbsp;
 						
-					<form action="codemaster/groupDelete.jsp" method="post" style="display:inline;"
+					<form action="../codemaster/groupDelete.jsp" method="post" style="display:inline;"
 					      onsubmit="return confirm('정말 삭제하시겠습니까?');">
-	
-					    <!-- <input type="hidden" name="main" value="codemaster/groupDelete.jsp"> -->
 					    <input type="hidden" name="groupCode" value="<%=dto.getGroup_code()%>">
 					    <input type="hidden" name="currentPage" value="<%=currentPage%>">
 					    <button type="submit" class="btn btn-danger">삭제</button>
@@ -136,7 +134,7 @@
 		     if(startPage>1)
 		     {%>
 		    	 <li class="page-item">
-		      		<a class="page-link" href="index.jsp?main=codemaster/groupList.jsp?currentPage=<%=startPage-1%>">이전</a>
+		      		<a class="page-link" href="../codemaster/groupList.jsp?currentPage=<%=startPage-1%>">이전</a>
 		    	</li>
 		     <%}
 		  
@@ -146,10 +144,10 @@
 		      {
 		    	  if(pp==currentPage) //현재페이지와 같을경우 active css클래스 추가
 		    	  {%>
-		    		  <li class="page-item active"><a href="index.jsp?main=codemaster/groupList.jsp?currentPage=<%=pp%>" class="page-link"><%=pp%></a></li>
+		    		  <li class="page-item active"><a href="../codemaster/groupList.jsp?currentPage=<%=pp%>" class="page-link"><%=pp%></a></li>
 		    	  <%}else
 		    	  {%>
-		    		  <li class="page-item"><a href="index.jsp?main=codemaster/groupList.jsp?currentPage=<%=pp%>" class="page-link"><%=pp%></a></li>
+		    		  <li class="page-item"><a href="../codemaster/groupList.jsp?currentPage=<%=pp%>" class="page-link"><%=pp%></a></li>
 		    	  <%}
 		      }
 		      
@@ -157,7 +155,7 @@
 		    if(endPage<totalPage)
 		     {%>
 		    	 <li class="page-item">
-		      		<a class="page-link" href="index.jsp?main=codemaster/groupList.jsp?currentPage=<%=endPage+1%>">다음</a>
+		      		<a class="page-link" href="../codemaster/groupList.jsp?currentPage=<%=endPage+1%>">다음</a>
 		    	</li>
 		      <%} 
 		  %>

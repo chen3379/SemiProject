@@ -21,7 +21,7 @@
 
 	String groupCode=request.getParameter("groupCode");
 	if(groupCode == null){
-	    response.sendRedirect("index.jsp?main=codemaster/groupList.jsp");
+	    response.sendRedirect("../codemaster/groupList.jsp");
 	    return;
 	}
 	String currentPage=request.getParameter("currentPage");
@@ -39,12 +39,12 @@
 	String id=(String)session.getAttribute("id");
 
 	//로그인한 상태인지?
-	String loginok=(String)session.getAttribute("loginStatus");
+//	String loginok=(String)session.getAttribute("loginStatus");
 %>
 
 <div style="margin: 30px 100px; width: 600px;">
 	
-<form action="codemaster/groupUpdateAction.jsp" method="post">
+<form action="../codemaster/groupUpdateAction.jsp" method="post">
 	<input type="hidden" name="groupCode" value="<%=groupCode%>">
 	<input type="hidden" name="currentPage" value="<%=currentPage%>">
 	
@@ -81,7 +81,7 @@
 		    <td colspan="2" align="center">
 		        <button type="submit" class="btn btn-secondary">수정</button>
 		        <button type="button" class="btn btn-warning"
-		            onclick="location.href='index.jsp?main=codemaster/groupList.jsp&currentPage=<%=currentPage%>'">
+		            onclick="location.href='../codemaster/groupList.jsp&currentPage=<%=currentPage%>'">
 		            목록
 		        </button>
 		    </td>

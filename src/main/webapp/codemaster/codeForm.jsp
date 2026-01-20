@@ -42,7 +42,7 @@ function check(f) {
 
 </script>
 <div>
-	<form action="codemaster/codeAction.jsp" method="post"  onsubmit="return check(this)">
+	<form action="../codemaster/codeAction.jsp" method="post"  onsubmit="return check(this)">
 	<table class="table table-bordered" style="width: 500px; margin-left: 100px;">
 	 
 	<caption align="top"><b>코드등록</b></caption>
@@ -107,7 +107,7 @@ function check(f) {
 				
 				<button type="button" class="btn btn-warning"
 					style="width: 120px;"
-					onclick="location.href='index.jsp?main=codemaster/groupList.jsp'">목록</button>
+					onclick="location.href='../codemaster/groupList.jsp'">목록</button>
 			</td>		
 		</tr>
 	</table>

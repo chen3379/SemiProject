@@ -15,15 +15,16 @@
 	String currentPage=request.getParameter("currentPage");
 	
 	// 필수값 체크
+	 
 	if (groupCode == null || codeId == null) {
 	%>
-	<script>
+	<!-- <script>
 	    alert("삭제할 정보가 올바르지 않습니다.");
 	    history.back();
-	</script>
+	</script> -->
 	<%
-    	return;
-	}
+    	//return;
+	} 
 
 	//dao 생성하고 읽기
 	CodeDao dao = new CodeDao();
@@ -37,6 +38,6 @@
 	int result=dao.deleteCode(groupCode, codeId);		
 	 
 	//보던페이지로 이동하되 현재페이지로
-	response.sendRedirect("../index.jsp?main=codemaster/codeList.jsp&groupCode="+ groupCode);
+	response.sendRedirect("../codemaster/codeList.jsp?groupCode=" + groupCode);
 
 %>

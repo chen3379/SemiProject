@@ -20,7 +20,7 @@
 
 	//그룹코드 조회groupCode
 	CodeDao dao=new CodeDao();
-
+	
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	String groupCode=request.getParameter("groupCode");
@@ -28,7 +28,7 @@
 	String currentPage=request.getParameter("currentPage");
 
 	if(groupCode == null){
-	    response.sendRedirect("index.jsp?main=codemaster/groupList.jsp");
+	    response.sendRedirect("../codemaster/groupList.jsp");
 	    return;
 	}
 	//그룹명 조회
@@ -45,15 +45,15 @@
 
 <div  style="margin: 10px 30px; width: 900px; float:right;">
 	<button type="button" class="btn btn-secondary" style="width:100px;"
-		onclick="location.href='index.jsp?main=codemaster/codeForm.jsp?groupCode=<%=groupCode %>'">코드등록</button>
+		onclick="location.href='../codemaster/codeForm.jsp?groupCode=<%=groupCode %>'">코드등록</button>
 	<button type="button" class="btn btn-secondary" style="width:100px;"
-		onclick="location.href='index.jsp?main=codemaster/groupList.jsp?groupCode=<%=groupCode %>'">그룹목록</button>
-	
+		onclick="location.href='../codemaster/groupList.jsp?groupCode=<%=groupCode %>'">그룹목록</button>
 </div> 
-	<input type="text" name="groupCode" value="<%=groupCode%>">
-	<input type="text" name="groupName" value="<%=dtog.getGroup_name()%>">
+	<input type="hidden" name="groupCode" value="<%=groupCode%>">
+	<input type="hidden" name="groupName" value="<%=dtog.getGroup_name()%>">
 
 <div style="margin: 10px 30px; width: 1000px;">
+	<h5><b><%=totalCount %>개의 코드가 있습니다</b></h5>
 	<table class="table table-bordered" style="width: 1200px;">
 	<caption align="top"><b>그룹코드 : <%=groupCode %> &nbsp;&nbsp;&nbsp;    그룹명 : [ <%=dtog.getGroup_name() %>] </b></caption>
 		<tr class="table-secondary" align="center">
@@ -103,17 +103,17 @@
 			<td align="right">
 			 	<!-- 수정 -->
 				<button type="button" class="btn btn-outline-secondary"
-				    onclick="location.href='<%=request.getContextPath()%>/index.jsp?main=codemaster/codeUpdateForm.jsp'
-				    + '&groupCode=' + encodeURIComponent('<%=dto.getGroup_code()%>')
-				    + '&codeId=' + encodeURIComponent('<%=dto.getCode_id()%>')
-				    + '&currentPage=' + encodeURIComponent('<%=currentPage%>')">
+				    onclick="location.href='../codemaster/codeUpdateForm.jsp?groupCode=<%=dto.getGroup_code()%>&codeId=<%=dto.getCode_id()%>'">
+
+				<%-- <a href="../codemaster/codeUpdateForm.jsp?groupCode=<%=dto.getGroup_code()%>&codeId=<%=dto.getCode_id()%>" class="btn btn-outline-secondary">수정</a>
+ --%>
 				    수정
 				</button>
-
     			
  				&nbsp;
+ 				
  				 <!-- 삭제 -->
-	           <form action="codemaster/codeDelete.jsp" method="post"
+	           <form action="../codemaster/codeDelete.jsp" method="post"
 					style="display:inline;"
 					onsubmit="return confirm('정말 삭제하시겠습니까?');">
 

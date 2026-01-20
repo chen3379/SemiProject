@@ -24,6 +24,6 @@
 	dao.updateGroup(dto);
 
 	//이동(gaipsuccess)
-	response.sendRedirect("../index.jsp?main=codemaster/groupList.jsp?currentPage="+currentPage);
+	response.sendRedirect("../codemaster/groupList.jsp?currentPage="+currentPage);
 	
 %>

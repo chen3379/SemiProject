@@ -84,9 +84,6 @@ if (dao.isCodeExists(groupCode, codeId))
 dao.insertCode(dto);
 
 //이동(gaipsuccess)
-response.sendRedirect(
-	    request.getContextPath() +
-	    "/index.jsp?main=codemaster/codeList.jsp"
-	    + "&groupCode=" + groupCode	    
-	);
+response.sendRedirect("../codemaster/codeList.jsp?groupCode="+ groupCode);
+
 %>
