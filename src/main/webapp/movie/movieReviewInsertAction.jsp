@@ -18,8 +18,6 @@ try {
     }
 
     String id = (String)session.getAttribute("id");
-	//test용 아래 코드 삭제필요
-    if (id == null) id = "guest";
 
     MovieReviewDto dto = new MovieReviewDto();
     dto.setMovieIdx(movieIdx);
@@ -30,7 +28,7 @@ try {
     boolean ok = dao.insertReview(dto);
 
     json.put("status", ok ? "OK" : "FAIL");
-    if (!ok) json.put("message", "DB 저장 실패(제약조건/SQL 확인)");
+    if (!ok) json.put("message", "이미 이 영화에 한줄평을 작성했어요.");
 
 } catch (Exception e) {
     e.printStackTrace();
