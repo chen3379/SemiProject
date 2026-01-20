@@ -1,3 +1,4 @@
+<%@page import="member.MemberDao"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="support.SupportDto"%>
 <%@page import="support.FaqDto"%>
@@ -14,15 +15,24 @@
 	
 	String status = request.getParameter("status"); // 관리자만 사용
 	String order = request.getParameter("order");   // 최신/오래된순
+	String categoryType = request.getParameter("categoryType");
 	
 	List<FaqDto> faqList = fDao.getActiveFaq();
-	List<SupportDto> list = sDao.getList(status, order);
+	List<SupportDto> list = sDao.getList(status, order, categoryType);
 	
-	String loginId = (String)session.getAttribute("id");
-	String roleType = (String)session.getAttribute("roleType");
-	boolean isLogin = (loginId != null);
-	boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+	MemberDao memberDao=new MemberDao();
+	
+	String id = (String)session.getAttribute("id");
+	String roleType = memberDao.getRoleType(id);
+	
+	System.out.println("SESSION roleType=" + roleType);
 
+	boolean isLogin = (id != null);
+	boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+	
+	// 문의유형 필터 변수
+	String categoryParam = request.getParameter("categoryType");
+	
 %>
 <!DOCTYPE html>
 <html>
@@ -44,20 +54,35 @@
 	<% } %>
 	</ul>
 	
-	<!-- 관리자 필터 -->
-	<% if(isAdmin){ %>
-	<form method="get">
-	  <label><input type="radio" name="status" value="">전체</label>
-	  <label><input type="radio" name="status" value="0">답변대기</label>
-	  <label><input type="radio" name="status" value="1">답변완료</label>
-	  <button>필터</button>
+	
+	<form method="get" id="filterForm">
+	
+  	  <!-- 문의유형 필터 (전체 사용자) -->
+	  <select name="categoryType" id="categoryType"
+	          onchange="document.getElementById('filterForm').submit();">
+	    <option value="">전체</option>
+	    <option value="0" <%= "0".equals(categoryParam) ? "selected" : "" %>>회원정보</option>
+	    <option value="1" <%= "1".equals(categoryParam) ? "selected" : "" %>>신고</option>
+	    <option value="2" <%= "2".equals(categoryParam) ? "selected" : "" %>>기타</option>
+	  </select>
+	
+	  <!-- 관리자 전용 답변상태 필터 -->
+	  <% if(isAdmin){ %>
+	    <select name="status" id="status"
+	            onchange="document.getElementById('filterForm').submit();">
+	      <option value="">답변상태 전체</option>
+	      <option value="0" <%= "0".equals(status) ? "selected" : "" %>>답변대기</option>
+	      <option value="1" <%= "1".equals(status) ? "selected" : "" %>>답변완료</option>
+	    </select>
+	  <% } %>
+	
 	</form>
-	<% } %>
+	
 	
 	<!-- 문의글 목록 -->
 	<table>
 		<tr>
-		  <th>No</th><th>제목</th><th>작성자</th><th>작성일</th><th>조회</th>
+		  <th>No</th><th>문의유형</th><th>제목</th><th>작성자</th><th>작성일</th><th>조회</th>
 		  <% if(isAdmin){ %><th>상태</th><% } %>
 		</tr>
 		
@@ -68,9 +93,20 @@
 		    <% if("1".equals(dto.getDeleteType())){ %>
 		      [삭제된 문의글입니다]
 		    <% } else { %>
+
+		      <%
+			      String categoryText = "기타";
+			      String ct = dto.getCategoryType();
+			      if(ct != null){
+			          if("0".equals(ct)) categoryText = "회원정보";
+			          else if("1".equals(ct)) categoryText = "신고";
+			          else if("2".equals(ct)) categoryText = "기타";
+			      }
+		      %>
+		      [<%= categoryText %>]
 		      [<%=dto.getStatusType().equals("0")?"답변대기":"답변완료"%>]
 		      <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
-		      <a href="supportDetail.jsp?idx=<%=dto.getSupportIdx()%>">
+		      <a href="supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>">
 		        <%=dto.getTitle()%>
 		      </a>
 		    <% } %>

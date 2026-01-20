@@ -171,7 +171,7 @@
                 <li><a href="../main/mainPage.jsp" class="nav-item">홈</a></li>
                 <li><a href="../movie/movieList.jsp" class="nav-item">영화</a></li>
                 <li><a href="../main/communitySection.jsp" class="nav-item">커뮤니티</a></li>
-                <li><a href="../support/support.jsp" class="nav-item">지원</a></li>
+                <li><a href="../support/supportList.jsp" class="nav-item">지원</a></li>
             </ul>
         </div>
 

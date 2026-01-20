@@ -12,8 +12,8 @@ import mysql.db.DBConnect;
 public class SupportDao {
 	 DBConnect db = new DBConnect();
 
-	    // 문의글 목록
-	    public List<SupportDto> getList(String status, String order) {
+	    // 문의글 목록 + 필터
+	    public List<SupportDto> getList(String status, String order, String categoryType) {
 	        List<SupportDto> list = new ArrayList<SupportDto>();
 	        
 	        Connection conn = db.getDBConnect();
@@ -22,12 +22,17 @@ public class SupportDao {
 
 	        String sql ="select * from support where delete_type='0' ";
 
-	        //
+	        // 문의유형 필터
+	        if (categoryType != null && !categoryType.equals("")) {
+	            sql += " and category_type = ?";
+	        }
+	        
+	        // 답변상태 필터
 	        if(status != null && !status.isEmpty()){
 	            sql += " and status_type=? ";
 	        }
 	        
-	        //
+	        // 정렬
 	        if("old".equals(order)){
 	            sql += " order by support_idx asc";
 	        } else {
@@ -36,7 +41,13 @@ public class SupportDao {
 
 	        try {
 	            pstmt = conn.prepareStatement(sql);
-
+	            
+	            int idx = 1;
+	            
+	            if (categoryType != null && !categoryType.equals("")) {
+	                pstmt.setString(idx++, categoryType);
+	            }
+	            
 	            if(status != null && !status.isEmpty()){
 	                pstmt.setString(1, status);
 	            }
@@ -48,6 +59,7 @@ public class SupportDao {
 	                SupportDto dto = new SupportDto();
 	                
 	                dto.setSupportIdx(rs.getInt("support_idx"));
+	                dto.setCategoryType(rs.getString("category_type"));
 	                dto.setTitle(rs.getString("title"));
 	                dto.setId(rs.getString("id"));
 	                dto.setSecretType(rs.getString("secret_type"));
@@ -88,6 +100,7 @@ public class SupportDao {
 	            if(rs.next()){
 	            	
 	                dto.setSupportIdx(rs.getInt("support_idx"));
+	                dto.setCategoryType(rs.getString("category_type"));
 	                dto.setTitle(rs.getString("title"));
 	                dto.setContent(rs.getString("content"));
 	                dto.setId(rs.getString("id"));
