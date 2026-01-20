@@ -19,7 +19,7 @@ public class FaqDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql ="select * from faq_board where active_type='1' order by faq_idx asc";
+        String sql ="select * from faq where active_type='1' order by faq_idx asc";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -51,7 +51,7 @@ public class FaqDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from faq_board order by faq_idx desc";
+        String sql = "select * from faq order by faq_idx desc";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -86,7 +86,7 @@ public class FaqDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "select * from faq_board where faq_idx=?";
+        String sql = "select * from faq where faq_idx=?";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -118,7 +118,7 @@ public class FaqDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
 
-        String sql = "insert into faq_board(title,content,active_type,create_day,create_id) " +
+        String sql = "insert into faq(title,content,active_type,create_day,create_id) " +
           "values(?,?,?,now(),?)";
 
         try {
@@ -143,7 +143,7 @@ public class FaqDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
 
-        String sql = "update faq_board set title=?, content=?, active_type=?, update_day=now(), update_id=? where faq_idx=?";
+        String sql = "update faq set title=?, content=?, active_type=?, update_day=now(), update_id=? where faq_idx=?";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -168,7 +168,7 @@ public class FaqDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
 
-        String sql = "update faq_board set active_type=?, update_day=now() where faq_idx=?";
+        String sql = "update faq set active_type=?, update_day=now() where faq_idx=?";
 
         try {
             pstmt = conn.prepareStatement(sql);

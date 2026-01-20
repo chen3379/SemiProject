@@ -1,16 +1,31 @@
+<%@page import="support.SupportDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<title>Insert title here</title>
-</head>
-<body>
+<%
+request.setCharacterEncoding("UTF-8");
 
-</body>
-</html>
+String id = (String)session.getAttribute("id");
+String categoryType = request.getParameter("categoryType");
+String title = request.getParameter("title");
+String content = request.getParameter("content");
+String secret = request.getParameter("secret");
+
+System.out.println("===== supportInsertAction 디버깅 =====");
+System.out.println("id = " + id);
+System.out.println("categoryType = " + categoryType);
+System.out.println("title = " + title);
+System.out.println("content = " + content);
+System.out.println("secret = " + secret);
+System.out.println("=====================================");
+
+if(categoryType == null || title == null || content == null ||
+   title.trim().isEmpty() || content.trim().isEmpty()){
+    out.print("{\"result\":\"FAIL\"}");
+    return;
+}
+
+SupportDao dao = new SupportDao();
+dao.insertSupport(categoryType, title, content, id, secret);
+
+out.print("{\"result\":\"OK\"}");
+%>

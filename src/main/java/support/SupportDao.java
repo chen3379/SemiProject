@@ -3,6 +3,7 @@ package support;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,29 +129,31 @@ public class SupportDao {
 	    }
 
 	    // 문의글 등록
-	    public void insertSupport(String title,String content,String id,String secret){
-	        Connection conn = db.getDBConnect();
-	        PreparedStatement pstmt = null;
+	    public void insertSupport(String categoryType,String title,String content,String id,String secret) {
 
-	        String sql ="insert into support(title,content,id,secret_type,delete_type,status_type,readcount,create_day) "
-	        + "values(?,?,?,?,'0','0',0,now())";
-
-	        try {	        	
-	            pstmt = conn.prepareStatement(sql);
-	            
-	            pstmt.setString(1, title);
-	            pstmt.setString(2, content);
-	            pstmt.setString(3, id);
-	            pstmt.setString(4, secret);
-	            
-	            pstmt.executeUpdate();
-	            
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        } finally {
-	            db.dbClose(null, pstmt, conn);
-	        }
-	    }
+			Connection conn = db.getDBConnect();
+			PreparedStatement pstmt = null;
+			
+			String sql ="insert into support (category_type, title, content, id, secret_type, " +
+			"delete_type, status_type, readcount, create_day) values (?, ?, ?, ?, ?, '0', '0', 0, now())";
+			
+			try {
+				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setString(1, categoryType); // 0,1,2
+				pstmt.setString(2, title);
+				pstmt.setString(3, content);
+				pstmt.setString(4, id);
+				pstmt.setString(5, secret);       // 0 or 1
+				
+				pstmt.executeUpdate();
+			
+			} catch (SQLException e) {
+				
+			} finally {
+				db.dbClose(null, pstmt, conn);
+			}
+		}
 
 	    // 문의글 삭제
 	    public void deleteSupport(int idx){
