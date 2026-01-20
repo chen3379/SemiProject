@@ -11,80 +11,119 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
-    /* 1. 전역 스타일 및 변수 정의 */
+    /* [1] Expert Level: CSS Variables & Reset */
     :root {
-        --primary-color: #E50914; /* 넷플릭스 레드 */
-        --background-dark: #141414; /* 깊은 배경색 */
-        --background-card: #1f1f1f;
-        --text-white: #ffffff;
-        --text-gray: #b3b3b3;
+        --primary-red: #E50914;
+        --primary-red-hover: #B20710;
+        --bg-main: #141414;
+        --bg-surface: #181818;
+        --text-white: #FFFFFF;
+        --text-gray: #BCBCBC;
+        --glass-bg: rgba(22, 22, 22, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --shadow-elevation: 0 10px 40px -10px rgba(0,0,0,0.7);
+        --transition-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 쫀득한 느낌 */
+        --transition-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 부드러운 느낌 */
     }
+
+    /* 스크롤바 커스텀 (Webkit) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
 
     body {
-        background-color: var(--background-dark);
+        background-color: var(--bg-main);
         color: var(--text-white);
-        font-family: 'Pretendard', sans-serif;
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
         overflow-x: hidden;
+        -webkit-font-smoothing: antialiased; /* 폰트 렌더링 부드럽게 */
     }
 
-    /* 2. 네비게이션 및 헤더 */
+    /* [2] Layout & Header */
     .container { 
-        margin-top: 50px; 
-        margin-bottom: 80px; 
-        max-width: 92%; 
+        margin-top: 60px; 
+        margin-bottom: 100px; 
+        max-width: 1600px; /* 대화면 대응 */
+        width: 94%;
+        padding: 0 20px;
+    }
+
+    .logo {
+        width: 180px;
+        max-width: 100%;
+        margin-bottom: 30px;
+        filter: drop-shadow(0 0 15px rgba(229, 9, 20, 0.4)); /* 로고 발광 효과 */
+        transition: transform 0.3s var(--transition-spring);
     }
     
-    .main-title {
-        font-size: 2.2rem;
-        font-weight: 800;
-        letter-spacing: -1px;
-        margin-bottom: 30px;
-        background: linear-gradient(to right, #fff 20%, var(--primary-color) 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    .logo:hover {
+        transform: scale(1.05);
+        cursor: pointer;
     }
 
-    /* 3. 필터 영역 (유리 질감 Glassmorphism) */
+    /* [3] Premium Glassmorphism Filter Bar */
     .filter-area {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        padding: 20px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px) saturate(180%); /* 배경을 흐리고 채도를 높여 생동감 부여 */
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        padding: 16px 24px;
         border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        margin-bottom: 40px;
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+        margin-bottom: 50px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap; /* 모바일 대응 */
+        gap: 15px;
     }
 
+    /* Custom Select Box */
     .form-select {
-        background-color: #222;
-        color: white;
-        border: 1px solid #444;
-        transition: 0.3s;
+        background-color: rgba(255, 255, 255, 0.08);
+        color: var(--text-white);
+        border: 1px solid var(--glass-border);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 10px 36px 10px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    }
+
+    .form-select:hover {
+        background-color: rgba(255, 255, 255, 0.15);
     }
 
     .form-select:focus {
-        background-color: #333;
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(229, 9, 20, 0.25);
-        color: white;
+        background-color: #222;
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 4px rgba(229, 9, 20, 0.15);
+        outline: none;
     }
 
-    /* 4. 영화 카드 (호버 시 확대 및 그림자 효과) */
+    /* [4] Cinematic Movie Card */
     .movie-card {
-        background: none;
+        background: transparent;
         border: none;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        cursor: pointer;
+        /* 하드웨어 가속을 이용해 렌더링 최적화 */
+        will-change: transform; 
+        transition: transform 0.3s var(--transition-smooth);
     }
 
     .poster-wrapper {
         position: relative;
         width: 100%;
-        padding-top: 150%; /* 2:3 포스터 비율 */
+        padding-top: 145%; /* 비율 미세 조정 */
         overflow: hidden;
         border-radius: 8px;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        background-color: #222; /* 로딩 전 배경색 */
+        transition: box-shadow 0.3s ease;
     }
 
     .poster-wrapper img {
@@ -94,88 +133,129 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.5s ease;
+        transition: transform 0.4s var(--transition-smooth);
     }
-
+    
+    /* Hover Effects: 전문가의 손길 */
     .movie-card:hover {
-        transform: translateY(-10px) scale(1.03);
-        z-index: 10;
+        transform: translateY(-8px);
+        z-index: 2;
     }
 
+    .movie-card:hover .poster-wrapper {
+        box-shadow: var(--shadow-elevation);
+    }
+    
     .movie-card:hover img {
-        transform: scale(1.1);
-    }
-    
-    .logo{
-    	width: 17%;
-        letter-spacing: -1px;
-        margin-bottom: 20px; 
-    }
-    
-    .logo:hover {
-        transform: translateY(-10px) scale(1.03);
-        z-index: 10;
+        transform: scale(1.08); /* 이미지만 살짝 확대 */
     }
 
-    .logo:hover img {
-        transform: scale(1.1);
+    .movie-title {
+        margin-top: 14px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--text-white);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* 긴 제목 말줄임표 */
+        transition: color 0.2s;
     }
     
+    .movie-card:hover .movie-title {
+        color: var(--primary-red);
+    }
 
-    /* 5. 페이지네이션 커스텀 */
-    .pagination { justify-content: center; margin-top: 50px; }
-    .page-link {
-        background-color: #222;
-        border: 1px solid #333;
+    .movie-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 6px;
+        font-size: 0.85rem;
         color: var(--text-gray);
-        padding: 10px 18px;
-        border-radius: 8px !important;
-        margin: 0 5px;
-        transition: 0.3s;
+        font-weight: 500;
+    }
+    
+    .movie-info i.bi-star-fill {
+        font-size: 0.8rem;
+        margin-right: 4px;
+        position: relative;
+        top: -1px;
     }
 
-    .page-link:hover {
-        background-color: #333;
-        color: white;
-        border-color: var(--primary-color);
-    }
-
-    .page-item.active .page-link {
-        background-color: var(--primary-color);
-        border-color: var(--primary-color);
-        color: white;
-        box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
-    }
-
-    /* 버튼 스타일링 */
+    /* [5] UI Components: Buttons & Pagination */
     .btn-netflix {
-        background-color: var(--primary-color);
+        background-color: var(--primary-red);
         color: white;
-        font-weight: bold;
+        font-weight: 600;
         border: none;
-        padding: 8px 20px;
+        padding: 8px 16px;
         border-radius: 4px;
-        transition: 0.3s;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease;
     }
 
     .btn-netflix:hover {
-        background-color: #c40812;
+        background-color: var(--primary-red-hover);
+        transform: scale(1.02);
+    }
+    
+    .btn-outline-light {
+        border-color: rgba(255,255,255,0.4);
+        color: rgba(255,255,255,0.9);
+    }
+    
+    .btn-outline-light:hover {
+        background-color: rgba(255,255,255,0.1);
+        border-color: #fff;
+    }
+
+    /* Pagination */
+    .pagination { 
+        gap: 6px; 
+        margin-top: 80px;
+    }
+    
+    .page-link {
+        background-color: transparent;
+        border: none;
+        color: var(--text-gray);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50% !important; /* 완전 원형 */
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .page-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
         color: white;
     }
 
-    /* 로딩 스피너 강조 */
+    .page-item.active .page-link {
+        background-color: var(--primary-red);
+        color: white;
+        box-shadow: 0 4px 12px rgba(229, 9, 20, 0.5); /* 붉은색 빛 */
+    }
+    
+    /* Loading Spinner */
     .spinner-border {
-        width: 3rem;
-        height: 3rem;
+        border-width: 3px;
+    }
+    
+    /* Admin Area Visibility Control (JS에서 제어하지만 기본 스타일 정의) */
+    .adminDiv {
+        transition: opacity 0.3s ease;
     }
 </style>
 </head>
 <body>
+    <jsp:include page="../main/nav.jsp" />
 
 <div class="container">
-<img class="logo" alt="" src="../save/whatflix-grunge-transparent2.PNG">
-    <!-- <h3 class="main-title">WhatFlix Originals</h3> -->
-    
+<br>
     <div class="filter-area">
         <div class="d-flex gap-3 align-items-center">
             <select class="form-select w-auto" id="genreSelect" onchange="loadMovieList(1)">
@@ -222,8 +302,8 @@
         
         <div class="d-flex gap-2">
             <select class="form-select w-auto" id="sortSelect" onchange="loadMovieList(1)">
-                <option value="latest">최신 등록순</option>
-                <option value="rating">평점 높은순</option>
+                <option value="latest">등록순</option>
+                <option value="rating">평점순</option>
                 <option value="release_day">개봉일순</option>
             </select>
         </div>
