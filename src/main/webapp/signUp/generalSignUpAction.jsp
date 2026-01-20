@@ -38,10 +38,16 @@ String result = memberDao.insertMember(memberDto);
 if ("SUCCESS".equals(result)) {
      
      json.put("status", "SUCCESS");
-} else if ("DUPLICATE".equals(result)) {
+} else if ("DUPLICATE_ID".equals(result)) {
     
-    json.put("status", "DUPLICATE");
+    json.put("status", "DUPLICATE_ID")  ;
     json.put("id", inputId);
+    json.put("nickname", inputNickname);
+} else if ("DUPLICATE_NICKNAME".equals(result)) {
+    
+    json.put("status", "DUPLICATE_NICKNAME");
+    json.put("id", inputId);
+    json.put("nickname", inputNickname);
 } else if ("FAIL".equals(result)) {
      
      json.put("status", "FAIL");

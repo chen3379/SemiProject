@@ -38,7 +38,7 @@ public class DBConnect {
                 // 파일에 저장한 이름("AWS_ACCESS_KEY")으로 값을 꺼내서 변수에 저장
                 this.dbPassword = prop.getProperty("AWS_ACCESS_KEY");
             } else {
-                System.out.println("❌ 오류: secret.properties 파일을 찾을 수 없습니다.");
+                System.out.println("❌ 오류: secret2.properties 파일을 찾을 수 없습니다.");
             }
 
         } catch (Exception e) {
