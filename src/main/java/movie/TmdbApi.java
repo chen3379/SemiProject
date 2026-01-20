@@ -26,7 +26,7 @@ public class TmdbApi {
         String key = "";
         try {
             // secret.properties 파일 읽기
-            InputStream input = TmdbApi.class.getClassLoader().getResourceAsStream("secret.properties");
+            InputStream input = TmdbApi.class.getClassLoader().getResourceAsStream("secret2.properties");
 
             if (input != null) {
                 Properties prop = new Properties();

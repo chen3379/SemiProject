@@ -1,5 +1,6 @@
 package movie;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +11,72 @@ import mysql.db.DBConnect;
 public class MovieRatingStatDao {
 	
 	DBConnect db = new DBConnect();
+	
+	// 평균 별점 조회
+	public BigDecimal getAvgScore(int movieIdx) {
+
+        BigDecimal avgScore = BigDecimal.ZERO;
+
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql =
+            "select ifnull(avg(score), 0) as avg_score " +
+            "from movie_rating " +
+            "where movie_idx = ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, movieIdx);
+
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                avgScore = rs.getBigDecimal("avg_score");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+
+        return avgScore;
+    }
+	
+	//평점 참여 인원 수 
+	public int getRatingCount(int movieIdx) {
+
+	    int count = 0;
+
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+
+	    String sql =
+	        "select count(*) as cnt " +
+	        "from movie_rating " +
+	        "where movie_idx = ?";
+
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, movieIdx);
+
+	        rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            count = rs.getInt("cnt");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(rs, pstmt, conn);
+	    }
+
+	    return count;
+	}
 	
 	// stat 테이블에 해당 movie_idx가 이미 있는지 확인
     public boolean isStatExist(int movieIdx) {
