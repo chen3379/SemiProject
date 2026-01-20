@@ -6,23 +6,22 @@
 <meta charset="UTF-8">
 <title>WhatFlix</title>
 <link href="main.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style type="text/css">
 .container{
-width: 300vw;
-transform : translate(-100vw); 
+width: 400vw;
+transition: transform 0.5s;
 }
 .inner {
 width: 100vw;
 float: left;
 }
 .inner img{
-width: 50%;
+width: 100%;
 }
 </style>
 </head>
 <body style="margin: 0;">
-
-
 <div style="overflow:hidden; ">
 	<div class="container">
 		<div class="inner">
@@ -39,12 +38,13 @@ width: 50%;
 		</div>
 	</div>
 </div>
-<button class="버튼1">1</button>
-<button class="버튼2">2</button>
-<button class="버튼3">3</button>
+<button class="btn1">1</button>
+<button class="btn2">2</button>
+<button class="btn3">3</button>
 <script type="text/javascript">
-$(".버튼1").click(function() {
-	$(".container").css("transform","translate(-100px)")
+$(".btn2").click(function() {
+	let moveX = -100;
+	$(".container").css("transform", "translateX(${'moveX'}vw)");
 })
 </script>
 </body>

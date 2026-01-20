@@ -502,7 +502,133 @@ public class MovieDao {
         return list;
     }
 
-    // 4. 영화 상세 조회 (Select - 1개)
+    // 영화 list-인기순(조회수순)
+    public List<MovieDto> getPopularList(int limit) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT m.* FROM movie m ORDER BY  m.readcount DESC, m.release_day DESC LIMIT ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, limit);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // 영화 list-새로 올라온 작품(개봉일순)
+    public List<MovieDto> getNewList(int limit) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT m.* FROM movie m ORDER BY m.release_day DESC LIMIT ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, limit);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // 영화 list-새로 등록한 작품(등록일순)
+    public List<MovieDto> getNewUpdateList(int limit) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT m.* FROM movie m ORDER BY m.create_day DESC LIMIT ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, limit);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setAvgScore(rs.getDouble("avg_rating"));
+
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // 영화 상세 조회 (Select - 1개)
     // 수정 폼이나 상세 페이지에서 사용
     public MovieDto getMovie(String movieIdx) {
         MovieDto dto = new MovieDto();
@@ -544,7 +670,7 @@ public class MovieDao {
         return dto;
     }
 
-    // 5. 영화 수정 (Update)
+    // 영화 수정 (Update)
     public void updateMovie(MovieDto dto) {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
@@ -576,7 +702,7 @@ public class MovieDao {
         }
     }
 
-    // 6. 영화 삭제 (Delete)
+    // 영화 삭제 (Delete)
     public void deleteMovie(String movieIdx) {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
