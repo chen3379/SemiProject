@@ -168,7 +168,6 @@ td.title {
 </style>
 </head>
 <body>
-<jsp:include page="../../main/nav.jsp" />
 <div class="container">
     <h2>자유게시판</h2>
 
@@ -241,5 +240,5 @@ td.title {
         <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;글쓰기</a>
     </div>
 </div>
-
-    <jsp:include page="../../main/nav.jsp" />
+</body>
+</html>s
