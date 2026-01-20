@@ -38,7 +38,6 @@ public class MovieDao {
             pstmt.execute();
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(null, pstmt, conn);
@@ -90,7 +89,6 @@ public class MovieDao {
                 generatedKey = rs.getInt(1); // 첫 번째 컬럼(PK) 반환
             }
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
@@ -145,7 +143,6 @@ public class MovieDao {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
@@ -192,7 +189,7 @@ public class MovieDao {
                 list.add(dto);
             }
 
-        } catch (SQLException e) { // TODO Auto-generated catch block
+        } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
@@ -245,7 +242,6 @@ public class MovieDao {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
@@ -299,7 +295,6 @@ public class MovieDao {
             }
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } finally {
             db.dbClose(rs, pstmt, conn);
@@ -680,5 +675,119 @@ public class MovieDao {
             db.dbClose(rs, pstmt, conn);
         }
         return dto;
+    }
+
+    // 내 별점 목록 가져오기 (정렬 옵션: latest=최신순, rating=별점순)
+    public List<MovieDto> getMyRatingList(String id, String sortOrder) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String orderBy;
+        if ("rating".equals(sortOrder)) {
+            orderBy = "ORDER BY r.score DESC, r.update_day DESC";
+        } else {
+            orderBy = "ORDER BY r.update_day DESC";
+        }
+
+        String sql = "SELECT m.*, r.score as my_score, mr.content as my_comment, DATE_FORMAT(r.update_day, '%Y.%m.%d') as rating_day "
+                   + "FROM movie m "
+                   + "INNER JOIN movie_rating r ON m.movie_idx = r.movie_idx "
+                   + "LEFT JOIN movie_review mr ON r.movie_idx = mr.movie_idx AND r.id = mr.id "
+                   + "WHERE r.id = ? "
+                   + orderBy;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setAvgScore(rs.getDouble("my_score"));
+
+                // 프로필 전용 필드 설정
+                dto.setMyScore(rs.getDouble("my_score"));
+                dto.setMyComment(rs.getString("my_comment"));
+                dto.setRatingDay(rs.getString("rating_day"));
+
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+
+        return list;
+    }
+
+    // 내 찜한 영화 목록 가져오기 (정렬 옵션: latest=최신순, oldest=오래된순)
+    public List<MovieDto> getMyWishList(String id, String sortOrder) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String orderBy;
+        if ("oldest".equals(sortOrder)) {
+            orderBy = "ORDER BY w.create_day ASC";
+        } else {
+            orderBy = "ORDER BY w.create_day DESC";
+        }
+
+        String sql = "SELECT m.*, DATE_FORMAT(w.create_day, '%Y.%m.%d') as wish_day "
+                   + "FROM movie m "
+                   + "INNER JOIN movie_wish w ON m.movie_idx = w.movie_idx "
+                   + "WHERE w.id = ? "
+                   + orderBy;
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+
+                // 프로필 전용 필드 설정
+                dto.setWishDay(rs.getString("wish_day"));
+
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+
+        return list;
     }
 }
