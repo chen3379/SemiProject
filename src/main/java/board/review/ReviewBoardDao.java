@@ -19,7 +19,7 @@ public class ReviewBoardDao {
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
 
-	    String sql = "SELECT review_idx, title, readcount " +
+	    String sql = "SELECT board_idx, title, readcount " +
 	                 "FROM review_board " +
 	                 "ORDER BY readcount DESC LIMIT 10";
 	    
