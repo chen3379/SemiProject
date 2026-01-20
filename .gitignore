@@ -43,4 +43,4 @@ secret2.properties
 !*.jar
 
 # --- api 제외 ---
-secret2.properties
+secret.properties
