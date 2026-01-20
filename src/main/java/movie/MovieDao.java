@@ -532,7 +532,6 @@ public class MovieDao {
                 dto.setCreateDay(rs.getTimestamp("create_day"));
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
-                dto.setAvgScore(rs.getDouble("avg_rating"));
 
                 list.add(dto);
             }
@@ -574,7 +573,6 @@ public class MovieDao {
                 dto.setCreateDay(rs.getTimestamp("create_day"));
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
-                dto.setAvgScore(rs.getDouble("avg_rating"));
 
                 list.add(dto);
             }
@@ -616,8 +614,6 @@ public class MovieDao {
                 dto.setCreateDay(rs.getTimestamp("create_day"));
                 dto.setUpdateDay(rs.getTimestamp("update_day"));
                 dto.setReadcount(rs.getInt("readcount"));
-                dto.setAvgScore(rs.getDouble("avg_rating"));
-
                 list.add(dto);
             }
         } catch (SQLException e) {
