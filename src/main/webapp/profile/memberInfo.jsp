@@ -15,7 +15,7 @@
     <p id="info-message" style="display:none;"></p>
     <div class="member-info">
         <div class="member-photo">
-            <img id="photo" src="${sessionScope.memberInfo.photo}" alt="프로필" />
+            <img id="photo" src="${pageContext.request.contextPath}${sessionScope.memberInfo.photo}" alt="프로필" />
         </div>
         <dl>
             <dt>닉네임</dt>
@@ -139,7 +139,7 @@
             $('#info-message').hide();
             $('.member-info').show();
             targetId = data.id;
-            $('#photo').attr('src', data.photo);
+            $('#photo').attr('src', "${pageContext.request.contextPath}" + data.photo);
             $('#memberNickname').text(data.nickname);
             $('#memberCreateDay').text(data.createDay);
 

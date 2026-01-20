@@ -35,12 +35,10 @@ local.properties
 .settings/
 .loadpath
 .recommenders/
-secret.properties
+secret2.properties
+
 # --- Project Specific ---
 .project
 .classpath
 /build/
 !*.jar
-
-# --- api 제외 ---
-secret2.properties
