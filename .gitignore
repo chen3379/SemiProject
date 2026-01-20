@@ -36,6 +36,7 @@ local.properties
 .loadpath
 .recommenders/
 secret2.properties
+
 # --- Project Specific ---
 .project
 .classpath
@@ -44,3 +45,4 @@ secret2.properties
 
 # --- api 제외 ---
 secret.properties
+
