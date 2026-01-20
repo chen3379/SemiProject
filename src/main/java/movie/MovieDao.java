@@ -154,41 +154,52 @@ public class MovieDao {
         return total;
     }
 
-    /*
-     * // 영화 list-전체 public List<MovieDto> getAllList(int startNum, int perPage) {
-     * List<MovieDto> list = new ArrayList<MovieDto>();
-     * 
-     * Connection conn = db.getDBConnect(); PreparedStatement pstmt = null;
-     * ResultSet rs = null;
-     * 
-     * String sql = "select * from movie m order by m.movie_idx desc limit ?, ?";
-     * 
-     * try { pstmt = conn.prepareStatement(sql);
-     * 
-     * pstmt.setInt(1, startNum); pstmt.setInt(2, perPage);
-     * 
-     * rs = pstmt.executeQuery();
-     * 
-     * while (rs.next()) { MovieDto dto = new MovieDto();
-     * 
-     * dto.setMovieIdx(rs.getInt("movie_idx")); dto.setTitle(rs.getString("title"));
-     * dto.setReleaseDay(rs.getString("release_day"));
-     * dto.setGenre(rs.getString("genre")); dto.setCountry(rs.getString("country"));
-     * dto.setDirector(rs.getString("director")); dto.setCast(rs.getString("cast"));
-     * dto.setSummary(rs.getString("summary"));
-     * dto.setPosterPath(rs.getString("poster_path"));
-     * dto.setTrailerUrl(rs.getString("trailer_url"));
-     * dto.setCreateDay(rs.getTimestamp("create_day"));
-     * dto.setUpdateDay(rs.getTimestamp("update_day"));
-     * dto.setReadcount(rs.getInt("readcount"));
-     * 
-     * list.add(dto); }
-     * 
-     * } catch (SQLException e) { // TODO Auto-generated catch block
-     * e.printStackTrace(); } finally { db.dbClose(rs, pstmt, conn); }
-     * 
-     * return list; }
-     */
+    // 영화 list-전체
+    public List<MovieDto> getAllList(int startNum, int perPage) {
+        List<MovieDto> list = new ArrayList<MovieDto>();
+
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "select * from movie m order by m.movie_idx desc limit ?, ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, startNum);
+            pstmt.setInt(2, perPage);
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                MovieDto dto = new MovieDto();
+
+                dto.setMovieIdx(rs.getInt("movie_idx"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReleaseDay(rs.getString("release_day"));
+                dto.setGenre(rs.getString("genre"));
+                dto.setCountry(rs.getString("country"));
+                dto.setDirector(rs.getString("director"));
+                dto.setCast(rs.getString("cast"));
+                dto.setSummary(rs.getString("summary"));
+                dto.setPosterPath(rs.getString("poster_path"));
+                dto.setTrailerUrl(rs.getString("trailer_url"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                dto.setUpdateDay(rs.getTimestamp("update_day"));
+                dto.setReadcount(rs.getInt("readcount"));
+
+                list.add(dto);
+            }
+
+        } catch (SQLException e) { // TODO Auto-generated catch block
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+
+        return list;
+    }
 
     // 영화 list-평점 높은순(전체)
     public List<MovieDto> getRatingList(int startNum, int perPage) {

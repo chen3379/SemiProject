@@ -1,7 +1,15 @@
+<%@page import="movie.MovieDto"%>
+<%@page import="java.util.List"%>
 <%@page import="movie.MovieDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-MovieDao dao=new MovieDao();
+int startNum = 0;
+int perPage = 15;
+
+MovieDao dao = new MovieDao();
+
+List<MovieDto> list = null;
+list = dao.getAllList(startNum, perPage);
 %>
 <section class="content-section">
     <div class="section-header">
