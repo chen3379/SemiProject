@@ -42,3 +42,10 @@ secret2.properties
 .classpath
 /build/
 !*.jar
+
+# --- api 제외 ---
+secret.properties
+secret2.properties
+
+
+

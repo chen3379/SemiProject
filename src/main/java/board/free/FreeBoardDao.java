@@ -93,12 +93,38 @@ public class FreeBoardDao {
 	}
 	
 	//community.jsp 하단 – 자유게시판 TOP 10
-	public List<FreeBoardDto> getTop10List() {
+	public List<FreeBoardDto> getTop10ByReadcount() {
+
 	    List<FreeBoardDto> list = new ArrayList<>();
 
-	    String sql = " SELECT * FROM free_board ORDER BY readcount DESC, create_day DESC LIMIT 10";
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
 
-	    // DB 연결 + ResultSet → list 담기
+	    String sql = "SELECT board_idx, title, readcount " +
+	                 "FROM free_board " +
+	                 "ORDER BY readcount DESC LIMIT 10";
+
+	    try {
+	        conn = db.getDBConnect();
+	        pstmt = conn.prepareStatement(sql);
+	        rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            FreeBoardDto dto = new FreeBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setReadcount(rs.getInt("readcount"));
+
+	            list.add(dto);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(rs, pstmt, conn);
+	    }
+
 	    return list;
 	}
 
@@ -157,6 +183,5 @@ public class FreeBoardDao {
 
 	    return dto;
 	}
-
 
 }
