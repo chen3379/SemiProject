@@ -9,37 +9,33 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
-
 
 public class MemberDao {
 
     DBConnect db = new DBConnect();
-     
+
     // 회원 가입
     public String insertMember(MemberDto memberDto) {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
-        String sql = "insert into member (nickname, id, password,create_day) values (?, ?, ?, now())";
+        String sql = "insert into member (nickname, id, password,create_day, photo) values (?, ?, ?, now(), ?)";
+        if (isIdDuplicate(memberDto.getId())) {
+            return "DUPLICATE_ID";
+        }
+
+        if (isNicknameDuplicate(memberDto.getNickname())) {
+            return "DUPLICATE_NICKNAME";
+        }
 
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, memberDto.getNickname().trim());
             pstmt.setString(2, memberDto.getId().trim());
             pstmt.setString(3, memberDto.getPassword());
-
+            pstmt.setString(4, "/save/default_photo.jpg");
             int result = pstmt.executeUpdate();
-
-            if (isIdDuplicate(memberDto.getId())) {
-                return "DUPLICATE_ID";
-            }
-
-            if (isNicknameDuplicate(memberDto.getNickname())) {
-                return "DUPLICATE_NICKNAME";
-            }
 
             if (result > 0)
                 return "SUCCESS";
@@ -50,8 +46,8 @@ public class MemberDao {
             return "DUPLICATE_ID";
         } catch (SQLException e) {
             e.printStackTrace();
-            return "ERROR"; 
-        }  finally {
+            return "ERROR";
+        } finally {
             db.dbClose(null, pstmt, conn);
         }
     }
@@ -80,6 +76,7 @@ public class MemberDao {
             db.dbClose(rs, pstmt, conn);
         }
     }
+
     // 닉네임 중복 체크
     public Boolean isNicknameDuplicate(String nickname) {
         Connection conn = db.getDBConnect();
@@ -151,22 +148,22 @@ public class MemberDao {
 
     // deleteMember 회원삭제
     public int deleteMember(String id) {
-    Connection conn = db.getDBConnect();
-    PreparedStatement pstmt = null;
-    String sql = "delete from member where id = ?";
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        String sql = "delete from member where id = ?";
 
-    try {
-        pstmt = conn.prepareStatement(sql);
-        pstmt.setString(1, id.trim());
-        return pstmt.executeUpdate(); 
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id.trim());
+            return pstmt.executeUpdate();
 
-    } catch (SQLException e) {
-        e.printStackTrace();
-        return -1; 
-    } finally {
-        db.dbClose(null, pstmt, conn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        } finally {
+            db.dbClose(null, pstmt, conn);
+        }
     }
-}
 
     // 아이디로 한명 조회
     public MemberDto selectOneMemberbyId(String id) {
@@ -177,7 +174,7 @@ public class MemberDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         MemberDto memberDto = null;
         String sql = "select * from member where id = ?";
 
@@ -185,7 +182,7 @@ public class MemberDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id.trim());
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 memberDto = new MemberDto();
                 memberDto.setMemberIdx(rs.getInt("member_idx"));
@@ -204,14 +201,16 @@ public class MemberDao {
                 memberDto.setPhoto(rs.getString("photo"));
 
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         } finally {
             db.dbClose(rs, pstmt, conn);
-        } return memberDto;
+        }
+        return memberDto;
     }
+
     // 닉네임으로 조회
     public MemberDto selectOneMemberbyNickname(String nickname) {
 
@@ -221,7 +220,7 @@ public class MemberDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         MemberDto memberDto = null;
         String sql = "select * from member where nickname = ?";
 
@@ -229,7 +228,7 @@ public class MemberDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nickname.trim());
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 memberDto = new MemberDto();
                 memberDto.setMemberIdx(rs.getInt("member_idx"));
@@ -248,27 +247,28 @@ public class MemberDao {
                 memberDto.setPhoto(rs.getString("photo"));
 
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         } finally {
             db.dbClose(rs, pstmt, conn);
-        } return memberDto;
+        }
+        return memberDto;
     }
 
-    // nickname으로 idList 찾기 
+    // nickname으로 idList 찾기
     // 이거 기준으로 메서드 통일!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // null값이나 empty 왔을 때 빈 거 반환
     // e로 예외 던지기
-    public List<String> getIdListByNickname (String nickname)throws SQLException {
+    public List<String> getIdListByNickname(String nickname) throws SQLException {
         if (nickname == null || nickname.trim().isEmpty()) {
             return Collections.emptyList();
         }
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         List<String> idList = new ArrayList<>();
         String sql = "select id from member where nickname = ?";
 
@@ -276,7 +276,7 @@ public class MemberDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nickname.trim());
             rs = pstmt.executeQuery();
-            
+
             while (rs.next()) {
                 idList.add(rs.getString("id"));
             }
@@ -285,7 +285,8 @@ public class MemberDao {
             throw e;
         } finally {
             db.dbClose(rs, pstmt, conn);
-        } return idList;
+        }
+        return idList;
     }
 
     // id 확인(pass 찾을때 email로 otp 전송용)
@@ -296,25 +297,28 @@ public class MemberDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         String sql = "select id from member where id = ?";
 
         try {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id.trim());
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 return "SUCCESS";
             }
-            
+
         } catch (SQLException e) {
             System.err.println("[ERROR] IsIdExist 쿼리 실행 중 오류: " + e.getMessage());
             throw e;
         } finally {
             db.dbClose(rs, pstmt, conn);
-        } return "SUCCESS";
+        }
+        return "SUCCESS";
     }
+
+    // OTP 생성
     public String createOtp() {
         SecureRandom random = new SecureRandom();
         int otp = random.nextInt(900000) + 100000;
@@ -329,7 +333,7 @@ public class MemberDao {
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         String hashedPassword = null;
         String sql = "select password from member where id = ?";
 
@@ -337,27 +341,28 @@ public class MemberDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id.trim());
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 hashedPassword = rs.getString("password");
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return hashedPassword;
         } finally {
             db.dbClose(rs, pstmt, conn);
-        } return hashedPassword;
+        }
+        return hashedPassword;
 
     }
 
     // 로그인 성공 후 role_type 조회
     public String getRoleType(String id) {
-        
+
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         String roleType = null;
         String sql = "select role_type from member where id = ?";
 
@@ -365,20 +370,18 @@ public class MemberDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, id.trim());
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 roleType = rs.getString("role_type");
             }
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             return roleType;
         } finally {
             db.dbClose(rs, pstmt, conn);
-        } return roleType;
+        }
+        return roleType;
     }
 
- 
 }
-
-    
