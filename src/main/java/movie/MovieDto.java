@@ -20,9 +20,18 @@ public class MovieDto {
     private int readcount;
     private String createId;
     private String updateId;
+    private double avgScore;
 
     public int getMovieIdx() {
         return movieIdx;
+    }
+
+    public double getAvgScore() {
+        return avgScore;
+    }
+
+    public void setAvgScore(double avgScore) {
+        this.avgScore = avgScore;
     }
 
     public void setMovieIdx(int movieIdx) {

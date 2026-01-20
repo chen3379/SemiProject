@@ -1,0 +1,64 @@
+package board.review;
+
+import java.security.Timestamp;
+
+public class ReviewBoardDto {
+	private int board_idx;
+    private String genre_type;
+    private String title;
+    private String content;
+    private String id;
+    private boolean is_spoiler_type;
+    private int readcount;
+    private Timestamp create_day;
+	public int getBoard_idx() {
+		return board_idx;
+	}
+	public void setBoard_idx(int board_idx) {
+		this.board_idx = board_idx;
+	}
+	public String getGenre_type() {
+		return genre_type;
+	}
+	public void setGenre_type(String genre_type) {
+		this.genre_type = genre_type;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public boolean isIs_spoiler_type() {
+		return is_spoiler_type;
+	}
+	public void setIs_spoiler_type(boolean is_spoiler_type) {
+		this.is_spoiler_type = is_spoiler_type;
+	}
+	public int getReadcount() {
+		return readcount;
+	}
+	public void setReadcount(int readcount) {
+		this.readcount = readcount;
+	}
+	public Timestamp getCreate_day() {
+		return create_day;
+	}
+	public void setCreate_day(Timestamp create_day) {
+		this.create_day = create_day;
+	}
+    
+    
+}

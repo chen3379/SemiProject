@@ -1,75 +1,142 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WHATFLIX</title>
+<title>WHATFLIX - Premium Movie Community</title>
 
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    /* [Core System] Design Tokens */
+    :root {
+        --primary-red: #E50914;
+        --primary-red-hover: #B20710;
+        --bg-main: #141414;
+        --bg-surface: #181818;
+        --bg-glass: rgba(20, 20, 20, 0.7);
+        --border-glass: rgba(255, 255, 255, 0.1);
+        --text-white: #FFFFFF;
+        --text-gray: #B3B3B3;
+        --text-muted: #666666;
+        
+        /* Layout Dimensions */
+        --nav-height: 70px;
+        --sidebar-width: 240px;
+        
+        /* Animation */
+        --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* [Global Reset] */
+    body {
+        background-color: var(--bg-main);
+        color: var(--text-white);
+        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+        overflow-x: hidden;
+        margin: 0;
+    }
+
+    a { text-decoration: none; color: inherit; transition: color 0.2s; }
+    ul { list-style: none; padding: 0; margin: 0; }
+
+    /* [Layout System] Sticky Nav + Sidebar Grid */
+    .app-container {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr;
+        min-height: 100vh;
+        padding-top: var(--nav-height); /* Header 높이만큼 띄움 */
+    }
+
+    .main-content {
+        padding: 40px 50px;
+        min-width: 0; /* Grid overflow 방지 */
+    }
+
+    /* [Component] Section Headers (Movie & Community) */
+    .content-section {
+        margin-bottom: 60px;
+        opacity: 0;
+        animation: fadeInUp 0.6s var(--ease-smooth) forwards;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-white);
+        letter-spacing: -0.5px;
+    }
+
+    .more-link {
+        font-size: 0.9rem;
+        color: var(--text-gray);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.2s;
+    }
+
+    .more-link:hover {
+        color: var(--text-white);
+        transform: translateX(5px);
+    }
+    
+    .more-link i { font-size: 0.8rem; }
+
+    /* Animation Keyframes */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Scrollbar Customization */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+    /* 모바일 대응 (반응형) */
+    @media (max-width: 768px) {
+        .app-container { grid-template-columns: 1fr; }
+        .sidebar-container { display: none; } /* 모바일에서 사이드바 숨김 (또는 햄버거 메뉴로 변경) */
+        .main-content { padding: 20px; }
+    }
+</style>
 </head>
 
 <body>
-	<header>
-		<nav>
-			<div>
-				<h1>WHATFLIX</h1>
-				<ul>
-					<li><a href="mainPage.jsp">홈</a></li>
-					<li><a href="../movie/movieList.jsp">영화</a></li>
-					<li><a href="community.jsp">커뮤니티</a></li>
-					<li><a href="support.jsp">지원</a></li>
+    <jsp:include page="nav.jsp" />
 
-					<li><a href="login.jsp">로그인</a></li>
-					<li><a href="profile.jsp">프로필</a></li>
-				</ul>
-			</div>
-		</nav>
-	</header>
-	<main>
-		<section id="movie-section">
-			<section>
-				<div>
-					<h2>최상단 노출</h2>
-					<a href="movieDetail.jsp">더보기 ›</a>
-				</div>
-			</section>
-			<section>
-				<div>
-					<!-- 좋아요 기능 별점으로 변경하여 추천순-최신순 변경 건의 -->
-					<h2>최신순</h2>
-					<a href="movieDetail.jsp">더보기 ›</a>
-				</div>
-			</section>
-			<section>
-				<div>
-					<h2>조회순</h2>
-					<a href="movieDetail.jsp">더보기 ›</a>
-				</div>
-			</section>
-			<section>
-				<div>
-					<!-- 조회한 영화에서 담은 영화로 변경 건의 -->
-					<h2>당신이 담은 영화</h2>
-					<a href="movieDetail.jsp">더보기 ›</a>
-				</div>
-			</section>
-		</section>
+    <jsp:include page="../login/loginModal.jsp" />
+    <jsp:include page="../profile/profileModal.jsp"/>
 
-		<section id="community-section">
-			<!-- 커뮤니티는 수정 후 변경 부탁드립니다. -->
-			<section>
-				<div>
-					<h2></h2>
-					<a href="">더보기 ›</a>
-				</div>
-			</section>
-		</section>
-	</main>
-	<footer>
-		<!-- footer -->
-	</footer>
+    <div class="app-container">
+        <aside class="sidebar-container">
+            <jsp:include page="sideBar.jsp" />
+        </aside>
+
+        <main class="main-content">
+            <jsp:include page="movieSection.jsp" />
+            <jsp:include page="communitySection.jsp" />
+        </main>
+    </div>
+
+    <footer>
+        <jsp:include page="footer.jsp"></jsp:include>
+    </footer>
 </body>
-
 </html>

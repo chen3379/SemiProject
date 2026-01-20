@@ -133,7 +133,7 @@
 	<div class="chat-body" id="chat-body">
 		<div class="chat-message ai-message">
 			<div class="message-content">
-				<strong>WhatFlix AI bot:</strong><br>
+				<strong>WhatFlix AI bot</strong><br>
 				안녕하세요!<br> 기분이나 상황을 말해주시면 어울리는 영화를 추천해드릴게요.
 			</div>
 		</div>
@@ -141,7 +141,7 @@
 
 	<div class="chat-footer">
 		<input type="text" id="chat-input" class="form-control"
-			placeholder="예: 우울할 때 볼만한 영화..., 기분 좋아지는 내용" onkeypress="handleEnter(event)">
+			placeholder="예: 우울할 때 볼만한 영화..." onkeypress="handleEnter(event)">
 		<button type="button" style="min-width: 80px; white-space: nowrap;"
 			class="btn btn-primary" onclick="sendMessage()">전송</button>
 	</div>
