@@ -48,8 +48,8 @@
 	
 	<!-- 작성자만 수정/삭제 -->
 	<% if(isLogin && loginId.equals(dto.getId())){ %>
-	  <a href="supportForm.jsp?idx=<%=idx%>">수정</a>
-	  <a href="action/supportDeleteAction.jsp?idx=<%=idx%>">삭제</a>
+	<button type="button" class="btn btn-outline-primary" onclick="goUpdate(<%=idx%>)">수정</button>
+	<button type="button" class="btn btn-outline-danger" onclick="deleteSupport(<%=idx%>)">삭제</button>
 	<% } %>
 	
 	<!-- 관리자 답변 -->

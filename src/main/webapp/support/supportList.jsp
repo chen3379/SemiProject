@@ -1,3 +1,4 @@
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="support.SupportDto"%>
 <%@page import="support.FaqDto"%>
 <%@page import="java.util.List"%>
@@ -8,6 +9,8 @@
 <%
 	SupportDao sDao = new SupportDao();
 	FaqDao fDao = new FaqDao();
+	
+	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	String status = request.getParameter("status"); // 관리자만 사용
 	String order = request.getParameter("order");   // 최신/오래된순
@@ -53,38 +56,38 @@
 	
 	<!-- 문의글 목록 -->
 	<table>
-	<tr>
-	  <th>No</th><th>제목</th><th>작성자</th><th>작성일</th><th>조회</th>
-	  <% if(isAdmin){ %><th>상태</th><% } %>
-	</tr>
-	
-	<% for(SupportDto dto : list){ %>
-	<tr>
-	  <td><%=dto.getSupportIdx()%></td>
-	  <td>
-	    <% if("1".equals(dto.getDeleteType())){ %>
-	      [삭제된 문의글입니다]
-	    <% } else { %>
-	      [<%=dto.getStatusType().equals("0")?"답변대기":"답변완료"%>]
-	      <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
-	      <a href="supportDetail.jsp?idx=<%=dto.getSupportIdx()%>">
-	        <%=dto.getTitle()%>
-	      </a>
-	    <% } %>
-	  </td>
-	  <td><%=dto.getId()%></td>
-	  <td><%=dto.getCreateDay()%></td>
-	  <td><%=dto.getReadcount()%></td>
-	  <% if(isAdmin){ %>
-	    <td><%=dto.getStatusType()%></td>
-	  <% } %>
-	</tr>
-	<% } %>
+		<tr>
+		  <th>No</th><th>제목</th><th>작성자</th><th>작성일</th><th>조회</th>
+		  <% if(isAdmin){ %><th>상태</th><% } %>
+		</tr>
+		
+		<% for(SupportDto dto : list){ %>
+		<tr>
+		  <td><%=dto.getSupportIdx()%></td>
+		  <td>
+		    <% if("1".equals(dto.getDeleteType())){ %>
+		      [삭제된 문의글입니다]
+		    <% } else { %>
+		      [<%=dto.getStatusType().equals("0")?"답변대기":"답변완료"%>]
+		      <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
+		      <a href="supportDetail.jsp?idx=<%=dto.getSupportIdx()%>">
+		        <%=dto.getTitle()%>
+		      </a>
+		    <% } %>
+		  </td>
+		  <td><%= dto.getId().split("@")[0] %></td>
+		  <td><%=sdf.format(dto.getCreateDay())%></td>
+		  <td><%=dto.getReadcount()%></td>
+		  <% if(isAdmin){ %>
+		    <td><%=dto.getStatusType()%></td>
+		  <% } %>
+		</tr>
+		<% } %>
 	</table>
 	
 	<!-- 글쓰기 -->
 	<% if(isLogin){ %>
-	  <a href="supportForm.jsp">문의하기</a>
+		<button type="button" onclick="location.href='supportForm.jsp'">문의하기</button>
 	<% } else { %>
 	  <button onclick="alert('로그인 후 이용해주세요')">문의하기</button>
 	<% } %>

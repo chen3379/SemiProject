@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class SupportDto {
 	private int supportIdx;
-	private String activeType; //0:회원정보,1:신고,2:기타
+	private String categoryType; //0:회원정보,1:신고,2:기타
 	private String title;
 	private String content;
 	private String id;
@@ -23,11 +23,11 @@ public class SupportDto {
 	public void setSupportIdx(int supportIdx) {
 		this.supportIdx = supportIdx;
 	}
-	public String getActiveType() {
-		return activeType;
+	public String getCategoryType() {
+		return categoryType;
 	}
-	public void setActiveType(String activeType) {
-		this.activeType = activeType;
+	public void setCategoryType(String categoryType) {
+		this.categoryType = categoryType;
 	}
 	public String getTitle() {
 		return title;
@@ -95,4 +95,6 @@ public class SupportDto {
 	public void setUpdateId(String updateId) {
 		this.updateId = updateId;
 	}
+	
+	
 }

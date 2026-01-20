@@ -175,6 +175,11 @@ public class SupportDao {
 	            db.dbClose(null,pstmt,conn);
 	        }
 	    }
+	    
+	    // 문의글 수정
+	    public void updateSupport() {
+	    	
+	    }
 
 	    // 답변상태 변경
 	    public void updateStatus(int idx,String status){

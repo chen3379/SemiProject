@@ -59,6 +59,7 @@ return;
 
 function saveSupport(){
 
+	  var categoryType = $("#categoryType").val();
 	  var title = $("#title").val();
 	  var content = $("#content").val();
 	  var secret = $("#secret").is(":checked") ? "1" : "0";
@@ -73,6 +74,7 @@ function saveSupport(){
 	    type : "post",
 	    dataType : "json",
 	    data : {
+	      categoryType : categoryType,
 	      title : title,
 	      content : content,
 	      secret : secret
