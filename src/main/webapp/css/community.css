@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+/* ===== 커뮤니티 메인 공통 ===== */
+body {
+    background-color: #141414;
+    color: #fff;
+}
+
+.community-main {
+    margin-top: 80px;
+    margin-bottom: 120px;
+}
+
+/* 섹션 타이틀 */
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+}
+
+/* ===== TOP10 카드 ===== */
+.rank-card {
+    background: rgba(24,24,24,0.9);
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    height: 100%;
+}
+
+.rank-card h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+/* 랭킹 리스트 */
+.rank-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rank-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 14px;
+}
+
+.rank-list li:last-child {
+    border-bottom: none;
+}
+
+.rank {
+    width: 22px;
+    text-align: center;
+    font-weight: 700;
+    color: #E50914;
+}
+
+.rank-list a {
+    flex: 1;
+    color: #eaeaea;
+    text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rank-list a:hover {
+    color: #E50914;
+    text-decoration: underline;
+}
+
+.count {
+    font-size: 12px;
+    color: #aaa;
+}
+
+/* ===== 공지 영역 ===== */
+.notice-area {
+    margin-top: 60px;
+    background: linear-gradient(135deg, #1a1a1a, #111);
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+
+.notice-area h4 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.notice-area ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.notice-area li {
+    padding: 6px 0;
+    font-size: 14px;
+    color: #ddd;
+}
