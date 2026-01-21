@@ -12,22 +12,27 @@ import mysql.db.DBConnect;
 public class SupportDao {
 	 DBConnect db = new DBConnect();
 
-	    // 문의글 목록
-	    public List<SupportDto> getList(String status, String order) {
+	    // 문의글 목록 + 필터
+	    public List<SupportDto> getList(String status, String order, String categoryType) {
 	        List<SupportDto> list = new ArrayList<SupportDto>();
 	        
 	        Connection conn = db.getDBConnect();
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
-
+	        
 	        String sql ="select * from support where delete_type='0' ";
 
-	        //
+	        // 문의유형 필터
+	        if (categoryType != null && !categoryType.equals("")) {
+	            sql += " and category_type = ?";
+	        }
+	        
+	        // 답변상태 필터
 	        if(status != null && !status.isEmpty()){
 	            sql += " and status_type=? ";
 	        }
 	        
-	        //
+	        // 정렬
 	        if("old".equals(order)){
 	            sql += " order by support_idx asc";
 	        } else {
@@ -36,9 +41,15 @@ public class SupportDao {
 
 	        try {
 	            pstmt = conn.prepareStatement(sql);
-
+	            
+	            int idx = 1;
+	            
+	            if (categoryType != null && !categoryType.equals("")) {
+	            	pstmt.setString(idx++, categoryType);
+	            }
+	            
 	            if(status != null && !status.isEmpty()){
-	                pstmt.setString(1, status);
+	            	pstmt.setString(idx++, status);
 	            }
 
 	            rs = pstmt.executeQuery();
@@ -48,6 +59,7 @@ public class SupportDao {
 	                SupportDto dto = new SupportDto();
 	                
 	                dto.setSupportIdx(rs.getInt("support_idx"));
+	                dto.setCategoryType(rs.getString("category_type"));
 	                dto.setTitle(rs.getString("title"));
 	                dto.setId(rs.getString("id"));
 	                dto.setSecretType(rs.getString("secret_type"));
@@ -69,7 +81,7 @@ public class SupportDao {
 	    }
 
 	    // 상세 조회
-	    public SupportDto getOneData(int idx){
+	    public SupportDto getOneData(int supportIdx){
 	    	SupportDto dto = new SupportDto();
 	    	
 	        Connection conn = db.getDBConnect();
@@ -81,13 +93,14 @@ public class SupportDao {
 	        try {
 	            pstmt = conn.prepareStatement(sql);
 	            
-	            pstmt.setInt(1, idx);
+	            pstmt.setInt(1, supportIdx);
 	            
 	            rs = pstmt.executeQuery();
 	            
 	            if(rs.next()){
 	            	
-	                dto.setSupportIdx(idx);
+	                dto.setSupportIdx(rs.getInt("support_idx"));
+	                dto.setCategoryType(rs.getString("category_type"));
 	                dto.setTitle(rs.getString("title"));
 	                dto.setContent(rs.getString("content"));
 	                dto.setId(rs.getString("id"));
@@ -108,7 +121,7 @@ public class SupportDao {
 	    }
 
 	    // 조회수 증가
-	    public void updateReadCount(int idx){
+	    public void updateReadCount(int supportIdx){
 	        Connection conn = db.getDBConnect();
 	        PreparedStatement pstmt = null;
 	        
@@ -117,7 +130,7 @@ public class SupportDao {
 	        try {
 	        	pstmt = conn.prepareStatement(sql);
 	            
-	            pstmt.setInt(1, idx);
+	            pstmt.setInt(1, supportIdx);
 	            
 	            pstmt.executeUpdate();
 	            
@@ -156,7 +169,7 @@ public class SupportDao {
 		}
 
 	    // 문의글 삭제
-	    public void deleteSupport(int idx){
+	    public void deleteSupport(int supportIdx){
 	        Connection conn=db.getDBConnect();
 	        PreparedStatement pstmt=null;
 	        
@@ -165,7 +178,7 @@ public class SupportDao {
 	        try{
 	            pstmt=conn.prepareStatement(sql);
 	            
-	            pstmt.setInt(1, idx);
+	            pstmt.setInt(1, supportIdx);
 	            
 	            pstmt.executeUpdate();
 	            
@@ -177,12 +190,32 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public void updateSupport() {
-	    	
+	    public void updateSupport(int supportIdx, String title, String content){
+
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+
+	        String sql =
+	          "update support " +
+	          "set title=?, content=?, update_day=now() " +
+	          "where support_idx=?";
+
+	        try{
+	            pstmt = conn.prepareStatement(sql);
+	            pstmt.setString(1, title);
+	            pstmt.setString(2, content);
+	            pstmt.setInt(3, supportIdx);
+	            pstmt.executeUpdate();
+	        }catch(Exception e){
+	            e.printStackTrace();
+	        }finally{
+	            db.dbClose(null, pstmt, conn);
+	        }
 	    }
 
+
 	    // 답변상태 변경
-	    public void updateStatus(int idx,String status){
+	    public void updateStatus(int supportIdx,String status){
 	        Connection conn=db.getDBConnect();
 	        PreparedStatement pstmt=null;
 	        
@@ -192,7 +225,7 @@ public class SupportDao {
 	            pstmt=conn.prepareStatement(sql);
 	            
 	            pstmt.setString(1, status);
-	            pstmt.setInt(2, idx);
+	            pstmt.setInt(2, supportIdx);
 	            
 	            pstmt.executeUpdate();
 	            

@@ -2,9 +2,8 @@ package board.comment;
 
 import java.sql.Timestamp;
 
-public class FreeCommentDto {
-	
- 	private int comment_idx;
+public class ReviewCommentDto {
+	private int comment_idx;
     private int board_idx;
     private String writer_id;
     private String content;
@@ -77,6 +76,4 @@ public class FreeCommentDto {
 	}
     
     
-    
-
 }

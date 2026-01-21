@@ -1,4 +1,5 @@
-<%@page import="board.like.ReviewLikeDao"%>
+<%@page import="board.comment.ReviewCommentDao"%>
+<%@page import="board.comment.ReviewCommentDto"%>
 <%@page import="org.json.simple.JSONObject"%>
 <%@ page contentType="application/json; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -15,23 +16,17 @@ try {
     }
 
     int board_idx = Integer.parseInt(request.getParameter("board_idx"));
+    String content = request.getParameter("content");
 
-    ReviewLikeDao dao = new ReviewLikeDao();
+    ReviewCommentDto dto = new ReviewCommentDto();
+    dto.setBoard_idx(board_idx);
+    dto.setWriter_id(loginId);
+    dto.setContent(content);
+    dto.setCreate_id(loginId);
 
-    boolean liked;
-    if (dao.isLiked(board_idx, loginId)) {
-        dao.deleteLike(board_idx, loginId);
-        liked = false;
-    } else {
-        dao.insertLike(board_idx, loginId);
-        liked = true;
-    }
-
-    int count = dao.getLikeCount(board_idx);
+    new ReviewCommentDao().insertComment(dto);
 
     json.put("status", "SUCCESS");
-    json.put("liked", liked);
-    json.put("count", count);
 
 } catch (Exception e) {
     e.printStackTrace();
