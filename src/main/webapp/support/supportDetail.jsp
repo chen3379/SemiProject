@@ -1,3 +1,4 @@
+<%@page import="member.MemberDao"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="support.SupportAdminDto"%>
 <%@page import="support.SupportAdminDao"%>
@@ -7,8 +8,8 @@
     pageEncoding="UTF-8"%>
 <%
     String id = (String)session.getAttribute("id");
-    String roleType = (String)session.getAttribute("roleType");
     boolean isLogin = (id != null);
+    String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
     boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
     int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
@@ -124,32 +125,62 @@
     <%
         SupportAdminDao aDao = new SupportAdminDao();
         SupportAdminDto answer = aDao.getAdminAnswer(supportIdx);
-    %>
+	%>
 
-    <% if (isAdmin) { %>
-        <% if (answer == null) { %>
-            <!-- 답변 등록 -->
-            <form action="supportInsertAction.jsp" method="post">
-                <input type="hidden" name="supportIdx" value="<%=supportIdx%>">
-                <div class="mb-2">
-                    <label class="form-label">관리자 답변</label>
-                    <textarea name="content" class="form-control" rows="4"></textarea>
-                </div>
-                <button class="btn btn-success btn-sm">답변 등록</button>
-            </form>
-        <% } else { %>
-            <!-- 답변 출력 -->
-            <h5 class="mt-3">관리자 답변</h5>
-            <div class="border p-3 mb-2 bg-light">
-                <pre style="white-space:pre-wrap;"><%=answer.getContent()%></pre>
-            </div>
-            <a href="supportDeleteAction.jsp?supportIdx=<%=supportIdx%>&admin=Y"
-               class="btn btn-outline-danger btn-sm"
-               onclick="return confirm('답변을 삭제하시겠습니까?');">
-                답변 삭제
-            </a>
-        <% } %>
-    <% } %>
+	<% if (isAdmin) { %>
+	
+	    <h5 class="mt-4">관리자 답변</h5>
+	
+	    <% if (answer == null) { %>
+	        <!-- ✅ 답변 등록 -->
+	        <form action="supportAdminInsertAction.jsp" method="post">
+	            <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
+	
+	            <div class="mb-2">
+	                <textarea name="content"
+	                          class="form-control"
+	                          rows="4"
+	                          placeholder="답변 내용을 입력하세요"></textarea>
+	            </div>
+	
+	            <button type="submit" class="btn btn-success btn-sm">
+	                답변 등록
+	            </button>
+	
+	            <a href="supportList.jsp"
+	               class="btn btn-outline-secondary btn-sm ms-2">
+	                목록
+	            </a>
+	        </form>
+	
+	    <% } else { %>
+	        <!-- ✅ 답변 존재 → 출력 + 수정/삭제 -->
+	        <div class="border p-3 bg-light mb-2">
+	            <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
+	        </div>
+	
+	        <form action="supportAdminUpdateAction.jsp" method="post" class="d-inline">
+	            <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
+	            <textarea name="content"
+	                      class="form-control mb-2"
+	                      rows="4"><%= answer.getContent() %></textarea>
+	
+	            <button class="btn btn-primary btn-sm">답변 수정</button>
+	        </form>
+	
+	        <a href="supportAdminDeleteAction.jsp?supportIdx=<%=supportIdx%>"
+	           class="btn btn-outline-danger btn-sm ms-2"
+	           onclick="return confirm('답변을 삭제하시겠습니까?');">
+	            답변 삭제
+	        </a>
+	
+	        <a href="supportList.jsp"
+	           class="btn btn-outline-secondary btn-sm ms-2">
+	            목록
+	        </a>
+	    <% } %>
+	
+	<% } %>
 
 </body>
 </html>

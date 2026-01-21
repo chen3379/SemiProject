@@ -4,16 +4,11 @@
 <%
 request.setCharacterEncoding("UTF-8");
 
-String supportIdx = request.getParameter("supportIdx");
+int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
 String content = request.getParameter("content");
 
-SupportAdminDao aDao = new SupportAdminDao();
+SupportAdminDao dao = new SupportAdminDao();
+dao.updateAdmin(supportIdx, content);
 
-// 답변 수정
-aDao.updateAdmin(
-    Integer.parseInt(supportIdx),
-    content
-);
-
-out.print("{\"result\":\"OK\"}");
+response.sendRedirect("supportDetail.jsp?supportIdx=" + supportIdx);
 %>

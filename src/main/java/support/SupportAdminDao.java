@@ -10,34 +10,35 @@ public class SupportAdminDao {
 	DBConnect db = new DBConnect();
 
     // 답변 조회
-    public SupportAdminDto getAdminAnswer(int idx){
-        SupportAdminDto dto=new SupportAdminDto();
-        
-        Connection conn=db.getDBConnect();
-        PreparedStatement pstmt=null;
-        ResultSet rs=null;
-        
-        String sql="select * from support_admin where support_idx=?";
+	public SupportAdminDto getAdminAnswer(int supportIdx){
+	    SupportAdminDto dto = null;
 
-        try{
-            pstmt=conn.prepareStatement(sql);
-            
-            pstmt.setInt(1, idx);
-            
-            rs=pstmt.executeQuery();
-            
-            if(rs.next()){
-                dto.setContent(rs.getString("content"));
-                dto.setId(rs.getString("id"));
-            }
-            
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally{
-            db.dbClose(rs,pstmt,conn);
-        }
-        return dto;
-    }
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+
+	    String sql = "select * from support_admin where support_idx=?";
+
+	    try{
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, supportIdx);
+	        rs = pstmt.executeQuery();
+
+	        if(rs.next()){
+	            dto = new SupportAdminDto();
+	            dto.setSupportIdx(rs.getInt("support_idx"));
+	            dto.setId(rs.getString("id"));
+	            dto.setContent(rs.getString("content"));
+	            dto.setCreateDay(rs.getTimestamp("create_day"));
+	        }
+	    }catch(Exception e){
+	        e.printStackTrace();
+	    }finally{
+	        db.dbClose(rs, pstmt, conn);
+	    }
+
+	    return dto;
+	}
 
     // 답변 등록
     public boolean insertAdmin(int idx,String id,String content){
@@ -90,7 +91,7 @@ public class SupportAdminDao {
     }
     
     // 답변삭제
-    public void deleteAnswer(int supportIdx){
+    public void deleteAdmin(int supportIdx){
 
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;

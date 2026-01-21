@@ -45,11 +45,11 @@ public class SupportDao {
 	            int idx = 1;
 	            
 	            if (categoryType != null && !categoryType.equals("")) {
-	                pstmt.setString(idx++, categoryType);
+	            	pstmt.setString(idx++, categoryType);
 	            }
 	            
 	            if(status != null && !status.isEmpty()){
-	                pstmt.setString(1, status);
+	            	pstmt.setString(idx++, status);
 	            }
 
 	            rs = pstmt.executeQuery();
