@@ -3,6 +3,7 @@
 <%@page import="board.free.FreeBoardDto"%>
 <%@page import="java.util.List"%>
 <%@page import="board.free.FreeBoardDao"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -15,7 +16,17 @@
 <title>커뮤니티-왓플릿스</title>
 <%
 ReviewBoardDao dao = new ReviewBoardDao();
-List<ReviewBoardDto> list = dao.getReviewList();
+String pageParam = request.getParameter("page");
+
+int pageSize = 5;
+int currentPage = (pageParam == null) ? 1 : Integer.parseInt(pageParam);
+int start = (currentPage - 1) * pageSize;
+
+List<ReviewBoardDto> list = dao.getReviewList(start, pageSize);
+int totalCount = dao.getTotalCount();
+int totalPage = (int)Math.ceil((double)totalCount / pageSize);
+
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 %>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -187,7 +198,6 @@ td.title a {
         color: #666;
     }
 
-    td.num::before { content: "번호"; }
     td.category::before { content: "카테고리"; }
     td.title::before { content: "제목"; }
     td.writer::before { content: "작성자"; }
@@ -197,6 +207,58 @@ td.title a {
     .write-btn {
         text-align: center;
     }
+}
+
+.page-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0 60px;
+}
+
+.page-list {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 기본 숫자 */
+.page-list li a {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: #9e9e9e;
+    transition: all 0.2s ease;
+}
+
+/* hover */
+.page-list li a:hover {
+    color: #fff;
+}
+
+/* 현재 페이지 (빨간 원) */
+.page-list li.active a {
+    background-color: #e50914;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(229, 9, 20, 0.7);
+}
+
+/* 화살표 */
+.page-list li.arrow a {
+    font-size: 22px;
+    color: #9e9e9e;
+}
+
+.page-list li.arrow a:hover {
+    color: #fff;
 }
 </style>
 </head>
@@ -214,7 +276,6 @@ td.title a {
     <table>
         <thead>
             <tr>
-                <th>번호</th>
                 <th>제목</th>
                 <th>작성자</th>
                 <th>작성일</th>
@@ -225,14 +286,11 @@ td.title a {
         <tbody>
         <% for (ReviewBoardDto dto : list) { %>
             <tr>
-                <td class="num"><%= dto.getBoard_idx() %></td>
-
                 <td class="title">
                     <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
                         <%= dto.getTitle() %>
                     </a>
                 </td>
-
                 <td class="writer"><%= dto.getId() %></td>
                 <td class="date"><%= dto.getCreate_day() %></td>
                 <td class="count"><%= dto.getReadcount() %></td>
@@ -244,6 +302,28 @@ td.title a {
     <div class="write-btn">
         <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;리뷰 작성</a>
     </div>
+    <div class="page-wrap">
+    <ul class="page-list">
+
+        <% for (int i = 1; i <= totalPage; i++) { %>
+            <li class="<%= (i == currentPage) ? "active" : "" %>">
+                <a href="list.jsp?page=<%=i%>">
+                    <%= i %>
+                </a>
+            </li>
+        <% } %>
+
+        <% if (currentPage < totalPage) { %>
+            <li class="arrow">
+                <a href="list.jsp?page=<%=currentPage + 1%>">
+                    &gt;
+                </a>
+            </li>
+        <% } %>
+
+    </ul>
+</div>
+    
 </div>
 
 </body>
