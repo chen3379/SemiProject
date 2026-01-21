@@ -2,16 +2,23 @@
 <%@ page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy" %>
 <%@ page import="board.free.*" %>
 <%@ page import="java.io.File" %>
+
 <%
 request.setCharacterEncoding("UTF-8");
 
-String uploadPath = application.getRealPath("/save");
-
-File uploadDir = new File(uploadPath);
-if (!uploadDir.exists()) {
-    uploadDir.mkdirs();
+/* ===== 로그인 체크 ===== */
+String loginId = (String) session.getAttribute("loginid");
+if (loginId == null) {
+    response.sendRedirect(request.getContextPath() + "/login/login.jsp");
+    return;
 }
-int maxSize = 10 * 1024 * 1024; // 10MB
+
+/* ===== 파일 업로드 설정 ===== */
+String uploadPath = application.getRealPath("/save");
+File uploadDir = new File(uploadPath);
+if (!uploadDir.exists()) uploadDir.mkdirs();
+
+int maxSize = 10 * 1024 * 1024;
 
 MultipartRequest multi = new MultipartRequest(
     request,
@@ -21,21 +28,18 @@ MultipartRequest multi = new MultipartRequest(
     new DefaultFileRenamePolicy()
 );
 
-// ⭐ multipart에서는 이걸로 꺼내야 함
+/* ===== multipart 파라미터 ===== */
 String category = multi.getParameter("category");
 String title = multi.getParameter("title");
 String content = multi.getParameter("content");
 
-System.out.println("category=" + category);
-System.out.println("title=" + title);
-System.out.println("content=" + content);
-
+/* ===== DTO ===== */
 FreeBoardDto dto = new FreeBoardDto();
 dto.setCategory_type(category);
 dto.setTitle(title);
 dto.setContent(content);
-dto.setId("guest");              // 임시
-dto.setIs_spoiler_type(false);   // 기본값
+dto.setId(loginId);           
+dto.setIs_spoiler_type(false);
 
 FreeBoardDao dao = new FreeBoardDao();
 dao.insertBoard(dto);
