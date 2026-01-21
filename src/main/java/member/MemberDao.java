@@ -11,6 +11,8 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import board.free.FreeBoardDto;
+import board.review.ReviewBoardDto;
 
 public class MemberDao {
 
@@ -384,4 +386,117 @@ public class MemberDao {
         return roleType;
     }
 
+    // [추가] 회원별 자유게시판 작성글 조회 (검색 포함)
+    public List<FreeBoardDto> getBoardListById(String id, String search) {
+        List<FreeBoardDto> list = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM free_board WHERE id = ? ";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += "AND (title LIKE ? OR content LIKE ?) ";
+        }
+        sql += "ORDER BY board_idx DESC";
+
+        try {
+            conn = db.getDBConnect();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            if (search != null && !search.trim().isEmpty()) {
+                pstmt.setString(2, "%" + search + "%");
+                pstmt.setString(3, "%" + search + "%");
+            }
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                FreeBoardDto dto = new FreeBoardDto();
+                dto.setBoard_idx(rs.getInt("board_idx"));
+                dto.setCategory_type(rs.getString("category_type"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setCreate_day(rs.getTimestamp("create_day"));
+                list.add(dto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // [추가] 회원별 리뷰게시판 작성글 조회 (검색 포함)
+    public List<ReviewBoardDto> getReviewListById(String id, String search) {
+        List<ReviewBoardDto> list = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM review_board WHERE id = ? ";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += "AND (title LIKE ? OR content LIKE ?) ";
+        }
+        sql += "ORDER BY board_idx DESC";
+
+        try {
+            conn = db.getDBConnect();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            if (search != null && !search.trim().isEmpty()) {
+                pstmt.setString(2, "%" + search + "%");
+                pstmt.setString(3, "%" + search + "%");
+            }
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                ReviewBoardDto dto = new ReviewBoardDto();
+                dto.setBoard_idx(rs.getInt("board_idx"));
+                dto.setGenre_type(rs.getString("genre_type"));
+                dto.setTitle(rs.getString("title"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setCreate_day(rs.getTimestamp("create_day"));
+                list.add(dto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return list;
+    }
+
+    // [추가] 리뷰 삭제
+    public void deleteReview(int board_idx) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        String sql = "DELETE FROM review_board WHERE board_idx = ?";
+        try {
+            conn = db.getDBConnect();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, board_idx);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(null, pstmt, conn);
+        }
+    }
+
+    // [추가] 자유게시판 글 삭제
+    public void deleteBoard(int board_idx) {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        String sql = "DELETE FROM free_board WHERE board_idx = ?";
+        try {
+            conn = db.getDBConnect();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, board_idx);
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(null, pstmt, conn);
+        }
+    }
 }

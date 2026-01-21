@@ -68,7 +68,10 @@
         photoPath = "/profile_photo/" + fileName;
     } else {
         // 사진을 새로 올리지 않은 경우 기존 사진 유지
-        photoPath = memberInfo.getPhoto();
+        photoPath = multi.getParameter("photo");
+        if (photoPath == null || photoPath.trim().isEmpty()) {
+            photoPath = memberInfo.getPhoto();
+        }
     }
 
     int age = 0;

@@ -149,6 +149,10 @@
             <!-- 프로필 사진 섹션 -->
             <div class="photo-edit-section">
                 <img id="photoPreview" src="default_profile.png" alt="프로필 사진 미리보기" />
+                <div class="mb-3 w-100">
+                    <label class="form-label text-gray small">기존 이미지 경로</label>
+                    <input type="text" id="memberPhoto" name="photo" class="edit-input mb-2" readonly placeholder="이미지 경로 없음">
+                </div>
                 <div class="file-input-wrapper">
                     <input type="file" id="photoInput" name="photoFile" accept="image/*" class="form-control form-control-sm bg-dark text-white border-secondary">
                 </div>
@@ -223,6 +227,7 @@
                 if (data && data.isMine) {
                     const contextPath = $('.edit-content-wrapper').data('context-path');
                     $('#photoPreview').attr('src', contextPath + data.photo);
+                    $('#memberPhoto').val(data.photo);
                     $('#memberId').val(data.id);
                     $('#memberNickname').val(data.nickname);
                     $('#memberName').val(data.name);
