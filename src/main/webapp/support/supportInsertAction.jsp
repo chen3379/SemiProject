@@ -1,11 +1,12 @@
 <%@page import="support.SupportDao"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
 request.setCharacterEncoding("UTF-8");
 
 String id = (String)session.getAttribute("id");
 String supportIdxStr = request.getParameter("supportIdx");
+int supportIdx = Integer.parseInt(supportIdxStr);
 String categoryType = request.getParameter("categoryType");
 String title = request.getParameter("title");
 String content = request.getParameter("content");
@@ -22,11 +23,12 @@ SupportDao dao = new SupportDao();
 if(supportIdxStr == null || supportIdxStr.equals("")){
     // 등록
     dao.insertSupport(categoryType, title, content, id, secret);
+    out.print("{\"result\":\"OK\"}");
+    
 } else {
     // 수정
-    int supportIdx = Integer.parseInt(supportIdxStr);
     dao.updateSupport(supportIdx, title, content);
+    out.print("{\"result\":\"OK\",\"supportIdx\":\"" + supportIdx + "\"}");
 }
-
-out.print("{\"result\":\"OK\"}");
+return;
 %>

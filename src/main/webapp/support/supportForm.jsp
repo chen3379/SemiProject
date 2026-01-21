@@ -75,8 +75,7 @@ history.back();
   <input type="text" name="title" id="title" value="<%= isUpdate ? dto.getTitle() : "" %>" placeholder="제목" required><br><br>
 
   <label>내용</label><br>
-  <textarea name="content" id="content" rows="6" cols="50" placeholder="문의 내용을 입력하세요" required>
-  <%= isUpdate ? dto.getContent() : "" %></textarea><br><br>
+  <textarea name="content" id="content" rows="6" cols="50" placeholder="문의 내용을 입력하세요" required><%= isUpdate ? dto.getContent() : "" %></textarea><br><br>
 
   <label>
     <input type="checkbox" name="secret" id="secret" value="1" <%= (isUpdate && "1".equals(dto.getSecretType())) ? "checked" : "" %>>비밀글
@@ -87,6 +86,8 @@ history.back();
 </form>
 
 <script type="text/javascript">
+
+var isUpdate = <%= isUpdate %>;
 
 function saveSupport(){
 	  
@@ -114,8 +115,14 @@ function saveSupport(){
 	    },
 	    success : function(res){
 	      if(res.result == "OK"){
+	    	  
 	    	alert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다");
-	        location.href = "supportList.jsp";
+	    	if(isUpdate){
+    	      location.href = "supportDetail.jsp?supportIdx=" + res.supportIdx;
+    	    } else {
+    	      location.href = "supportList.jsp";
+    	    }
+	    	
 	      } else if(res.result == "NO_LOGIN"){
 	        alert("로그인이 필요합니다");
 	        location.href = "../login/loginForm.jsp";
@@ -126,7 +133,11 @@ function saveSupport(){
 	    error : function(){
 	      alert("서버 오류");
 	    }
+	    
+	    
 	  });
+	  
+	  
 	}
 
 </script>

@@ -19,7 +19,7 @@ public class SupportDao {
 	        Connection conn = db.getDBConnect();
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
-
+	        
 	        String sql ="select * from support where delete_type='0' ";
 
 	        // 문의유형 필터
@@ -190,41 +190,28 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public boolean updateSupport(
-	    	    String categoryType,
-	    	    String title,
-	    	    String content,
-	    	    String secret,
-	    	    String loginId,
-	    	    boolean isAdmin,
-	    	    int supportIdx
-	    	){
-	    	    Connection conn = db.getDBConnect();
-	    	    PreparedStatement pstmt = null;
+	    public void updateSupport(int supportIdx, String title, String content){
 
-	    	    String sql =
-	    	      "update support set category_type=?, title=?, content=?, secret_type=?, update_day=now() " +
-	    	      "where support_idx=? and (id=? or ?=true)";
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
 
-	    	    try{
-	    	        pstmt = conn.prepareStatement(sql);
-	    	        pstmt.setString(1, categoryType);
-	    	        pstmt.setString(2, title);
-	    	        pstmt.setString(3, content);
-	    	        pstmt.setString(4, secret);
-	    	        pstmt.setInt(5, supportIdx);
-	    	        pstmt.setString(6, loginId);
-	    	        pstmt.setBoolean(7, isAdmin);
+	        String sql =
+	          "update support " +
+	          "set title=?, content=?, update_day=now() " +
+	          "where support_idx=?";
 
-	    	        return pstmt.executeUpdate() > 0;
-
-	    	    }catch(Exception e){
-	    	        e.printStackTrace();
-	    	        return false;
-	    	    }finally{
-	    	        db.dbClose(null, pstmt, conn);
-	    	    }
-	    	}
+	        try{
+	            pstmt = conn.prepareStatement(sql);
+	            pstmt.setString(1, title);
+	            pstmt.setString(2, content);
+	            pstmt.setInt(3, supportIdx);
+	            pstmt.executeUpdate();
+	        }catch(Exception e){
+	            e.printStackTrace();
+	        }finally{
+	            db.dbClose(null, pstmt, conn);
+	        }
+	    }
 
 
 	    // 답변상태 변경

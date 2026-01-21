@@ -16,15 +16,22 @@
     SupportDao dao = new SupportDao();
     SupportDto dto = dao.getOneData(supportIdx);
 
+    // 글 없음(잘못된 번호 접근)
+    if (dto == null) {
+        out.print("<script>alert('존재하지 않는 글입니다');history.back();</script>");
+        return;
+    }
+
     // 삭제글
     if ("1".equals(dto.getDeleteType())) {
         out.print("<script>alert('삭제된 글입니다');history.back();</script>");
         return;
     }
 
-    // 비밀글
+    // 비밀글: 관리자 or 작성자만
     if ("1".equals(dto.getSecretType())) {
-        if (!isAdmin && !id.equals(dto.getId())) {
+        boolean isWriter = isLogin && id.equals(dto.getId());
+        if (!isAdmin && !isWriter) {
             out.print("<script>alert('접근 권한이 없습니다');history.back();</script>");
             return;
         }

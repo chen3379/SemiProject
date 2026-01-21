@@ -16,7 +16,7 @@ public class SupportAdminDao {
         Connection conn=db.getDBConnect();
         PreparedStatement pstmt=null;
         ResultSet rs=null;
-
+        
         String sql="select * from support_admin where support_idx=?";
 
         try{
@@ -63,6 +63,48 @@ public class SupportAdminDao {
             return false;
         }finally{
             db.dbClose(null,pstmt,conn);
+        }
+    }
+    
+    // 답변수정
+    public void updateAdmin(int supportIdx, String content){
+
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+
+        String sql =
+          "update support_admin " +
+          "set content=?, update_day=now() " +
+          "where support_idx=?";
+
+        try{
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, content);
+            pstmt.setInt(2, supportIdx);
+            pstmt.executeUpdate();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            db.dbClose(null, pstmt, conn);
+        }
+    }
+    
+    // 답변삭제
+    public void deleteAnswer(int supportIdx){
+
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+
+        String sql = "delete from support_admin where support_idx=?";
+
+        try{
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, supportIdx);
+            pstmt.executeUpdate();
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            db.dbClose(null, pstmt, conn);
         }
     }
 }

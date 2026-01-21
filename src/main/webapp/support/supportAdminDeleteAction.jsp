@@ -1,16 +1,18 @@
+<%@page import="support.SupportDao"%>
+<%@page import="support.SupportAdminDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<title>Insert title here</title>
-</head>
-<body>
+<%
+String supportIdx = request.getParameter("supportIdx");
 
-</body>
-</html>
+SupportAdminDao aDao = new SupportAdminDao();
+SupportDao sDao = new SupportDao();
+
+// 답변 삭제
+aDao.deleteAnswer(Integer.parseInt(supportIdx));
+
+// 원글 상태 되돌리기 → 답변대기
+sDao.updateStatus(Integer.parseInt(supportIdx), "0");
+
+out.print("{\"result\":\"OK\"}");
+%>

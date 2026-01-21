@@ -20,18 +20,20 @@
 	List<FaqDto> faqList = fDao.getActiveFaq();
 	List<SupportDto> list = sDao.getList(status, order, categoryType);
 	
-	MemberDao memberDao=new MemberDao();
-	
 	String id = (String)session.getAttribute("id");
-	String roleType = memberDao.getRoleType(id);
 	
-	System.out.println("SESSION roleType=" + roleType);
+    boolean isLogin = (id != null);
+    String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
 
-	boolean isLogin = (id != null);
-	boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
-	
+    System.out.println("SESSION roleType=" + roleType);
+
+    boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+    
 	// 문의유형 필터 변수
 	String categoryParam = request.getParameter("categoryType");
+	
+	// 
+	boolean canSeeSecret = false;
 	
 %>
 <!DOCTYPE html>
@@ -87,6 +89,7 @@
 		</tr>
 		
 		<% for(SupportDto dto : list){ %>
+		<!-- 원글 -->
 		<tr>
 		  <td><%=dto.getSupportIdx()%></td>
 		  <td>
@@ -118,6 +121,37 @@
 		    <td><%=dto.getStatusType()%></td>
 		  <% } %>
 		</tr>
+		
+		<%
+		/* ===== 답변 표시 여부 판단 ===== */
+		boolean showAnswer = false;
+		
+		// 답변완료 상태일 때만
+		if("1".equals(dto.getStatusType())){
+
+		    // 비밀글 아님 → 모두 가능
+		    if("0".equals(dto.getSecretType())){
+		        showAnswer = true;
+		    }
+		    // 비밀글 → 작성자 or 관리자
+		    else if(isAdmin || (isLogin && id.equals(dto.getId()))){
+		        showAnswer = true;
+		    }
+		}
+
+		%>
+		
+		<% if(showAnswer){ %>
+		<!-- 관리자 답변 표시 -->
+		<tr class="bg-light">
+		  <td></td>
+		  <td colspan="<%= isAdmin ? 6 : 5 %>" style="padding-left:30px;">
+		    ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
+		  </td>
+		</tr>
+		<% } %>		
+		
+		
 		<% } %>
 	</table>
 	
