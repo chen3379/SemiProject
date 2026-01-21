@@ -136,7 +136,7 @@
     #deleteBtn:hover { border-color: var(--primary-red); color: var(--primary-red); }
 </style>
 
-<div class="profile-content-wrapper">
+<div class="profile-content-wrapper" data-context-path="${pageContext.request.contextPath}">
     <!-- 검색 폼 -->
     <div class="search-container">
         <form id="searchForm" action="memberSearchAction.jsp" method="post" class="d-flex w-100 gap-2">
@@ -269,11 +269,12 @@
 
     // 데이터 렌더링 함수 로직 보존
     function renderProfile(data) {
+        const contextPath = $('.profile-content-wrapper').data('context-path');
         $('#info-message').hide();
         $('.member-info').css('display', 'flex');
         targetId = data.id;
         
-        $('#photo').attr('src', "${pageContext.request.contextPath}" + data.photo);
+        $('#photo').attr('src', contextPath + data.photo);
         $('#memberNickname').text(data.nickname);
         $('#memberCreateDay').text(data.createDay);
 

@@ -35,7 +35,6 @@ request.setCharacterEncoding("UTF-8");
             json.put("gender", memberDto.getGender());
             json.put("age", memberDto.getAge());
             json.put("hp", memberDto.getHp());
-            json.put("email", memberDto.getEmail());
             json.put("addr", memberDto.getAddr());
             json.put("isMine", true);
         } else {
