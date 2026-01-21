@@ -154,7 +154,8 @@
         <form id="adminEditForm" enctype="multipart/form-data">
             <!-- 프로필 사진 섹션 -->
             <div class="photo-edit-section">
-                <img id="photoPreview" src="${pageContext.request.contextPath}/profile_photo/default_photo.jpg" alt="프로필 사진" />
+                <img id="photoPreview" src="${pageContext.request.contextPath}/profile_photo/default_photo.jpg" alt="프로필 사진"
+                onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'; this.onerror=null;" />
                 <div class="file-input-wrapper">
                     <input type="file" id="photoInput" name="photoFile" accept="image/*" class="form-control form-control-sm bg-dark text-white border-secondary">
                 </div>
