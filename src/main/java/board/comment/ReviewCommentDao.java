@@ -67,5 +67,28 @@ public class ReviewCommentDao {
 
         return count;
     }
+    
+    // 댓글 등록
+ 	public void insertComment(ReviewCommentDto dto) {
+
+ 	    String sql = "INSERT INTO review_comment "
+ 	               + "(board_idx, writer_id, content, parent_comment_idx, create_day, create_id) "
+ 	               + "VALUES (?, ?, ?, ?, NOW(), ?)";
+
+ 	    try (Connection conn = db.getDBConnect();
+ 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+ 	        pstmt.setInt(1, dto.getBoard_idx());
+ 	        pstmt.setString(2, dto.getWriter_id());
+ 	        pstmt.setString(3, dto.getContent());
+ 	        pstmt.setInt(4, dto.getParent_comment_idx()); 
+ 	        pstmt.setString(5, dto.getCreate_id());
+
+ 	        pstmt.executeUpdate();
+
+ 	    } catch (Exception e) {
+ 	        e.printStackTrace();
+ 	    }
+ 	}
 	
 }

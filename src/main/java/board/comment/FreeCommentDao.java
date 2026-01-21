@@ -50,16 +50,18 @@ public class FreeCommentDao {
 	// 댓글 등록
 	public void insertComment(FreeCommentDto dto) {
 
-	    String sql = "INSERT INTO free_comment   (board_idx, writer_id, content, create_day, create_id)   VALUES (?, ?, ?, NOW(), ?) ";
+	    String sql = "INSERT INTO free_comment "
+	               + "(board_idx, writer_id, content, parent_comment_idx, create_day, create_id) "
+	               + "VALUES (?, ?, ?, ?, NOW(), ?)";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-    	  	pstmt.setInt(1, dto.getBoard_idx());
-            pstmt.setString(2, dto.getWriter_id());
-            pstmt.setString(3, dto.getContent());
-            pstmt.setInt(4, dto.getParent_comment_idx()); 
-            pstmt.setString(5, dto.getCreate_id());
+	        pstmt.setInt(1, dto.getBoard_idx());
+	        pstmt.setString(2, dto.getWriter_id());
+	        pstmt.setString(3, dto.getContent());
+	        pstmt.setInt(4, dto.getParent_comment_idx()); // 원댓글이면 0
+	        pstmt.setString(5, dto.getCreate_id());
 
 	        pstmt.executeUpdate();
 
