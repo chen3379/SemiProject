@@ -1,3 +1,4 @@
+<%@page import="member.MemberDao"%>
 <%@page import="support.SupportDao"%>
 <%@page import="support.SupportDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -5,11 +6,12 @@
 <%
 
 //로그인 여부 확인
-String loginId = (String)session.getAttribute("id");
-String roleType = (String)session.getAttribute("roleType");
+String id = (String)session.getAttribute("id");
+boolean isLogin = (id != null);
+String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
-if(loginId == null){
+if(id == null){
 %>
 <script>
 alert("로그인 후 이용 가능합니다");
@@ -31,7 +33,7 @@ if(isUpdate){
     dto = dao.getOneData(supportIdx);
     
  	// 수정 권한 체크
-    if(!loginId.equals(dto.getId()) && !isAdmin){
+    if(!id.equals(dto.getId()) && !isAdmin){
 %>
 <script>
 alert("수정 권한이 없습니다");

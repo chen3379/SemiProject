@@ -137,16 +137,6 @@
 	    background-color: rgba(255,255,255,0.08);
 	}
 	
-	/* 삭제된 문의글 표시 */
-	.deleted-row {
-	    color: #f28b82;          /* 연한 빨강 */
-	    background-color: rgba(229, 9, 20, 0.08);
-	    cursor: default;
-	}
-	
-	.deleted-row:hover {
-	    background-color: rgba(229, 9, 20, 0.12);
-	}
 
     /* Animation Keyframes */
     @keyframes fadeInUp {
@@ -256,7 +246,20 @@
                     <tbody>
 
                     <% for(SupportDto dto : list){ %>
-                        <!-- 원글 -->
+                    
+                    	<% if("1".equals(dto.getDeleteType())){ %>
+                    		<!-- 삭제된 문의글 -->
+                    		<tr class="deleted-row"
+						        onclick="alert('삭제된 글입니다');">
+						        <td><%=dto.getSupportIdx()%></td>
+						        <td colspan="<%= isAdmin ? 6 : 5 %>">
+						            ---------------삭제된 문의글입니다----------------
+						        </td>
+						    </tr>
+					        
+				        <% } else { %>
+
+                        <!-- 정상 문의글 -->
                         <tr style="cursor:pointer;" onclick="location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>'">
                             <td><%=dto.getSupportIdx()%></td>
                             <td>
@@ -282,19 +285,10 @@
                                 </td>
                             <% } %>
                         </tr>
+                        
+                        <%} %>
 
-                        <%
-                        boolean showAnswer = false;
-                        if("1".equals(dto.getStatusType())){
-                            if("0".equals(dto.getSecretType())){
-                                showAnswer = true;
-                            } else if(isAdmin || (isLogin && id.equals(dto.getId()))){
-                                showAnswer = true;
-                            }
-                        }
-                        %>
-
-						<% if("1".equals(dto.getStatusType())){ %>
+						<% if("0".equals(dto.getDeleteType()) && "1".equals(dto.getStatusType())){ %>
 						<tr class="bg-light"
 						    style="cursor:pointer;"
 						    onclick="handleAnswerClick('<%=dto.getSecretType()%>', '<%=dto.getId()%>', '<%=dto.getSupportIdx()%>')">

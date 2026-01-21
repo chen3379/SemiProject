@@ -20,11 +20,11 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 	        
-	        String sql ="select * from support where delete_type='0' ";
+	        String sql ="select * from support";
 
 	        // 문의유형 필터
 	        if (categoryType != null && !categoryType.equals("")) {
-	            sql += " and category_type = ?";
+	            sql += " where category_type = ?";
 	        }
 	        
 	        // 답변상태 필터

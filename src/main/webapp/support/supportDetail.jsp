@@ -104,7 +104,7 @@
     </div>
 
     <!-- 작성자 버튼 -->
-    <% if (isLogin && id.equals(dto.getId())) { %>
+    <% if (isAdmin||(isLogin && id.equals(dto.getId()))) { %>
         <div class="mb-3">
         	<% if(canEdit){ %>
             <a href="supportForm.jsp?supportIdx=<%=supportIdx%>" class="btn btn-outline-primary btn-sm">
@@ -132,7 +132,7 @@
 	    <h5 class="mt-4">관리자 답변</h5>
 	
 	    <% if (answer == null) { %>
-	        <!-- ✅ 답변 등록 -->
+	        <!-- 답변 등록 -->
 	        <form action="supportAdminInsertAction.jsp" method="post">
 	            <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
 	
@@ -154,7 +154,7 @@
 	        </form>
 	
 	    <% } else { %>
-	        <!-- ✅ 답변 존재 → 출력 + 수정/삭제 -->
+	        <!-- 답변 존재 → 출력 + 수정/삭제 -->
 	        <div class="border p-3 bg-light mb-2">
 	            <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
 	        </div>
