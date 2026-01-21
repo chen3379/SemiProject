@@ -90,8 +90,6 @@
             </a>
         </li>
 
-        <hr>
-
         <!-- [2] 내 영화 (아코디언) -->
         <li class="menu-group">
             <a href="#" class="nav-link menu-trigger">
@@ -99,7 +97,7 @@
                 <span class="arrow">▼</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="#" class="ajax-nav-link" data-url="myRatings.jsp">별점 목록</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="myRating.jsp">별점 목록</a></li>
                 <li><a href="#" class="ajax-nav-link" data-url="myWishlist.jsp">찜한 영화</a></li>
             </ul>
         </li>
@@ -111,8 +109,8 @@
                 <span class="arrow">▼</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="#" class="ajax-nav-link" data-url="myPosts.jsp">커뮤니티</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="myComments.jsp">QnA</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="myPost.jsp">커뮤니티</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="myComment.jsp">QnA</a></li>
             </ul>
         </li>
 
@@ -129,10 +127,10 @@
                 <span class="arrow">▼</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="#" class="ajax-nav-link" data-url="memberList.jsp">회원 관리</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="movieList.jsp">영화 관리</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="communityList.jsp">커뮤니티 관리</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="qnaList.jsp">QnA 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminMember.jsp">회원 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminMovieList.jsp">영화 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminCommunityList.jsp">커뮤니티 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminQnaList.jsp">QnA 관리</a></li>
                 <li><a href="#" class="ajax-nav-link" data-url="../codemaster/groupList.jsp">code관리</a></li>
             </ul>
         </li>
