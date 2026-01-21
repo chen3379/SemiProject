@@ -8,34 +8,76 @@ import java.sql.SQLException;
 import mysql.db.DBConnect;
 
 public class FreeLikeDao {
-	DBConnect db= new DBConnect();
-	
-	public boolean isLike(int board_idx, String id) {
-		   boolean result = false;
-		   Connection conn=db.getDBConnect();
-		   PreparedStatement pstmt=null;
-		   ResultSet rs=null;
-		   
-		   String sql="select count(*) from free_like where board_idx=? and id=?";
-		   
-		   conn=db.getDBConnect();
-		   try {
-			pstmt=conn.prepareStatement(sql);
-			pstmt.setInt(1, board_idx);
-			pstmt.setString(2, id);
-			rs=pstmt.executeQuery();
-			
-			if(rs.next()) {
-				result=rs.getInt(1)>0;
-			}
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			db.dbClose(rs, pstmt, conn);
-		}
-		   
-		   return result;
-	}
+
+    DBConnect db = new DBConnect();
+
+    // 좋아요 여부 확인
+    public boolean isLiked(int board_idx, String id) {
+        boolean result = false;
+        String sql = "SELECT COUNT(*) FROM free_like WHERE board_idx=? AND id=?";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, board_idx);
+            pstmt.setString(2, id);
+
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) result = rs.getInt(1) > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    // 좋아요 추가
+    public void insertLike(int board_idx, String id) {
+        String sql = "INSERT INTO free_like (board_idx, id) VALUES (?,?)";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, board_idx);
+            pstmt.setString(2, id);
+            pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 좋아요 취소
+    public void deleteLike(int board_idx, String id) {
+        String sql = "DELETE FROM free_like WHERE board_idx=? AND id=?";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, board_idx);
+            pstmt.setString(2, id);
+            pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 좋아요 수
+    public int getLikeCount(int board_idx) {
+        int count = 0;
+        String sql = "SELECT COUNT(*) FROM free_like WHERE board_idx=?";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, board_idx);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) count = rs.getInt(1);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
 }
