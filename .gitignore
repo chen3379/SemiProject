@@ -42,3 +42,4 @@ secret2.properties
 .classpath
 /build/
 !*.jar
+secret2.properties
