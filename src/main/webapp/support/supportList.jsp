@@ -135,6 +135,17 @@
     .table-hover tbody tr:hover {
 	    background-color: rgba(255,255,255,0.08);
 	}
+	
+	/* 삭제된 문의글 표시 */
+	.deleted-row {
+	    color: #f28b82;          /* 연한 빨강 */
+	    background-color: rgba(229, 9, 20, 0.08);
+	    cursor: default;
+	}
+	
+	.deleted-row:hover {
+	    background-color: rgba(229, 9, 20, 0.12);
+	}
 
     /* Animation Keyframes */
     @keyframes fadeInUp {
