@@ -131,6 +131,7 @@
                 <li><a href="#" class="ajax-nav-link" data-url="adminMovieList.jsp">영화 관리</a></li>
                 <li><a href="#" class="ajax-nav-link" data-url="adminCommunityList.jsp">커뮤니티 관리</a></li>
                 <li><a href="#" class="ajax-nav-link" data-url="adminQnaList.jsp">QnA 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="../codemaster/groupList.jsp">code관리</a></li>
             </ul>
         </li>
         <% 

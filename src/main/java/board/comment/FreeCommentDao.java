@@ -67,7 +67,31 @@ public class FreeCommentDao {
 	    }
 	}
 
-	//
+	//댓글 카운트
+	public int getCommentCount(int board_idx) {
+	    int count = 0;
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+
+	    String sql = "SELECT COUNT(*) FROM free_comment WHERE board_idx=?";
+
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, board_idx);
+	        rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            count = rs.getInt(1);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(rs, pstmt, conn);
+	    }
+	    return count;
+	}
+
 	
 
 }

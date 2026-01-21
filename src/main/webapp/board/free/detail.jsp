@@ -1,3 +1,4 @@
+<%@page import="board.like.FreeLikeDao"%>
 <%@page import="board.comment.FreeCommentDto"%>
 <%@page import="java.util.List"%>
 <%@page import="board.comment.FreeCommentDao"%>
@@ -30,9 +31,16 @@ dao.updateReadCount(board_idx);
 
 FreeBoardDto dto = dao.getBoard(board_idx);
 
+/* ===== 좋아요 ===== */
+FreeLikeDao likeDao = new FreeLikeDao();
+int likeCount = likeDao.getLikeCount(board_idx);
+
+/* ===== 댓글 ===== */
 FreeCommentDao cdao = new FreeCommentDao();
 List<FreeCommentDto> clist = cdao.getCommentList(board_idx);
+int commentCount = cdao.getCommentCount(board_idx);
 %>
+
 
 
 <style>
@@ -109,27 +117,59 @@ List<FreeCommentDto> clist = cdao.getCommentList(board_idx);
 
 .post-menu {
     position: absolute;
-    top: 0;
-    right:0;
+    top: 36px;
+    right: 0;
     background: #fff;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
     display: none;
-    z-index: 100;
+    z-index: 1000;
+    min-width: 120px;
 }
 
 .post-menu a {
     display: block;
-    padding: 10px 16px;
+    padding: 12px 16px;
     font-size: 14px;
-    color: #333;
+    color: #222;
     text-decoration: none;
 }
 
 .post-menu a:hover {
     background: #f5f5f5;
 }
+
+@media (max-width: 576px) {
+
+    .post-menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        top: auto;
+        border-radius: 16px 16px 0 0;
+        padding: 12px 0;
+        box-shadow: 0 -6px 16px rgba(0,0,0,0.2);
+        animation: slideUp 0.25s ease;
+    }
+
+    .post-menu a {
+        text-align: center;
+        font-size: 16px;
+        padding: 14px;
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+}
+
 
 
 .like-area {
@@ -378,29 +418,40 @@ List<FreeCommentDto> clist = cdao.getCommentList(board_idx);
 			<div class="post-meta">
 				<span class="readcount">조회 <%=dto.getReadcount()%></span>
 
-				<%-- 작성자만 보이게 --%>
+				<%-- 작성자 관리자만 보이게 수정 삭제  --%>
 				<%
 				String loginId = (String) session.getAttribute("loginid");
+				
 				boolean isOwner = loginId != null && loginId.equals(dto.getId());
+				boolean isAdmin = "ADMIN".equals(session.getAttribute("roleType"));
+				
+				// 🔧 테스트용 스위치
+				boolean isTestMode = false;   // 테스트 끝나면 false
+				boolean canEdit = isTestMode || isOwner || isAdmin;
 				%>
 
+
 				<%
-				if (!isOwner) {
+				if (canEdit) {
 				%>
 				<span class="more" id="postMenuBtn">⋮</span>
 				<%
 				}
 				%>
-			</div>
-			<% if (!isOwner) { %>
-			<div class="post-menu" id="postMenu">
-				<a href="updateForm.jsp?board_idx=<%=board_idx%>">수정</a> <a
-					href="delete.jsp?board_idx=<%=board_idx%>"
-					onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
-			</div>
-			<% } %>
-		</div>
 
+				<%
+				if (canEdit) {
+				%>
+				<div class="post-menu" id="postMenu">
+					<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> <a
+						href="delete.jsp?board_idx=<%=board_idx%>"
+						onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+				</div>
+				<%
+				}
+				%>
+			</div>
+		</div>
 		<!-- 제목 -->
 		<h2 class="post-title"><%= dto.getTitle() %></h2>
 
@@ -420,22 +471,40 @@ List<FreeCommentDto> clist = cdao.getCommentList(board_idx);
 		<div class="post-content">
 			<%= dto.getContent() %>
 		</div>
+		<%
+		FreeLikeDao frLikeDao = new FreeLikeDao();
+		
+		String frLoginId = (String) session.getAttribute("loginid");
+		
+		// 좋아요 개수
+		int frLikeCount = likeDao.getLikeCount(board_idx);
+		
+		// 내가 좋아요 눌렀는지
+		boolean isLiked = false;
+		if (loginId != null) {
+		    isLiked = likeDao.isLiked(board_idx, loginId);
+		}
+		%>
 
 		<!-- 좋아요 -->
 		<div class="like-area">
-			<div class="like-wrapper">
-				<i class="bi bi-hand-thumbs-up"></i> <span class="like-count">1</span>
-			</div>
+		    <div class="like-wrapper <%=isLiked ? "active" : "" %>"
+		         id="likeBtn"
+		         data-board="<%= board_idx %>">
+		        <i class="bi bi-hand-thumbs-up"></i>
+		        <span class="like-count" id="likeCount"><%= likeCount %></span>
+		    </div>
 		</div>
+
 
 		<!-- 하단 액션 -->
 		<div class="post-footer">
-			<span>💬 0</span> <span id="copyUrlBtn" style="cursor: pointer;">🔗
+			<span>💬 <%=commentCount %></span> <span id="copyUrlBtn" style="cursor: pointer;">🔗
 				URL</span> <span>🔗 공유</span>
 		</div>
 
 		<!-- 댓글 영역 -->
-		<div class="comment-list">
+		<div class="comment-list mt-5">
 
 			<% for (FreeCommentDto c : clist) { %>
 
@@ -506,82 +575,60 @@ List<FreeCommentDto> clist = cdao.getCommentList(board_idx);
 			<% } %>
 
 		</div>
-
 	</div>
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
 	
-	    /* ======================
-	       URL 복사 버튼
-	       ====================== */
+	    /* URL 복사 */
 	    const copyBtn = document.getElementById('copyUrlBtn');
-	
 	    if (copyBtn) {
 	        const originalText = copyBtn.innerHTML;
 	        let timer = null;
 	
 	        copyBtn.addEventListener('click', function () {
-	            const url = window.location.href;
-	
-	            navigator.clipboard.writeText(url).then(() => {
-	
+	            navigator.clipboard.writeText(location.href).then(() => {
 	                if (timer) return;
-	
 	                copyBtn.innerHTML = '🔗 URL 복사됨';
-	                copyBtn.style.color = '#db1f12';
-	
 	                timer = setTimeout(() => {
 	                    copyBtn.innerHTML = originalText;
-	                    copyBtn.style.color = '';
 	                    timer = null;
 	                }, 2000);
-	
-	            }).catch(() => {
-	                alert('URL 복사에 실패했습니다.');
 	            });
 	        });
 	    }
 	
-	    /* ======================
-	       답글 토글 버튼
-	       ====================== */
-	    const replyButtons = document.querySelectorAll('.reply-btn');
-	
-	    replyButtons.forEach(function (btn) {
-	        btn.addEventListener('click', function () {
-	            const id = btn.dataset.id;
-	            const form = document.getElementById('reply-form-' + id);
-	
+	    /* 답글 토글 */
+	    document.querySelectorAll('.reply-btn').forEach(btn => {
+	        btn.addEventListener('click', () => {
+	            const form = document.getElementById('reply-form-' + btn.dataset.id);
 	            if (!form) return;
-	
-	            if (form.style.maxHeight) {
-	                form.style.maxHeight = null;
-	                form.style.opacity = '0';
-	            } else {
-	                form.style.display = 'block';
-	                form.style.maxHeight = form.scrollHeight + 'px';
-	                form.style.opacity = '1';
-	            }
+	            form.style.display = form.style.display === 'block' ? 'none' : 'block';
 	        });
 	    });
 	
-	});
-	
-	document.addEventListener('DOMContentLoaded', function () {
-	    const btn = document.getElementById('postMenuBtn');
+	    /* 게시글 메뉴 */
+	    const menuBtn = document.getElementById('postMenuBtn');
 	    const menu = document.getElementById('postMenu');
-
-	    if (!btn || !menu) return;
-
-	    btn.addEventListener('click', function (e) {
-	        e.stopPropagation();
-	        menu.style.display =
-	            menu.style.display === 'block' ? 'none' : 'block';
+	    if (menuBtn && menu) {
+	        menuBtn.addEventListener('click', e => {
+	            e.stopPropagation();
+	            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+	        });
+	        document.addEventListener('click', () => menu.style.display = 'none');
+	    }
+	
+	    /* 좋아요 */
+	    document.getElementById('likeBtn')?.addEventListener('click', function () {
+	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
+	            if (res.status === 'LOGIN_REQUIRED') {
+	                alert('로그인이 필요합니다.');
+	                return;
+	            }
+	            $('#likeCount').text(res.count);
+	            $('#likeBtn').toggleClass('active', res.liked);
+	        }, 'json');
 	    });
-
-	    document.addEventListener('click', function () {
-	        menu.style.display = 'none';
-	    });
+	
 	});
 </script>
 </body>
