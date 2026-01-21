@@ -82,6 +82,55 @@ public class ReviewBoardDao {
 
 	    return list;
 	}
+	
+	
+	// 조회수 증가
+	public void updateReadCount(int board_idx) {
+
+	    String sql = "UPDATE review_board SET readcount = readcount + 1 WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	// 상세 조회
+	public ReviewBoardDto getBoard(int board_idx) {
+
+	    ReviewBoardDto dto = null;
+
+	    String sql = "SELECT * FROM review_board WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        ResultSet rs = pstmt.executeQuery();
+
+	        if (rs.next()) {
+	            dto = new ReviewBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setGenre_type(rs.getString("genre_type"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setContent(rs.getString("content"));
+	            dto.setId(rs.getString("id"));
+	            dto.setReadcount(rs.getInt("readcount"));
+	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            //dto.setUpdate_day(rs.getTimestamp("update_day"));
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return dto;
+	}
 
 
 }

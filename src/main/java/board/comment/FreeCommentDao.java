@@ -35,6 +35,7 @@ public class FreeCommentDao {
 	            dto.setUpdate_day(rs.getTimestamp("update_day"));
 	            dto.setCreate_id(rs.getString("create_id"));
 	            dto.setUpdate_id(rs.getString("update_id"));
+	            dto.setIs_deleted(rs.getInt("is_deleted"));
 
 	            list.add(dto);
 	        }

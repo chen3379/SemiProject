@@ -505,75 +505,86 @@ int commentCount = cdao.getCommentCount(board_idx);
 
 		<!-- 댓글 영역 -->
 		<div class="comment-list mt-5">
-
 			<% for (FreeCommentDto c : clist) { %>
-
-			<% if (c.getParent_comment_idx() == 0) { %>
-
-			<!-- ================= 댓글 ================= -->
-			<div class="comment-item">
-
-				<div class="comment-avatar">👤</div>
-
-				<div class="comment-body">
-
-					<div class="comment-top">
-						<span class="comment-writer"><%= c.getWriter_id() %></span> <span
-							class="comment-date"><%= c.getCreate_day() %></span>
-					</div>
-
-					<div class="comment-content">
-						<%= c.getContent() %>
-					</div>
-
-					<div class="comment-actions">
-						<span class="reply-btn" data-id="<%= c.getComment_idx() %>">답글</span>
-						<span class="action-divider">·</span> <span>신고</span>
-					</div>
-
-					<!-- 답글 입력 -->
-					<div class="reply-form" id="reply-form-<%= c.getComment_idx() %>">
-						<form action="commentInsert.jsp" method="post">
-							<input type="hidden" name="board_idx" value="<%= board_idx %>">
-							<input type="hidden" name="parent_comment_idx"
-								value="<%= c.getComment_idx() %>">
-							<textarea name="content" placeholder="답글을 입력하세요" required></textarea>
-							<button type="submit">등록</button>
-						</form>
-					</div>
-
-				</div>
-			</div>
-
-			<% } else { %>
-
-			<!-- ================= 답글 ================= -->
-			<div class="comment-item reply">
-
-				<div class="comment-avatar">👤</div>
-
-				<div class="comment-body">
-
-					<div class="comment-top">
-						<span class="comment-writer"><%= c.getWriter_id() %></span> <span
-							class="comment-date"><%= c.getCreate_day() %></span>
-					</div>
-
-					<div class="comment-content">
-						<%= c.getContent() %>
-					</div>
-
-					<div class="comment-actions">
-						<span>신고</span>
-					</div>
-
-				</div>
-			</div>
-
+			    <%-- ================= 삭제된 댓글 ================= --%>
+			    <% if (c.getIs_deleted() == 1) { %>
+			
+			        <div class="comment-item <%= c.getParent_comment_idx() != 0 ? "reply" : "" %>">
+			            <div class="comment-avatar">👤</div>
+			            <div class="comment-body">
+			                <div class="comment-content text-muted fst-italic">
+			                    삭제된 댓글입니다.
+			                </div>
+			            </div>
+			        </div>
+			
+			    <% } else { %>
+			
+			        <%-- ================= 정상 댓글 ================= --%>
+			
+			        <% if (c.getParent_comment_idx() == 0) { %>
+			        <!-- ===== 원댓글 ===== -->
+			        <div class="comment-item">
+			
+			            <div class="comment-avatar">👤</div>
+			
+			            <div class="comment-body">
+			                <div class="comment-top">
+			                    <span class="comment-writer"><%= c.getWriter_id() %></span>
+			                    <span class="comment-date"><%= c.getCreate_day() %></span>
+			                </div>
+			
+			                <div class="comment-content">
+			                    <%= c.getContent() %>
+			                </div>
+			
+			                <div class="comment-actions">
+			                    <span class="reply-btn" data-id="<%= c.getComment_idx() %>">답글</span>
+			                    <span class="action-divider">·</span>
+			                    <span>신고</span>
+			                </div>
+			
+			                <!-- 답글 입력 -->
+			                <div class="reply-form" id="reply-form-<%= c.getComment_idx() %>">
+			                    <form action="commentInsert.jsp" method="post">
+			                        <input type="hidden" name="board_idx" value="<%= board_idx %>">
+			                        <input type="hidden" name="parent_comment_idx"
+			                               value="<%= c.getComment_idx() %>">
+			                        <textarea name="content" placeholder="답글을 입력하세요" required></textarea>
+			                        <button type="submit">등록</button>
+			                    </form>
+			                </div>
+			            </div>
+			        </div>
+			
+			        <% } else { %>
+			
+			        <!-- ===== 답글 ===== -->
+			        <div class="comment-item reply">
+			
+			            <div class="comment-avatar">👤</div>
+			
+			            <div class="comment-body">
+			                <div class="comment-top">
+			                    <span class="comment-writer"><%= c.getWriter_id() %></span>
+			                    <span class="comment-date"><%= c.getCreate_day() %></span>
+			                </div>
+			
+			                <div class="comment-content">
+			                    <%= c.getContent() %>
+			                </div>
+			
+			                <div class="comment-actions">
+			                    <span>신고</span>
+			                </div>
+			            </div>
+			        </div>
+			
+			        <% } %>
+			
+			    <% } %>
+			
 			<% } %>
-
-			<% } %>
-
 		</div>
 	</div>
 	<script>
