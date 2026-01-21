@@ -1,6 +1,6 @@
 package board.review;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 
 public class ReviewBoardDto {
 	private int board_idx;

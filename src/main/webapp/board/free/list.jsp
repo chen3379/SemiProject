@@ -26,19 +26,10 @@ List<FreeBoardDto> list = dao.getBoardList(category);
     box-sizing: border-box;
 }
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                 Roboto, "Noto Sans KR", Arial, sans-serif;
-    background-color: #fafafa;
-}
+
 
 /* 전체 감싸는 영역 */
-.container {
-    max-width: 1200px;     /* 최대만 제한 */
-    margin: 0 auto;
-    padding: 20px;
-}
+
 
 /* 제목 */
 h2 {
@@ -177,7 +168,6 @@ td.title {
 </style>
 </head>
 <body>
-
 <div class="container">
     <h2>자유게시판</h2>
 
@@ -250,6 +240,5 @@ td.title {
         <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;글쓰기</a>
     </div>
 </div>
-
 </body>
-</html>
+</html>s

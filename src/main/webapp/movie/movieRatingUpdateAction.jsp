@@ -11,5 +11,5 @@
 	BigDecimal score=new BigDecimal(scoreStr);
 	
 	MovieRatingDao dao = new MovieRatingDao();
-	dao.insertRating(movieIdx, id, score);
+	dao.updateRating(movieIdx, id, score);
 %>

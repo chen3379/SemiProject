@@ -93,12 +93,38 @@ public class FreeBoardDao {
 	}
 	
 	//community.jsp 하단 – 자유게시판 TOP 10
-	public List<FreeBoardDto> getTop10List() {
+	public List<FreeBoardDto> getTop10ByReadcount() {
+
 	    List<FreeBoardDto> list = new ArrayList<>();
 
-	    String sql = " SELECT * FROM free_board ORDER BY readcount DESC, create_day DESC LIMIT 10";
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
 
-	    // DB 연결 + ResultSet → list 담기
+	    String sql = "SELECT board_idx, title, readcount " +
+	                 "FROM free_board " +
+	                 "ORDER BY readcount DESC LIMIT 10";
+
+	    try {
+	        conn = db.getDBConnect();
+	        pstmt = conn.prepareStatement(sql);
+	        rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            FreeBoardDto dto = new FreeBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setReadcount(rs.getInt("readcount"));
+
+	            list.add(dto);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(rs, pstmt, conn);
+	    }
+
 	    return list;
 	}
 
@@ -157,6 +183,56 @@ public class FreeBoardDao {
 
 	    return dto;
 	}
+	
+	public void updateBoard(int board_idx, String category, String title, String content) {
+
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+
+	    String sql =
+	        "UPDATE free_board " +
+	        "SET category_type=?, title=?, content=?, update_day=NOW() " +
+	        "WHERE board_idx=?";
+
+	    try {
+	        conn = db.getDBConnect();
+	        pstmt = conn.prepareStatement(sql);
+
+	        pstmt.setString(1, category);
+	        pstmt.setString(2, title);
+	        pstmt.setString(3, content);
+	        pstmt.setInt(4, board_idx);
+
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(null, pstmt, conn);
+	    }
+	}
 
 
+	// 게시글 삭제
+	public void deleteBoard(int board_idx) {
+
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+
+	    String sql = "DELETE FROM free_board WHERE board_idx = ?";
+
+	    try {
+	        conn = db.getDBConnect();
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(null, pstmt, conn);
+	    }
+	}
+
+	
 }

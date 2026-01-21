@@ -1,16 +1,67 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-</head>
-<body>
+<%@page import="java.io.File"%>
+<%@page import="board.free.FreeBoardDao"%>
+<%@page import="board.free.FreeBoardDto"%>
+<%@page import="member.MemberDto"%>
+<%@page import="com.oreilly.servlet.MultipartRequest"%>
+<%@page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
 
-</body>
-</html>
+<%
+/* ======================
+   1. 로그인 체크
+   ====================== */
+String loginId = (String) session.getAttribute("id");
+MemberDto loginMember = (MemberDto) session.getAttribute("memberInfo");
+
+if (loginId == null || loginMember == null) {
+    response.sendError(401, "LOGIN_REQUIRED");
+    return;
+}
+
+/* ======================
+   2. multipart 처리
+   ====================== */
+String savePath = application.getRealPath("/save");
+int maxSize = 10 * 1024 * 1024;
+
+File dir = new File(savePath);
+if (!dir.exists()) dir.mkdirs();
+
+MultipartRequest multi = new MultipartRequest(
+    request,
+    savePath,
+    maxSize,
+    "UTF-8",
+    new DefaultFileRenamePolicy()
+);
+
+int board_idx = Integer.parseInt(multi.getParameter("board_idx"));
+String category = multi.getParameter("category");
+String title = multi.getParameter("title");
+String content = multi.getParameter("content");
+if (content == null) content = "";
+
+/* ======================
+   3. 게시글 조회
+   ====================== */
+FreeBoardDao dao = new FreeBoardDao();
+FreeBoardDto dto = dao.getBoard(board_idx);
+
+/* ======================
+   4. 권한 체크
+   - 작성자 OR 관리자
+   ====================== */
+boolean isOwner = loginId.equals(dto.getId());
+boolean isAdmin = "ADMIN".equals(loginMember.getRoleType());
+
+if (!isOwner && !isAdmin) {
+    response.sendError(403, "NO_PERMISSION");
+    return;
+}
+
+/* ======================
+   5. 수정 처리
+   ====================== */
+dao.updateBoard(board_idx, category, title, content);
+response.sendRedirect("detail.jsp?board_idx=" + board_idx);
+%>

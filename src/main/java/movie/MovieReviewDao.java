@@ -113,51 +113,134 @@ public class MovieReviewDao {
 
 	}
 	
-	//한줄평 delete
-	public void deleteReview(int reviewIdx)
-	{
-		Connection conn=db.getDBConnect();
-		PreparedStatement pstmt=null;
-		
-		String sql="delete from movie_review where review_idx=?";
-		
-		try {
-			pstmt=conn.prepareStatement(sql);
-			
-			pstmt.setInt(1, reviewIdx);
-			
-			pstmt.executeUpdate();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			db.dbClose(null, pstmt, conn);
-		}
+	//한줄평 update
+	public boolean updateReview(int reviewIdx, String id, String content) {
+
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+
+	    String sql =
+	        "update movie_review set content=?, update_day=now() " +
+	        "where review_idx=? and id=?";
+
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, content);
+	        pstmt.setInt(2, reviewIdx);
+	        pstmt.setString(3, id);
+
+	        return pstmt.executeUpdate() > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        db.dbClose(null, pstmt, conn);
+	    }
 	}
 	
-	//한줄평 update
-	public void updateReview(MovieReviewDto dto)
-	{
-		Connection conn=db.getDBConnect();
-		PreparedStatement pstmt=null;
-		
-		String sql="update movie_review set content=?, update_day=now() where review_idx=?";
-		
-		try {
-			pstmt=conn.prepareStatement(sql);
-			
-			pstmt.setString(1, dto.getContent());
-	        pstmt.setInt(2, dto.getReviewIdx());
-			
-			pstmt.executeUpdate();
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			db.dbClose(null, pstmt, conn);
-		}
+	//한줄평 관리자 update
+	public boolean updateReviewByAdmin(int reviewIdx, String content) {
+
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+
+	    String sql =
+	        "update movie_review set content=?, update_day=now() " +
+	        "where review_idx=?";
+
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setString(1, content);
+	        pstmt.setInt(2, reviewIdx);
+
+	        return pstmt.executeUpdate() > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        db.dbClose(null, pstmt, conn);
+	    }
 	}
+
+	
+	//한줄평 delete
+	public boolean deleteReview(int reviewIdx, String id) {
+	    boolean ok = false;
+
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+
+	    String sql = "delete from movie_review where review_idx=? and id=?";
+
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, reviewIdx);
+	        pstmt.setString(2, id);
+
+	        int n = pstmt.executeUpdate();
+	        ok = (n > 0);
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(null, pstmt, conn);
+	    }
+
+	    return ok;
+	}
+	
+	//한줄평 관리자 delete
+	public boolean deleteReviewByAdmin(int reviewIdx) {
+	    boolean ok = false;
+
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+
+	    String sql = "delete from movie_review where review_idx=?";
+
+	    try {
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, reviewIdx);
+
+	        int n = pstmt.executeUpdate();
+	        ok = (n > 0);
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(null, pstmt, conn);
+	    }
+
+	    return ok;
+	}
+	
+	//한줄평 작성자 id만 불러오기
+	public String getReviewWriterId(int reviewIdx){
+	    String writerId = null;
+	    
+	    Connection conn = db.getDBConnect();
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+
+	    String sql = "select id from movie_review where review_idx=?";
+
+	    try{
+	        pstmt = conn.prepareStatement(sql);
+	        pstmt.setInt(1, reviewIdx);
+	        rs = pstmt.executeQuery();
+	        if(rs.next()){
+	            writerId = rs.getString("id");
+	        }
+	    }catch(SQLException e){
+	        e.printStackTrace();
+	    }finally{
+	        db.dbClose(rs, pstmt, conn);
+	    }
+	    return writerId;
+	}
+	
+	
 	
 }

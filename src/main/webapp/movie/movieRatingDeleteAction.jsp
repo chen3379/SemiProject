@@ -1,3 +1,4 @@
+<%@page import="movie.MovieRatingStatDao"%>
 <%@page import="movie.MovieRatingDao"%>
 <%@page import="java.math.BigDecimal"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -8,4 +9,7 @@
 
 	MovieRatingDao dao = new MovieRatingDao();
 	dao.deleteRating(movieIdx, id);
+	
+	MovieRatingStatDao statDao = new MovieRatingStatDao();
+    statDao.refreshStat(movieIdx);
 %>

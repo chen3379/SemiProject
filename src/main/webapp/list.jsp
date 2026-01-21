@@ -1,5 +1,3 @@
-<%@page import="board.review.ReviewBoardDao"%>
-<%@page import="board.review.ReviewBoardDto"%>
 <%@page import="board.free.FreeBoardDto"%>
 <%@page import="java.util.List"%>
 <%@page import="board.free.FreeBoardDao"%>
@@ -14,8 +12,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <title>커뮤니티-왓플릿스</title>
 <%
-ReviewBoardDao dao = new ReviewBoardDao();
-List<ReviewBoardDto> list = dao.getReviewList();
+String category = request.getParameter("category");
+if (category == null) category = "all";
+
+FreeBoardDao dao = new FreeBoardDao();
+List<FreeBoardDto> list = dao.getBoardList(category);
 %>
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -25,10 +26,19 @@ List<ReviewBoardDto> list = dao.getReviewList();
     box-sizing: border-box;
 }
 
-
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, "Noto Sans KR", Arial, sans-serif;
+    background-color: #fafafa;
+}
 
 /* 전체 감싸는 영역 */
-
+.container {
+    max-width: 1200px;     /* 최대만 제한 */
+    margin: 0 auto;
+    padding: 20px;
+}
 
 /* 제목 */
 h2 {
@@ -167,42 +177,77 @@ td.title {
 </style>
 </head>
 <body>
+
 <div class="container">
-    <h2>🎬 영화 리뷰</h2>
+    <h2>자유게시판</h2>
+
+    <!-- 카테고리 -->
+   <div class="category-wrap">
+	    <div class="category">
+	        <a href="list.jsp?category=all"
+	           class="<%= "all".equals(category) ? "active" : "" %>">
+	           전체
+	        </a>
+	
+	        <a href="list.jsp?category=FREE"
+	           class="<%= "FREE".equals(category) ? "active" : "" %>">
+	           자유수다
+	        </a>
+	
+	        <a href="list.jsp?category=QNA"
+	           class="<%= "QNA".equals(category) ? "active" : "" %>">
+	           질문 / 추천
+	        </a>
+	    </div>
+	</div>
 
     <!-- 게시글 목록 -->
     <table>
         <thead>
             <tr>
                 <th>번호</th>
+                <th>카테고리</th>
                 <th>제목</th>
                 <th>작성자</th>
                 <th>작성일</th>
                 <th>조회수</th>
             </tr>
         </thead>
-
-        <tbody>
-        <% for (ReviewBoardDto dto : list) { %>
-            <tr>
-                <td class="num"><%= dto.getBoard_idx() %></td>
-
-                <td class="title">
-                    <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
-                        <%= dto.getTitle() %>
-                    </a>
-                </td>
-
-                <td class="writer"><%= dto.getId() %></td>
-                <td class="date"><%= dto.getCreate_day() %></td>
-                <td class="count"><%= dto.getReadcount() %></td>
-            </tr>
-        <% } %>
-        </tbody>
+		<tbody>
+			<%
+			    for (FreeBoardDto dto : list) {
+			%>
+			    <tr>
+			        <td class="num"><%=dto.getBoard_idx()%></td>
+			
+			        <td class="category">
+			            <%="FREE".equals(dto.getCategory_type()) ? "자유수다" : "질문/추천"%>
+			        </td>
+			
+			        <td class="title">
+			            <% if (dto.isIs_spoiler_type()) { %>
+			                <span class="spoiler">[스포]</span>
+			            <% } %>
+			            <a href="detail.jsp?board_idx=<%= dto.getBoard_idx()%>">
+			                <%= dto.getTitle() %>
+			            </a>
+			        </td>
+			
+			        <td class="writer"><%= dto.getId() %></td>
+			        <td class="date"><%= dto.getCreate_day() %></td>
+			        <td class="count"><%= dto.getReadcount() %></td>
+			    </tr>
+			<%
+			    }
+			%>
+		</tbody>
+			
+        
+        	
     </table>
 
     <div class="write-btn">
-        <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;리뷰 작성</a>
+        <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;글쓰기</a>
     </div>
 </div>
 

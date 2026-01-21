@@ -1,16 +1,25 @@
+<%@page import="board.comment.FreeCommentDao"%>
+<%@page import="board.comment.FreeCommentDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-</head>
-<body>
+<%
+int board_idx = Integer.parseInt(request.getParameter("board_idx"));
+String content = request.getParameter("content");
+String loginId = (String) session.getAttribute("loginid");
 
-</body>
-</html>
+int parent = request.getParameter("parent_comment_idx") == null
+        ? 0
+        : Integer.parseInt(request.getParameter("parent_comment_idx"));
+
+FreeCommentDto dto = new FreeCommentDto();
+dto.setBoard_idx(board_idx);
+dto.setWriter_id(loginId);
+dto.setContent(content);
+dto.setParent_comment_idx(parent);
+dto.setCreate_id(loginId);
+
+FreeCommentDao dao = new FreeCommentDao();
+dao.insertComment(dto);
+
+response.sendRedirect("detail.jsp?board_idx=" + board_idx);
+%>
