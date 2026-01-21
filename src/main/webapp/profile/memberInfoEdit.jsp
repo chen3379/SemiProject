@@ -139,7 +139,7 @@
     #cancelBtn:hover { background: #333; }
 </style>
 
-<div class="edit-content-wrapper">
+<div class="edit-content-wrapper" data-context-path="${pageContext.request.contextPath}">
     <div class="edit-card shadow-lg">
         <div class="edit-header">
             <h2>회원정보 수정</h2>
@@ -221,7 +221,8 @@
             dataType: "json",
             success: function (data) {
                 if (data && data.isMine) {
-                    $('#photoPreview').attr('src', "${pageContext.request.contextPath}" + data.photo);
+                    const contextPath = $('.edit-content-wrapper').data('context-path');
+                    $('#photoPreview').attr('src', contextPath + data.photo);
                     $('#memberId').val(data.id);
                     $('#memberNickname').val(data.nickname);
                     $('#memberName').val(data.name);

@@ -22,6 +22,12 @@ public class MovieDto {
     private String updateId;
     private double avgScore;
 
+    // 프로필 페이지에서 사용할 추가 필드
+    private double myScore;
+    private String myComment;
+    private String ratingDay;
+    private String wishDay;
+
     public int getMovieIdx() {
         return movieIdx;
     }
@@ -156,5 +162,38 @@ public class MovieDto {
 
     public void setUpdateId(String updateId) {
         this.updateId = updateId;
+    }
+
+    // 프로필 페이지 추가 필드 Getters & Setters
+    public double getMyScore() {
+        return myScore;
+    }
+
+    public void setMyScore(double myScore) {
+        this.myScore = myScore;
+    }
+
+    public String getMyComment() {
+        return myComment;
+    }
+
+    public void setMyComment(String myComment) {
+        this.myComment = myComment;
+    }
+
+    public String getRatingDay() {
+        return ratingDay;
+    }
+
+    public void setRatingDay(String ratingDay) {
+        this.ratingDay = ratingDay;
+    }
+
+    public String getWishDay() {
+        return wishDay;
+    }
+
+    public void setWishDay(String wishDay) {
+        this.wishDay = wishDay;
     }
 }

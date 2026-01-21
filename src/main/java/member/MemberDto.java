@@ -1,8 +1,12 @@
 package member;
 
 import java.sql.Timestamp;
+import java.io.Serializable;
 
-public class MemberDto {
+public class MemberDto implements Serializable {
+
+	// dto session 직렬화
+	private static final long serialVersionUID = 1L;
 	// member table
 	private int memberIdx;
 	private String id;
@@ -13,7 +17,6 @@ public class MemberDto {
 	private String nickname;
 	private Timestamp createDay;
 	private Timestamp updateDay;
-	private String email;
 	private int age;
 	private String name;
 	private String gender;
@@ -56,10 +59,6 @@ public class MemberDto {
 
 	public Timestamp getUpdateDay() {
 		return updateDay;
-	}
-
-	public String getEmail() {
-		return email;
 	}
 
 	public int getAge() {
@@ -120,10 +119,6 @@ public class MemberDto {
 
 	public void setUpdateDay(Timestamp updateDay) {
 		this.updateDay = updateDay;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public void setAge(int age) {
