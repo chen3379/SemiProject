@@ -20,10 +20,13 @@
 <title>커뮤니티</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/community.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
 <jsp:include page="../main/nav.jsp" />
+    <jsp:include page="../login/loginModal.jsp" />
+    <jsp:include page="../profile/profileModal.jsp"/>
 
 <div class="container community-main">
 
@@ -106,6 +109,5 @@
 
 </div>
 
-<jsp:include page="../main/footer.jsp" />
 </body>
 </html>

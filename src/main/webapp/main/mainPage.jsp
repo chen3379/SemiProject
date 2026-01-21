@@ -120,7 +120,6 @@
 
 <body>
     <jsp:include page="nav.jsp" />
-
     <jsp:include page="../login/loginModal.jsp" />
     <jsp:include page="../profile/profileModal.jsp"/>
 

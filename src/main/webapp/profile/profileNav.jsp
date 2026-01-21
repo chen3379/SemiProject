@@ -109,8 +109,8 @@
                 <span class="arrow">▼</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="#" class="ajax-nav-link" data-url="myPost.jsp">커뮤니티</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="myComment.jsp">QnA</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="memberBoard.jsp">커뮤니티</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="memberQna.jsp">QnA</a></li>
             </ul>
         </li>
 
