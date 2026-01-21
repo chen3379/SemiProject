@@ -5,6 +5,7 @@
 request.setCharacterEncoding("UTF-8");
 
 String id = (String)session.getAttribute("id");
+String supportIdxStr = request.getParameter("supportIdx");
 String categoryType = request.getParameter("categoryType");
 String title = request.getParameter("title");
 String content = request.getParameter("content");
@@ -17,7 +18,15 @@ if(categoryType == null || title == null || content == null ||
 }
 
 SupportDao dao = new SupportDao();
-dao.insertSupport(categoryType, title, content, id, secret);
+
+if(supportIdxStr == null || supportIdxStr.equals("")){
+    // 등록
+    dao.insertSupport(categoryType, title, content, id, secret);
+} else {
+    // 수정
+    int supportIdx = Integer.parseInt(supportIdxStr);
+    dao.updateSupport(supportIdx, title, content);
+}
 
 out.print("{\"result\":\"OK\"}");
 %>

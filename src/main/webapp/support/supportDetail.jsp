@@ -54,6 +54,9 @@
     // 문의 상태
     String statusText = "답변대기";
     if ("1".equals(dto.getStatusType())) statusText = "답변완료";
+    
+    // 작성자, 관리자만 수정버튼 노출
+    boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
 %>
 <!DOCTYPE html>
 <html>
@@ -95,9 +98,11 @@
     <!-- 작성자 버튼 -->
     <% if (isLogin && id.equals(dto.getId())) { %>
         <div class="mb-3">
+        	<% if(canEdit){ %>
             <a href="supportForm.jsp?supportIdx=<%=supportIdx%>" class="btn btn-outline-primary btn-sm">
                 수정
             </a>
+            <% } %>
             <a href="supportDeleteAction.jsp?supportIdx=<%=supportIdx%>"
                class="btn btn-outline-danger btn-sm"
                onclick="return confirm('정말 삭제하시겠습니까?');">

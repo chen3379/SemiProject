@@ -190,38 +190,41 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public boolean updateSupport(String categoryType,String title,String content,
-	    String secret,String id,int supportIdx) {
+	    public boolean updateSupport(
+	    	    String categoryType,
+	    	    String title,
+	    	    String content,
+	    	    String secret,
+	    	    String loginId,
+	    	    boolean isAdmin,
+	    	    int supportIdx
+	    	){
+	    	    Connection conn = db.getDBConnect();
+	    	    PreparedStatement pstmt = null;
 
-			Connection conn = db.getDBConnect();
-			PreparedStatement pstmt = null;
-			
-			String sql ="update support set category_type = ?, title = ?, content = ?, " +
-			"secret_type = ?, update_day = now(), update_id = ? " +
-			"where support_idx = ? and id = ? " +  // 작성자 본인만 수정
-			"and delete_type = '0'";     // 삭제된 글 수정 방지
-			
-			try {
-			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setString(1, categoryType);
-			pstmt.setString(2, title);
-			pstmt.setString(3, content);
-			pstmt.setString(4, secret);
-			pstmt.setString(5, id);          // update_id
-			pstmt.setInt(6, supportIdx);
-			pstmt.setString(7, id);
-			
-			// 수정된 행 수 기준으로 성공/실패 판단
-			return pstmt.executeUpdate() > 0;
-			
-			} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-			} finally {
-			db.dbClose(null, pstmt, conn);
-			}
-	    }
+	    	    String sql =
+	    	      "update support set category_type=?, title=?, content=?, secret_type=?, update_day=now() " +
+	    	      "where support_idx=? and (id=? or ?=true)";
+
+	    	    try{
+	    	        pstmt = conn.prepareStatement(sql);
+	    	        pstmt.setString(1, categoryType);
+	    	        pstmt.setString(2, title);
+	    	        pstmt.setString(3, content);
+	    	        pstmt.setString(4, secret);
+	    	        pstmt.setInt(5, supportIdx);
+	    	        pstmt.setString(6, loginId);
+	    	        pstmt.setBoolean(7, isAdmin);
+
+	    	        return pstmt.executeUpdate() > 0;
+
+	    	    }catch(Exception e){
+	    	        e.printStackTrace();
+	    	        return false;
+	    	    }finally{
+	    	        db.dbClose(null, pstmt, conn);
+	    	    }
+	    	}
 
 
 	    // 답변상태 변경
