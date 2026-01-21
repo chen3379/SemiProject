@@ -9,11 +9,12 @@
     List<MemberDto> memberList = (List<MemberDto>) request.getAttribute("memberList");
     Integer totalMemberCount = (Integer) request.getAttribute("totalCount");
     String sortOrder = (String) request.getAttribute("sortOrder");
+    String searchKeyword = request.getParameter("search"); // 검색어 유지용
 
     if (totalMemberCount == null) totalMemberCount = 0;
     if (sortOrder == null) sortOrder = "latest";
+    if (searchKeyword == null) searchKeyword = "";
 %>
-
 <style>
     /* [WHATFLIX Admin - 통합 디자인 시스템] */
     .admin-section {
@@ -135,87 +136,77 @@
         text-decoration: none;
     }
 </style>
-
-<div class="member-list-container">
-<%
-    if (memberList != null && !memberList.isEmpty()) {
-        String cp = pageContext.getServletContext().getContextPath();
-        for (MemberDto m : memberList) {
-            String photo = m.getPhoto();
-%>
-            <!-- 1. onclick 경로를 확실하게 지정하고 cursor style 추가 -->
-            <div class="member-row" 
-                 onclick="goToMemberEdit('<%= m.getId() %>')" 
-                 style="min-height: 60px; padding: 8px 20px; cursor: pointer;">
-                
-                <!-- 썸네일 -->
-                <img src="<%= (photo == null || photo.trim().isEmpty()) 
-                            ? cp + "/profile_photo/default_photo.jpg" 
-                            : cp + photo %>" 
-                     class="member-thumb" 
-                     style="width: 40px; height: 40px; margin-right: 15px; pointer-events: none;"
-                     onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'">
-
-                <div class="member-main-info" style="flex: 1.5; pointer-events: none;">
-                    <div class="member-name-wrap">
-                        <span class="member-name" style="font-size: 0.95rem;"><%= m.getNickname() %></span> 
-                        <% if("9".equals(m.getRoleType())) { %><span class="role-badge">ADMIN</span><% } %>
-                    </div>
-                    <div class="member-sub-info" style="font-size: 0.8rem; color: #777;">
-                        <%= m.getId() %> | <%= m.getHp() != null ? m.getHp() : "연락처 없음" %>
-                    </div>
-                </div>
-
-                <div class="member-status-info" style="flex: 1; text-align: center; font-size: 0.8rem; pointer-events: none;">
-                    <span style="color: #555;">가입일:</span> <%= m.getCreateDay().toString().substring(0, 10) %>
-                </div>
-
-                <div class="member-actions" style="margin-left: auto;">
-                    <!-- 버튼 클릭 시에도 부모 이벤트가 실행되도록 stopPropagation 없이 유지 -->
-                    <span class="edit-link-btn" style="padding: 4px 12px; font-size: 0.75rem;">관리</span>
-                </div>
+<div class="admin-section">
+    <div class="section-header">
+        <div class="section-title-wrap">
+            <h2 class="section-title">회원 관리 <span class="section-count">(<%=totalMemberCount%>)</span></h2>
+        </div>
+        
+        <div class="admin-controls">
+            <div class="search-wrapper" style="position: relative;">
+                <input type="text" id="memberSearch" class="search-bar" 
+                       placeholder="닉네임 또는 아이디 검색" value="<%=searchKeyword%>"
+                       onkeyup="if(window.event.keyCode==13){searchMember()}">
+                <i class="bi bi-search" onclick="searchMember()" 
+                   style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #777;"></i>
             </div>
-<% 
-        }
-    } 
-%>
+            
+            <button type="button" class="sort-btn <%= "latest".equals(sortOrder) ? "active" : "" %>" 
+                    onclick="sortMembers('latest')">최신순</button>
+            <button type="button" class="sort-btn <%= "name".equals(sortOrder) ? "active" : "" %>" 
+                    onclick="sortMembers('name')">이름순</button>
+        </div>
+    </div>
+
+    <div class="member-list-container">
+    <%
+        if (memberList != null && !memberList.isEmpty()) {
+            String cp = pageContext.getServletContext().getContextPath();
+            for (MemberDto m : memberList) {
+                String photo = m.getPhoto();
+    %>
+                <!-- [수정됨] onclick 핸들러에 this를 넘기고, data-id 속성 추가 -->
+                <div class="member-row" onclick="goToMemberEdit(this)" data-id="<%= m.getId() %>">
+                    <img src="<%= (photo == null || photo.trim().isEmpty()) 
+                                ? cp + "/profile_photo/default_photo.jpg" 
+                                : cp + photo %>" 
+                         class="member-thumb" 
+                         onerror="this.src='<%=cp%>/profile_photo/default_photo.jpg'">
+
+                    <div class="member-main-info">
+                        <div class="member-name-wrap">
+                            <span class="member-name"><%= m.getNickname() %></span> 
+                            <% if("9".equals(m.getRoleType())) { %><span class="role-badge">ADMIN</span><% } %>
+                        </div>
+                        <div class="member-sub-info">
+                            <%= m.getId() %> | <%= m.getHp() != null ? m.getHp() : "연락처 없음" %>
+                        </div>
+                    </div>
+
+                    <div class="member-status-info">
+                        <span style="color: #555;">가입일:</span> <%= m.getCreateDay().toString().substring(0, 10) %>
+                    </div>
+
+                    <div class="member-actions">
+                        <span class="edit-link-btn">관리</span>
+                    </div>
+                </div>
+    <% 
+            }
+        } else {
+    %>
+        <div class="text-center py-5 text-muted">조회된 회원이 없습니다.</div>
+    <% } %>
+    </div>
 </div>
 
 <script>
-    // [중요] 상세 정보 수정 이동 함수 재확인
-    function goToMemberEdit(memberId) {
-        if(!memberId) {
-            alert("회원 ID가 없습니다.");
-            return;
-        }
-
-        // adminMemberEdit.jsp 가 맞는지 파일명 재확인 필수
-        const targetUrl = "adminMemberEdit.jsp?id=" + memberId;
-        
-        console.log("Navigating to: " + targetUrl); // 디버깅용
-
-        // 1. 페이드아웃 효과와 함께 로드
-        $('#content-area').fadeOut(150, function() {
-            $(this).load(targetUrl, function(response, status, xhr) {
-                if (status == "error") {
-                    console.error("Load Error: " + xhr.status + " " + xhr.statusText);
-                    alert("페이지를 불러오는데 실패했습니다.");
-                    $(this).show(); // 에러 시 다시 보이기
-                } else {
-                    $(this).fadeIn(150);
-                    // 2026년형: 주소창 파라미터 업데이트 (필요 시)
-                    window.history.pushState(null, null, "?menu=adminMemberEdit&id=" + memberId);
-                }
-            });
-        });
-    }
-
-    // 검색 및 정렬 함수 파일명 확인 (adminMember.jsp가 리스트를 그려주는 파일이 맞는지 확인)
+    // 검색 및 정렬 함수 (AJAX로 adminMember.jsp를 다시 로드)
     function searchMember() {
         let keyword = $('#memberSearch').val();
         $.ajax({
             type: "get",
-            url: "adminMember.jsp", // 리스트를 다시 그려주는 JSP 파일명
+            url: "adminMember.jsp",
             data: { search: keyword },
             success: function(res) { 
                 $('#content-area').html(res); 
@@ -224,13 +215,37 @@
     }
 
     function sortMembers(sortType) {
+        let keyword = $('#memberSearch').val();
         $.ajax({
             type: "get",
             url: "adminMember.jsp",
-            data: { sort: sortType },
+            data: { 
+                sort: sortType,
+                search: keyword
+            },
             success: function(res) { 
                 $('#content-area').html(res); 
             }
+        });
+    }
+
+    // [수정됨] 상세 페이지 이동 함수: 클릭된 요소의 data-id를 읽어 파라미터로 전송
+    function goToMemberEdit(element) {
+        // 클릭된 HTML 요소에서 data-id 속성값을 가져옵니다.
+        const memberId = $(element).data('id'); 
+
+        if(!memberId) {
+            alert("회원 ID를 찾을 수 없습니다.");
+            return;
+        }
+        
+        const targetUrl = "adminMemberEdit.jsp?id=" + encodeURIComponent(memberId);
+        
+        $('#content-area').fadeOut(150, function() {
+            // URL 파라미터를 포함하여 비동기 로드 요청
+            $(this).load(targetUrl, function() {
+                $(this).fadeIn(150);
+            });
         });
     }
 </script>

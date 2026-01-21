@@ -1,3 +1,4 @@
+<%@page import="java.text.SimpleDateFormat"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="movie.MovieDto" %>
@@ -9,6 +10,7 @@
     List<MovieDto> ratingList = (List<MovieDto>) request.getAttribute("ratingList");
     Integer totalCount = (Integer) request.getAttribute("totalCount");
     String sortOrder = (String) request.getAttribute("sortOrder");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     if (totalCount == null) totalCount = 0;
     if (sortOrder == null) sortOrder = "latest";
@@ -198,7 +200,7 @@
 
                         <div class="movie-meta">
                             <span class="movie-genre"><%= movie.getGenre() != null ? movie.getGenre() : "장르미상" %></span>
-                            <span class="rating-date"><%= movie.getRatingDay() %></span>
+                            <span class="rating-date"><%= sdf.format(movie.getCreateDay()) %></span>
                         </div>
                     </div>
                 </div>
@@ -213,6 +215,7 @@
 </div>
 
 <script>
+
     $(function() {
         /* 정렬 버튼 클릭 이벤트 */
         $('.sort-btn').on('click', function() {

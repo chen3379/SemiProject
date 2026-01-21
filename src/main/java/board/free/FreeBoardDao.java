@@ -234,5 +234,4 @@ public class FreeBoardDao {
 	    }
 	}
 
-	
 }

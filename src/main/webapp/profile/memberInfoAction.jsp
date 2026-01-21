@@ -30,21 +30,21 @@
             json.put("status", "SUCCESS");
             json.put("photo", memberDto.getPhoto());
             json.put("nickname", memberDto.getNickname());
+            json.put("id", memberDto.getId()); // 항상 ID 반환
             json.put("createDay", sdf.format(memberDto.getCreateDay()));
         
-        if(loginId.equals(id)) {
-            json.put("memberIdx", memberDto.getMemberIdx());
-            json.put("id", memberDto.getId());
-            json.put("name", memberDto.getName());
-            json.put("gender", memberDto.getGender());
-            json.put("age", memberDto.getAge());
-            json.put("hp", memberDto.getHp());
-            json.put("addr", memberDto.getAddr());
-            json.put("isMine", true);
-        } else {
-            json.put("isMine", false);
-        } 
-    }
+            if(loginId != null && loginId.equals(memberDto.getId())) {
+                json.put("memberIdx", memberDto.getMemberIdx());
+                json.put("name", memberDto.getName());
+                json.put("gender", memberDto.getGender());
+                json.put("age", memberDto.getAge());
+                json.put("hp", memberDto.getHp());
+                json.put("addr", memberDto.getAddr());
+                json.put("isMine", true);
+            } else {
+                json.put("isMine", false);
+            } 
+        }
 } catch (Exception e) {
     e.printStackTrace();
     json.put("status", "ERROR");
