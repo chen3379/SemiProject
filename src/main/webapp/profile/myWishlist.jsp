@@ -157,7 +157,7 @@
 </style>
 
 <div class="my-movies-section">
-    <div class="section-header">
+    <div class="section-header" data-sort-order="<%= sortOrder %>">
         <div>
             <h2 class="section-title">
                 찜한 영화
@@ -165,12 +165,12 @@
             </h2>
         </div>
         <div class="sort-buttons">
-            <button class="sort-btn <%= "latest".equals(sortOrder) ? "active" : "" %>"
-                    onclick="sortWishes('latest')">
+            <button type="button" class="sort-btn <%= "latest".equals(sortOrder) ? "active" : "" %>"
+                    data-sort="latest">
                 최신순
             </button>
-            <button class="sort-btn <%= "oldest".equals(sortOrder) ? "active" : "" %>"
-                    onclick="sortWishes('oldest')">
+            <button type="button" class="sort-btn <%= "oldest".equals(sortOrder) ? "active" : "" %>"
+                    data-sort="oldest">
                 오래된순
             </button>
         </div>
@@ -190,14 +190,14 @@
                         }
                     }
             %>
-                <div class="movie-card">
+                <div class="movie-card" data-movie-idx="<%= movie.getMovieIdx() %>">
                     <!-- 삭제 버튼 -->
-                    <div class="wish-remove-btn" onclick="removeWish(event, <%= movie.getMovieIdx() %>)" title="찜 해제">
+                    <div class="wish-remove-btn js-remove-wish" title="찜 해제">
                         ✕
                     </div>
                     
                     <!-- 포스터 영역 -->
-                    <div class="movie-poster-wrapper" onclick="goToDetail(<%= movie.getMovieIdx() %>)">
+                    <div class="movie-poster-wrapper js-movie-detail">
                         <img src="<%= posterSrc %>" alt="<%= movie.getTitle() %>" class="movie-poster"
                              onerror="this.src='../save/no_image.jpg'">
                     </div>
@@ -222,6 +222,26 @@
 </div>
 
 <script>
+    $(function() {
+        /* 정렬 버튼 클릭 이벤트 */
+        $('.sort-btn').on('click', function() {
+            const sort = $(this).data('sort');
+            sortWishes(sort);
+        });
+
+        /* 찜 삭제 버튼 클릭 이벤트 */
+        $('.js-remove-wish').on('click', function(event) {
+            const movieIdx = $(this).closest('.movie-card').data('movie-idx');
+            removeWish(event, movieIdx);
+        });
+
+        /* 상세 페이지 이동 클릭 이벤트 */
+        $('.js-movie-detail').on('click', function() {
+            const movieIdx = $(this).closest('.movie-card').data('movie-idx');
+            goToDetail(movieIdx);
+        });
+    });
+
     /* 정렬 함수 */
     function sortWishes(sort) {
         $.ajax({
@@ -242,6 +262,8 @@
         event.stopPropagation(); // 카드 클릭 상세 이동 방지
 
         if (confirm("찜 목록에서 삭제하시겠습니까?")) {
+            const currentSort = $('.section-header').data('sort-order');
+            
             $.ajax({
                 type: "post",
                 url: "../movie/movieWishDeleteAction.jsp",
@@ -250,7 +272,7 @@
                 success: function(res) {
                     if (res.status === "OK") {
                         // 현재 정렬 상태 유지하며 리로드
-                        sortWishes("<%= sortOrder %>");
+                        sortWishes(currentSort);
                     } else {
                         alert(res.message || "삭제에 실패했습니다.");
                     }

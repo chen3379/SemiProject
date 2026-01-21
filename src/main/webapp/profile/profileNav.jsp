@@ -127,10 +127,10 @@
                 <span class="arrow">▼</span>
             </a>
             <ul class="sub-menu">
-                <li><a href="#" class="ajax-nav-link" data-url="memberList.jsp">회원 관리</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="movieList.jsp">영화 관리</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="communityList.jsp">커뮤니티 관리</a></li>
-                <li><a href="#" class="ajax-nav-link" data-url="qnaList.jsp">QnA 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminMember.jsp">회원 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminMovieList.jsp">영화 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminCommunityList.jsp">커뮤니티 관리</a></li>
+                <li><a href="#" class="ajax-nav-link" data-url="adminQnaList.jsp">QnA 관리</a></li>
             </ul>
         </li>
         <% 

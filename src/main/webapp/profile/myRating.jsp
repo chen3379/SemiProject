@@ -127,6 +127,7 @@
         margin-bottom: 10px;
         display: -webkit-box;
         -webkit-line-clamp: 1; /* Wishlist와 높이를 맞추기 위해 1줄로 제한 */
+        line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -156,16 +157,16 @@
 </style>
 
 <div class="my-movies-section">
-    <div class="section-header">
+    <div class="section-header" data-sort-order="<%= sortOrder %>">
         <h2 class="section-title">
             평가한 영화
             <span class="section-count"><%= totalCount %></span>
         </h2>
         <div class="sort-buttons">
-            <button class="sort-btn <%= "latest".equals(sortOrder) ? "active" : "" %>"
-                    onclick="sortRatings('latest')">최신순</button>
-            <button class="sort-btn <%= "high".equals(sortOrder) ? "active" : "" %>"
-                    onclick="sortRatings('high')">평점순</button>
+            <button type="button" class="sort-btn <%= "latest".equals(sortOrder) ? "active" : "" %>"
+                    data-sort="latest">최신순</button>
+            <button type="button" class="sort-btn <%= "high".equals(sortOrder) ? "active" : "" %>"
+                    data-sort="high">평점순</button>
         </div>
     </div>
 
@@ -178,7 +179,7 @@
                         posterSrc = movie.getPosterPath().startsWith("http") ? movie.getPosterPath() : "../save/" + movie.getPosterPath();
                     }
             %>
-                <div class="movie-card" onclick="goToDetail(<%= movie.getMovieIdx() %>)">
+                <div class="movie-card js-movie-detail" data-movie-idx="<%= movie.getMovieIdx() %>">
                     <!-- 포스터 영역 (Wishlist와 비율 동일) -->
                     <div class="movie-poster-wrapper">
                         <img src="<%= posterSrc %>" alt="<%= movie.getTitle() %>" class="movie-poster"
@@ -212,6 +213,20 @@
 </div>
 
 <script>
+    $(function() {
+        /* 정렬 버튼 클릭 이벤트 */
+        $('.sort-btn').on('click', function() {
+            const sort = $(this).data('sort');
+            sortRatings(sort);
+        });
+
+        /* 상세 페이지 이동 클릭 이벤트 */
+        $('.js-movie-detail').on('click', function() {
+            const movieIdx = $(this).data('movie-idx');
+            goToDetail(movieIdx);
+        });
+    });
+
     function sortRatings(sort) {
         $.ajax({
             type: "get",
