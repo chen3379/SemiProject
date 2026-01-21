@@ -101,20 +101,26 @@ td.title {
     margin-right: 6px;
 }
 
-/* 글쓰기 버튼 */
+/* ===== 글쓰기 버튼 ===== */
 .write-btn {
-    margin-top: 16px;
+    margin-top: 24px;
     text-align: right;
 }
 
+/* 기본 상태 */
 .write-btn a {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #333;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 14px;
+    background: #e50914;   
+    color: #fff;          
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+/* 마우스 오버 */
+.write-btn a:hover {
+    background: #b20710;   
+    color: #fff;          
 }
 
 /* =======================

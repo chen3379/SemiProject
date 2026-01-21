@@ -20,19 +20,16 @@ List<ReviewBoardDto> list = dao.getReviewList();
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
-/* 기본 리셋 */
-* {
-    box-sizing: border-box;
+/* ===== 전체 ===== */
+body {
+    background: #141414;
+    color: #fff;
+    padding-top: 30px;
 }
 
-
-
-/* 전체 감싸는 영역 */
-
-
-/* 제목 */
-h2 {
-    margin-bottom: 16px;
+.review-container {
+    padding-top: 40px;
+    padding-bottom: 60px;
 }
 
 /* 카테고리 탭 */
@@ -68,12 +65,36 @@ h2 {
     color: #fff;
 }
 
+/* ===== 헤더 ===== */
+.review-header {
+    margin-bottom: 28px;
+}
+
+.review-header h2 {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.review-header h2 span {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+/* ===== 테이블 카드 ===== */
+.review-table-wrap {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 16px 16px 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
 
 /* 테이블 */
 table {
     width: 100%;
     border-collapse: collapse;
-    background: #fff;
+      background: transparent;
 }
 
 th, td {
@@ -84,7 +105,6 @@ th, td {
 }
 
 th {
-    background-color: #f2f2f2;
     font-weight: 600;
 }
 
@@ -92,7 +112,15 @@ td.title {
     text-align: left;
     word-break: break-word;
 }
-
+/* 제목 줄 너무 길면 말줄임 */
+td.title a {
+    display: inline-block;
+    max-width: 520px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+}
 /* 스포일러 */
 .spoiler {
     color: #d32f2f;
@@ -100,22 +128,27 @@ td.title {
     margin-right: 6px;
 }
 
-/* 글쓰기 버튼 */
+/* ===== 글쓰기 버튼 ===== */
 .write-btn {
-    margin-top: 16px;
+    margin-top: 24px;
     text-align: right;
 }
 
+/* 기본 상태 */
 .write-btn a {
-    display: inline-block;
-    padding: 8px 14px;
-    background: #333;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    font-size: 14px;
+    background: #e50914;   
+    color: #fff;          
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
 }
 
+/* 마우스 오버 */
+.write-btn a:hover {
+    background: #b20710;   
+    color: #fff;          
+}
 /* =======================
    📱 반응형 (모바일)
    ======================= */
@@ -138,6 +171,7 @@ td.title {
         padding: 12px;
         background: #fff;
     }
+    
 
     td {
         text-align: left;
@@ -168,9 +202,15 @@ td.title {
 </head>
 <body>
 <div class="container">
-    <h2>🎬 영화 리뷰</h2>
+     <div class="review-header">
+        <h2>
+            🎬 영화 리뷰
+            <span>왓플릭스 유저들의 솔직한 감상</span>
+        </h2>
+    </div>
 
     <!-- 게시글 목록 -->
+    <div class="review-table-wrap">
     <table>
         <thead>
             <tr>
@@ -200,7 +240,7 @@ td.title {
         <% } %>
         </tbody>
     </table>
-
+    </div>
     <div class="write-btn">
         <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;리뷰 작성</a>
     </div>

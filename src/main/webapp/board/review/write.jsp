@@ -17,6 +17,8 @@
 
 <title>영화 리뷰 작성</title>
 </head>
+
+
 <body>
 	<div class="container" style="max-width: 900px; padding: 60px 20px;">
 		<div class="review-write-wrap">

@@ -16,10 +16,11 @@ public class ReviewCommentDao {
 
         List<ReviewCommentDto> list = new ArrayList<>();
 
-        String sql = 
-            "SELECT * FROM review_comment " +
-            "WHERE board_idx = ? " +
-            "ORDER BY comment_idx ASC";
+        String sql =
+        	    "SELECT * FROM review_comment " +
+        	    "WHERE board_idx = ? " +
+        	    "ORDER BY parent_comment_idx ASC, comment_idx ASC";
+
 
         try (Connection conn = db.getDBConnect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -28,12 +29,17 @@ public class ReviewCommentDao {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                ReviewCommentDto dto = new ReviewCommentDto();
-                dto.setComment_idx(rs.getInt("comment_idx"));
-                dto.setBoard_idx(rs.getInt("board_idx"));
-                dto.setWriter_id(rs.getString("writer_id"));
-                dto.setContent(rs.getString("content"));
-                dto.setCreate_day(rs.getTimestamp("create_day"));
+        	 	ReviewCommentDto dto = new ReviewCommentDto();
+        	    dto.setComment_idx(rs.getInt("comment_idx"));
+        	    dto.setBoard_idx(rs.getInt("board_idx"));
+        	    dto.setWriter_id(rs.getString("writer_id"));
+        	    dto.setContent(rs.getString("content"));
+        	    dto.setParent_comment_idx(rs.getInt("parent_comment_idx")); // ⭐
+        	    dto.setCreate_day(rs.getTimestamp("create_day"));
+        	    dto.setUpdate_day(rs.getTimestamp("update_day"));
+        	    dto.setCreate_id(rs.getString("create_id"));
+        	    dto.setUpdate_id(rs.getString("update_id"));
+        	    dto.setIs_deleted(rs.getInt("is_deleted"));                 // ⭐
 
                 list.add(dto);
             }
@@ -69,26 +75,48 @@ public class ReviewCommentDao {
     }
     
     // 댓글 등록
- 	public void insertComment(ReviewCommentDto dto) {
+    public void insertComment(ReviewCommentDto dto) {
 
- 	    String sql = "INSERT INTO review_comment "
- 	               + "(board_idx, writer_id, content, parent_comment_idx, create_day, create_id) "
- 	               + "VALUES (?, ?, ?, ?, NOW(), ?)";
+        String sql =
+            "INSERT INTO review_comment " +
+            "(board_idx, writer_id, content, parent_comment_idx, create_day, create_id) " +
+            "VALUES (?, ?, ?, ?, NOW(), ?)";
 
- 	    try (Connection conn = db.getDBConnect();
- 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
- 	        pstmt.setInt(1, dto.getBoard_idx());
- 	        pstmt.setString(2, dto.getWriter_id());
- 	        pstmt.setString(3, dto.getContent());
- 	        pstmt.setInt(4, dto.getParent_comment_idx()); 
- 	        pstmt.setString(5, dto.getCreate_id());
+            pstmt.setInt(1, dto.getBoard_idx());
+            pstmt.setString(2, dto.getWriter_id());
+            pstmt.setString(3, dto.getContent());
+            pstmt.setInt(4, dto.getParent_comment_idx()); // ⭐ 이 줄이 핵심
+            pstmt.setString(5, dto.getCreate_id());
 
- 	        pstmt.executeUpdate();
+            pstmt.executeUpdate();
 
- 	    } catch (Exception e) {
- 	        e.printStackTrace();
- 	    }
- 	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+ 	
+	// 댓글 삭제 (소프트 삭제)
+	public void deleteComment(int comment_idx, String loginId) {
+
+	    String sql =
+	        "UPDATE review_comment " +
+	        "SET is_deleted = 1, update_day = NOW(), update_id = ? " +
+	        "WHERE comment_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, loginId);
+	        pstmt.setInt(2, comment_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
 	
 }
