@@ -4,7 +4,7 @@
 	Object statusObj = session.getAttribute("loginStatus");
     String loginStatus = (statusObj != null) ? statusObj.toString() : "false";
 	
-	if(!"true".equals(loginStatus)) {
+ if(!"true".equals(loginStatus)) {
 		if (session.getAttribute("guestUUID") == null) {
             GuestDao guestDao = new GuestDao();
             String newGuestUUID = guestDao.createGuestUUID(); 
@@ -12,7 +12,7 @@
             session.setAttribute("guestUUID", newGuestUUID);
             session.setAttribute("roleType", "0");
         }
-	}
+	} 
 %>
 
 <style>

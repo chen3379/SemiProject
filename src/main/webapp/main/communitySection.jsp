@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List"%>
 <%@ page import="board.free.FreeBoardDao"%>
 <%@ page import="board.free.FreeBoardDto"%>
@@ -17,63 +17,95 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>커뮤니티 메인</title>
-
-
-<!-- 커뮤니티 전용 -->
-<link rel="stylesheet"
-	href="<%=request.getContextPath()%>/css/community.css?v=1">
+<title>커뮤니티</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/community.css">
 </head>
+
 <body>
+<jsp:include page="../main/nav.jsp" />
 
-	<jsp:include page="/main/nav.jsp" />
+<div class="container community-main">
 
-	<div class="container community-main">
-		<h2 class="section-title">🔥 커뮤니티 인기 글</h2>
-		<div class="row g-4">
-			<!-- 자유게시판 TOP10 -->
-			<div class="col-md-6">
-				<div class="rank-card">
-					<h4>💬 자유게시판 TOP 10</h4>
-					<ul class="rank-list">
-						<% int rank = 1;
-                       for(FreeBoardDto dto : freeTop10) { %>
-						<li><span class="rank"><%=rank++%></span> <a
-							href="<%=request.getContextPath()%>/board/free/detail.jsp?board_idx=<%=dto.getBoard_idx()%>">
-								<%=dto.getTitle()%>
-						</a> <span class="count"><%=dto.getReadcount()%></span></li>
-						<% } %>
-					</ul>
-				</div>
-			</div>
+    <!-- ===== 게시판 바로가기 ===== -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <a href="<%=request.getContextPath()%>/board/free/list.jsp" style="text-decoration:none">
+                <div class="rank-card">
+                    <h4>💬 자유게시판</h4>
+                    <p style="font-size:14px;color:#bbb;">일상 · 잡담 · 질문을 자유롭게</p>
+                </div>
+            </a>
+        </div>
 
-			<!-- 영화리뷰 TOP10 -->
-			<div class="col-md-6">
-				<div class="rank-card">
-					<h4>🎬 영화리뷰 TOP 10</h4>
-					<ul class="rank-list">
-						<% rank = 1;
-                       for(ReviewBoardDto dto : reviewTop10) { %>
-						<li><span class="rank"><%=rank++%></span> <a
-							href="<%=request.getContextPath()%>/board/review/detail.jsp?review_idx=<%=dto.getBoard_idx()%>">
-								<%=dto.getTitle()%>
-						</a> <span class="count"><%=dto.getReadcount()%></span></li>
-						<% } %>
-					</ul>
-				</div>
-			</div>
+        <div class="col-md-6">
+            <a href="<%=request.getContextPath()%>/board/review/list.jsp" style="text-decoration:none">
+                <div class="rank-card">
+                    <h4>🎬 영화 리뷰</h4>
+                    <p style="font-size:14px;color:#bbb;">영화 감상 후기와 추천</p>
+                </div>
+            </a>
+        </div>
+    </div>
 
-		</div>
+    <!-- ===== 커뮤니티 인기 글 ===== -->
+    <h2 class="section-title">🔥 커뮤니티 인기 글</h2>
 
-		<!-- 공지 -->
-		<div class="notice-area">
-			<h4>📢 공지사항</h4>
-			<ul>
-				<li>[공지] 커뮤니티 이용 규칙 안내</li>
-				<li>[공지] 스포일러 글 작성 가이드</li>
-			</ul>
-		</div>
+    <div class="row g-4">
+        <!-- 자유게시판 TOP10 -->
+        <div class="col-md-6">
+            <div class="rank-card">
+                <h4>💬 자유게시판 TOP 10</h4>
+                <ul class="rank-list">
+                    <%
+                        int rank = 1;
+                        for (FreeBoardDto dto : freeTop10) {
+                    %>
+                    <li>
+                        <span class="rank"><%=rank++%></span>
+                        <a href="<%=request.getContextPath()%>/board/free/detail.jsp?board_idx=<%=dto.getBoard_idx()%>">
+                            <%=dto.getTitle()%>
+                        </a>
+                        <span class="count"><%=dto.getReadcount()%></span>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
 
-	</div>
+        <!-- 영화리뷰 TOP10 -->
+        <div class="col-md-6">
+            <div class="rank-card">
+                <h4>🎬 영화리뷰 TOP 10</h4>
+                <ul class="rank-list">
+                    <%
+                        rank = 1;
+                        for (ReviewBoardDto dto : reviewTop10) {
+                    %>
+                    <li>
+                        <span class="rank"><%=rank++%></span>
+                        <a href="<%=request.getContextPath()%>/board/review/detail.jsp?board_idx=<%=dto.getBoard_idx()%>">
+                            <%=dto.getTitle()%>
+                        </a>
+                        <span class="count"><%=dto.getReadcount()%></span>
+                    </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 공지사항 ===== -->
+    <div class="notice-area">
+        <h4>📢 공지사항</h4>
+        <ul>
+            <li>[공지] 커뮤니티 이용 규칙 안내</li>
+            <li>[공지] 스포일러 글 작성 가이드</li>
+        </ul>
+    </div>
+
+</div>
+
+<jsp:include page="../main/footer.jsp" />
 </body>
 </html>
