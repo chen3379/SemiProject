@@ -7,6 +7,7 @@
 <title>WhatFlix</title>
 <link href="main.css" rel="stylesheet">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="/NLCHS/Content/js/owl.carousel-2.3.4-custom.js"></script>
 <style type="text/css">
 .container{
 width: 400vw;
