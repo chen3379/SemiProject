@@ -1,3 +1,4 @@
+<%@page import="movie.MovieWishDao"%>
 <%@page import="member.MemberDao"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="movie.MovieRatingStatDao"%>
@@ -52,10 +53,17 @@ MovieRatingStatDao statDao = new MovieRatingStatDao();
 BigDecimal avgScore = statDao.getAvgScore(movieIdx);
 int ratingCount = statDao.getRatingCount(movieIdx);
 
-//로그인 수정 필요
-String id = (String) session.getAttribute("id");
-Boolean loginStatus = (Boolean) session.getAttribute("loginStatus");
-boolean isLogin = (loginStatus != null && loginStatus == true && id != null);
+//로그인 정보 조회
+String id = (String)session.getAttribute("id");
+boolean isLogin = (id != null);
+
+//위시
+MovieWishDao wishDao = new MovieWishDao();
+boolean isWished = false;
+
+if (isLogin) {
+    isWished = wishDao.isWished(movieIdx, id);
+}
 %>
 <!DOCTYPE html>
 <html>
@@ -339,9 +347,9 @@ h1.fw-bold small {
 					</span> &nbsp;&nbsp;&nbsp;
 					<button type="button" id="wishBtn"
 						class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-1"
-						data-wished="false">
-						<span id="wishText" class="text-muted">위시</span> <i id="wishIcon"
-							class="bi bi-heart text-danger fs-4"></i>
+						data-wished="<%=isWished%>">
+						<span id="wishText" class="<%=isWished ? "text-danger fw-semibold" : "text-muted"%>">위시</span> 
+						<i id="wishIcon" class="bi <%=isWished ? "bi-heart-fill" : "bi-heart"%> text-danger fs-4"></i>
 					</button>
 				</div>
 
@@ -460,7 +468,8 @@ h1.fw-bold small {
 				</div>
 
 				<div class="d-flex justify-content-end">
-					<button type="button" class="btn btn-outline-danger text-white fw-bold"
+					<button type="button"
+						class="btn btn-outline-danger text-white fw-bold"
 						id="btnReviewSubmit">등록</button>
 				</div>
 			</div>
@@ -534,7 +543,7 @@ h1.fw-bold small {
 		</div>
 	</div>
 	<jsp:include page="chatWidget.jsp" />
-	
+
 	<script type="text/javascript">
 	// 영화 삭제
 	function delMovie(idx) {
@@ -562,12 +571,10 @@ h1.fw-bold small {
 	
 	 /* ===== (reviewCount==0일 때) 작성하기 버튼 ===== */
 	 
-	 //임시 주석
 	 var isLogin = <%=isLogin ? "true" : "false"%>;
 	 
 	  $(document).on("click", "#btnReviewWrite", function(){
 		
-		//임시 주석
 		//비회원일때는 로그인창으로 넘어가기
 		if(!isLogin){
 		    alert("로그인이 필요합니다.");
@@ -794,11 +801,9 @@ h1.fw-bold small {
     
     
 	});
-	 <%MemberDao memberDao = new MemberDao();
+	 <%if (id != null) {
 
-if (id != null) {
-
-	String roleType = memberDao.getRoleType(id);
+	String roleType = (String) session.getAttribute("roleType");
 	//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
 	//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
 	if ("3".equals(roleType) || "9".equals(roleType)) {%>
