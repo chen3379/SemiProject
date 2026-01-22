@@ -30,7 +30,7 @@ int start = (currentPage - 1) * pageSize;
 
 String loginId = (String) session.getAttribute("loginid");
 boolean isLogin = (loginId != null);
-String roleType = (String) session.getAttribute("roleType");
+String roleType = (String) session.getAttribute("RoleType");
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
 
@@ -51,6 +51,8 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 
 %>
+<%=session.getAttribute("RoleType")%>
+<%=session.getAttribute("roleType")%>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
 
@@ -300,8 +302,8 @@ String msg = request.getParameter("msg");
     alert("복구되었습니다.");
 <% } %>
 </script>
-<jsp:include page="/main/nav.jsp" />
-<jsp:include page="/login/loginModal.jsp" />
+<!--<jsp:include page="/main/nav.jsp" />
+<jsp:include page="/login/loginModal.jsp" />-->
 
 <div class="container" style="padding-top: 80px; ">
 	<div class="review-header">
