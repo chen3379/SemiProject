@@ -210,6 +210,7 @@ public class FreeBoardDao {
 	            dto.setCategory_type(rs.getString("category_type"));
 	            dto.setTitle(rs.getString("title"));
 	            dto.setContent(rs.getString("content"));
+	            dto.setFilename(rs.getString("filename"));
 	            dto.setId(rs.getString("id"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
@@ -349,6 +350,42 @@ public class FreeBoardDao {
 	    }
 	}
 
+	// 상세 하단에 보여줄 글 목록 (최근 N개, 본인 글 제외)
+	public List<FreeBoardDto> getBottomBoardList(int currentBoardIdx, int limit) {
+
+	    List<FreeBoardDto> list = new ArrayList<>();
+
+	    String sql =
+	        "SELECT board_idx, title, id, create_day " +
+	        "FROM free_board " +
+	        "WHERE is_deleted = 0 " +
+	        "AND board_idx <> ? " +
+	        "ORDER BY board_idx DESC " +
+	        "LIMIT ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, currentBoardIdx);
+	        pstmt.setInt(2, limit);
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            FreeBoardDto dto = new FreeBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setId(rs.getString("id"));
+	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            list.add(dto);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
 
 	
 }
