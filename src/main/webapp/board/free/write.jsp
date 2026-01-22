@@ -41,7 +41,6 @@
 	
 	  <!-- 에디터 값 저장용 -->
 	  <input type="hidden" name="content" id="content">
-	
 	  <!-- 파일 업로드 -->
 	  <input type="file" name="uploadFile" class="form-control mt-3">
 	
@@ -76,14 +75,31 @@
   </div>
 </div>
 <script>
-  const editor = new toastui.Editor({
-    el: document.querySelector('#editor'),
-    height: '500px',
-    initialEditType: 'wysiwyg',
-    previewStyle: 'vertical',
-    language: 'ko-KR',
-    placeholder: '이곳에 글을 작성하세요.'
-  });
+const editor = new toastui.Editor({
+	  el: document.querySelector('#editor'),
+	  height: '500px',
+	  initialEditType: 'wysiwyg',
+	  previewStyle: 'vertical',
+	  language: 'ko-KR',
+	  placeholder: '이곳에 글을 작성하세요.',
+
+	  hooks: {
+	    addImageBlobHook: (blob, callback) => {
+	      const formData = new FormData();
+	      formData.append('image', blob);
+
+	      fetch('imageUpload.jsp', {
+	        method: 'POST',
+	        body: formData
+	      })
+	      .then(res => res.json())
+	      .then(data => {
+	        callback(data.url, 'image');
+	      });
+	    }
+	  }
+	});
+
 
   const form = document.querySelector('form');
   const categorySelect = document.querySelector('select[name="category"]');

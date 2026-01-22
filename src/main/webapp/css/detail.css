@@ -438,6 +438,17 @@ textarea:disabled {
     cursor: not-allowed;
 }
 
+.post-attachment {
+    padding: 12px 16px;
+    background: #1f1f1f;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.post-attachment a {
+    color: #9ad0ff;
+    text-decoration: none;
+}
 
 
 /*Review detail*/
