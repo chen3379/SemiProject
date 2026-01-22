@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<% String requestId = request.getParameter("id"); %>
 
 <style>
     /* [WHATFLIX Profile Edit Style - Admin Version] */
@@ -99,7 +100,7 @@
 
     .edit-select {
         appearance: none;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org' viewBox='0 0 16 16' fill='%23B3B3B3'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23B3B3B3'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
         background-repeat: no-repeat;
         background-position: right 1rem center;
         background-size: 16px 12px;
@@ -156,6 +157,10 @@
             <div class="photo-edit-section">
                 <img id="photoPreview" src="${pageContext.request.contextPath}/profile_photo/default_photo.jpg" alt="프로필 사진"
                 onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'; this.onerror=null;" />
+                <div class="mb-3 w-100">
+                    <label class="form-label text-gray small">기존 이미지 경로</label>
+                    <input type="text" id="memberPhoto" name="photo" class="edit-input mb-2" readonly placeholder="이미지 경로 없음">
+                </div>
                 <div class="file-input-wrapper">
                     <input type="file" id="photoInput" name="photoFile" accept="image/*" class="form-control form-control-sm bg-dark text-white border-secondary">
                 </div>
@@ -233,7 +238,8 @@
 <script>
 $(document).ready(function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const targetId = urlParams.get('id');
+    // JSP scriptlet에서 읽어온 requestId가 있으면 그것을 우선 사용하고, 없으면 URL 파라미터에서 가져옵니다.
+    const targetId = "<%= requestId != null ? requestId : "" %>" || urlParams.get('id');
     console.log("조회할 대상 ID:", targetId);
     const cp = "${pageContext.request.contextPath}";
     
@@ -256,6 +262,7 @@ $(document).ready(function () {
                     $('#memberAge').val(data.age);
                     $('#memberGender').val(data.gender);
                     $('#memberAddr').val(data.addr);
+                    $('#memberPhoto').val(data.photo);
                     
                     // 사진 경로 처리
                     let imgSrc = (data.photo && data.photo.trim() !== "") 

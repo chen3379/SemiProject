@@ -30,6 +30,7 @@ String dbHashedPassword = memberDao.getHashedPassword(inputId);
 	if (dbHashedPassword != null && BCrypt.checkpw(inputPassword, dbHashedPassword)) {
 		MemberDto memberDto = memberDao.selectOneMemberbyId(inputId);
 		session.setAttribute("id", inputId);
+	 	session.setAttribute("loginid", inputId);  
 		session.setAttribute("saveId", (saveId != null ? "true" : "false"));
 		session.setAttribute("loginStatus", true);
 		session.setAttribute("memberInfo", memberDto);
@@ -40,7 +41,7 @@ String dbHashedPassword = memberDao.getHashedPassword(inputId);
 		json.put("status", "SUCCESS");
 	} else {
 		json.put("status", "FAIL");
-	} 
+	}
 }
 catch (Exception e) {
     e.printStackTrace();

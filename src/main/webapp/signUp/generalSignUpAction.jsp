@@ -36,7 +36,14 @@ MemberDao memberDao = new MemberDao();
 String result = memberDao.insertMember(memberDto);
 
 if ("SUCCESS".equals(result)) {
-     
+     // [추가] 자동 로그인 처리
+     MemberDto loggedMember = memberDao.selectOneMemberbyId(inputId);
+     session.setAttribute("id", inputId);
+     session.setAttribute("loginStatus", true);
+     session.setAttribute("memberInfo", loggedMember);
+     session.setMaxInactiveInterval(60 * 60 * 8);
+     session.removeAttribute("guestUUID");
+
      json.put("status", "SUCCESS");
 } else if ("DUPLICATE_ID".equals(result)) {
     

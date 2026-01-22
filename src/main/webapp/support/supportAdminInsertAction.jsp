@@ -1,16 +1,25 @@
+<%@page import="support.SupportDao"%>
+<%@page import="support.SupportAdminDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<title>Insert title here</title>
-</head>
-<body>
 
-</body>
-</html>
+<%
+request.setCharacterEncoding("UTF-8");
+
+String adminId = (String)session.getAttribute("id");
+int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
+String content = request.getParameter("content");
+
+if(content == null || content.trim().isEmpty()){
+    out.print("<script>alert('답변 내용을 입력하세요');history.back();</script>");
+    return;
+}
+
+SupportAdminDao aDao = new SupportAdminDao();
+SupportDao sDao = new SupportDao();
+
+aDao.insertAdmin(supportIdx, adminId, content);
+sDao.updateStatus(supportIdx, "1"); // 답변완료
+
+response.sendRedirect("supportDetail.jsp?supportIdx=" + supportIdx);
+%>

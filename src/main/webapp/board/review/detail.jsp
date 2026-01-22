@@ -1,3 +1,9 @@
+<%@page import="board.comment.ReviewCommentDto"%>
+<%@page import="java.util.List"%>
+<%@page import="board.comment.ReviewCommentDao"%>
+<%@page import="board.like.ReviewLikeDao"%>
+<%@page import="board.review.ReviewBoardDto"%>
+<%@page import="board.review.ReviewBoardDao"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -7,10 +13,320 @@
 <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<title>Insert title here</title>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/detail.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<title>영화 리뷰 상세</title>
 </head>
+
+<%
+int board_idx = Integer.parseInt(request.getParameter("board_idx"));
+
+ReviewBoardDao dao = new ReviewBoardDao();
+dao.updateReadCount(board_idx);
+ReviewBoardDto dto = dao.getBoard(board_idx);
+
+/* ===== 좋아요 ===== */
+ReviewLikeDao likeDao = new ReviewLikeDao();
+int likeCount = likeDao.getLikeCount(board_idx);
+
+/* ===== 댓글 ===== */
+ReviewCommentDao cdao = new ReviewCommentDao();
+List<ReviewCommentDto> clist = cdao.getCommentList(board_idx);
+int commentCount = cdao.getCommentCount(board_idx);
+
+/* 로그인 */
+String loginId = (String)session.getAttribute("loginid");
+boolean isOwner = loginId != null && loginId.equals(dto.getId());
+boolean isAdmin = "ADMIN".equals(session.getAttribute("roleType"));
+boolean canEdit = isOwner || isAdmin;
+%>
 <body>
+<script>
+	$(function () {
+	
+	    /* 댓글 등록 */
+	    $('#commentSubmitBtn').on('click', function () {
+	
+	        const content = $('textarea[name="content"]').val().trim();
+	
+	        if (!content) {
+	            alert('내용을 입력하세요');
+	            return;
+	        }
+	
+	        $.post(
+	            'commentInsert.jsp',
+	            {
+	                board_idx: '<%= board_idx %>',
+	                content: content
+	            },
+	            function (res) {
+	
+	                if (res.status === 'LOGIN_REQUIRED') {
+	                    alert('로그인이 필요합니다');
+	                    return;
+	                }
+	
+	                if (res.status === 'SUCCESS') {
+	                    location.reload(); 
+	                } else {
+	                    alert('댓글 등록 실패');
+	                }
+	            },
+	            'json'
+	        );
+	    });
+	
+	});
+	</script>
+<div class="container">
+
+    <!-- 상단 -->
+    <div class="d-flex justify-content-between">
+        <div>
+            <div><strong><%= dto.getId() %></strong></div>
+            <div class="meta">
+                <span><%= dto.getCreate_day() %></span>
+                <span>조회 <%= dto.getReadcount() %></span>
+            </div>
+        </div>
+		<%
+		if (canEdit) {
+		%>
+		<span class="more" id="postMenuBtn">⋮</span>
+		<%
+		}
+		%>
+
+		<%
+		if (canEdit) {
+		%>
+		<div class="post-menu" id="postMenu">
+			<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> <a
+				href="delete.jsp?board_idx=<%=board_idx%>"
+				onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+		</div>
+		<%
+		}
+		%>
+		</div>
+
+    <!-- 제목 -->
+    <h2 class="title"><%= dto.getTitle() %></h2>
+
+    <!-- 본문 -->
+    <div class="mt-4">
+        <%= dto.getContent() %>
+    </div>
+
+   	<!-- 본문 -->
+		<div class="post-content">
+			<%= dto.getContent() %>
+		</div>
+		<%
+		ReviewLikeDao frLikeDao = new ReviewLikeDao();
+		
+		String frLoginId = (String) session.getAttribute("loginid");
+		
+		// 좋아요 개수
+		int frLikeCount = likeDao.getLikeCount(board_idx);
+		
+		// 내가 좋아요 눌렀는지
+		boolean isLiked = false;
+		if (loginId != null) {
+		    isLiked = likeDao.isLiked(board_idx, loginId);
+		}
+		%>
+
+		<!-- 좋아요 -->
+		<div class="like-area">
+		    <div class="like-wrapper <%=isLiked ? "active" : "" %>"
+		         id="likeBtn"
+		         data-board="<%= board_idx %>">
+		        <i class="bi bi-hand-thumbs-up"></i>
+		        <span class="like-count" id="likeCount"><%= likeCount %></span>
+		    </div>
+		</div>
+
+
+    <!-- 하단 액션 -->
+		<div class="post-footer mb-5">
+			<span>💬 <%=commentCount %></span> <span id="copyUrlBtn" style="cursor: pointer;">🔗
+				URL</span> <span>🔗 공유</span>
+		</div>
+		
+		
+	  	<!-- 댓글 작성 박스 -->
+		<div class="comment-input-box">
+		    <!-- 입력 영역 -->
+		    <form id="commentForm">
+			    <input type="hidden" name="board_idx" value="<%= board_idx %>">
+			
+			    <div class="comment-writer-name">
+				    <%= loginId != null ? loginId : "비회원" %>
+				</div>
+				
+				<% if (loginId == null) { %>
+				    <textarea disabled placeholder="로그인 후 댓글을 작성할 수 있습니다"></textarea>
+				<% } else { %>
+				    <textarea name="content" placeholder="댓글을 남겨보세요" required></textarea>
+				<% } %>
+			
+			    <div class="comment-input-footer">
+			        <div class="comment-tools">
+			            <i class="bi bi-camera"></i>
+			            <i class="bi bi-emoji-smile"></i>
+			        </div>
+			
+			        <% if (loginId != null) { %>
+			            <button type="button" id="commentSubmitBtn">등록</button>
+			        <% } %>
+			    </div>
+			</form>
+		</div>
+	  	
+		<!-- 댓글 영역 -->
+		<div class="comment-list mt-5">
+			<% for (ReviewCommentDto c : clist) { %>
+			    <%-- ================= 삭제된 댓글 ================= --%>
+			    <% if (c.getIs_deleted() == 1) { %>
+			
+			        <div class="comment-item <%= c.getParent_comment_idx() != 0 ? "reply" : "" %>">
+			            <div class="comment-avatar">👤</div>
+			            <div class="comment-body">
+			                <div class="comment-content text-muted fst-italic">
+			                    삭제된 댓글입니다.
+			                </div>
+			            </div>
+			        </div>
+			
+			    <% } else { %>
+			
+			        <%-- ================= 정상 댓글 ================= --%>
+			
+			        <% if (c.getParent_comment_idx() == 0) { %>
+			        <!-- ===== 원댓글 ===== -->
+			        <div class="comment-item">
+			
+			            <div class="comment-avatar">👤</div>
+			
+			            <div class="comment-body">
+			                <div class="comment-top">
+			                    <span class="comment-writer"><%= c.getWriter_id() %></span>
+			                    <span class="comment-date"><%= c.getCreate_day() %></span>
+			                </div>
+			
+			                <div class="comment-content">
+			                    <%= c.getContent() %>
+			                </div>
+			
+			                <div class="comment-actions">
+			                    <span class="reply-btn" data-id="<%= c.getComment_idx() %>">답글</span>
+			                    <span class="action-divider">·</span>
+			                    <span>신고</span>
+			                </div>
+			
+			                <!-- 답글 입력 -->
+			                <div class="reply-form" id="reply-form-<%= c.getComment_idx() %>">
+			                    <form action="commentInsert.jsp" method="post">
+			                        <input type="hidden" name="board_idx" value="<%= board_idx %>">
+			                        <input type="hidden" name="parent_comment_idx"
+			                               value="<%= c.getComment_idx() %>">
+			                        <textarea name="content" placeholder="답글을 입력하세요" required></textarea>
+			                        <button type="submit">등록</button>
+			                    </form>
+			                </div>
+			            </div>
+			        </div>
+			
+			        <% } else { %>
+			
+			        <!-- ===== 답글 ===== -->
+			        <div class="comment-item reply">
+			
+			            <div class="comment-avatar">👤</div>
+			
+			            <div class="comment-body">
+			                <div class="comment-top">
+			                    <span class="comment-writer"><%= c.getWriter_id() %></span>
+			                    <span class="comment-date"><%= c.getCreate_day() %></span>
+			                </div>
+			
+			                <div class="comment-content">
+			                    <%= c.getContent() %>
+			                </div>
+			
+			                <div class="comment-actions">
+			                    <span>신고</span>
+			                </div>
+			            </div>
+			        </div>
+			
+			        <% } %>
+			
+			    <% } %>
+			
+			<% } %>
+		</div>
+	</div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+	
+	    /* URL 복사 */
+	    const copyBtn = document.getElementById('copyUrlBtn');
+	    if (copyBtn) {
+	        const originalText = copyBtn.innerHTML;
+	        let timer = null;
+	
+	        copyBtn.addEventListener('click', function () {
+	            navigator.clipboard.writeText(location.href).then(() => {
+	                if (timer) return;
+	                copyBtn.innerHTML = '🔗 URL 복사됨';
+	                timer = setTimeout(() => {
+	                    copyBtn.innerHTML = originalText;
+	                    timer = null;
+	                }, 2000);
+	            });
+	        });
+	    }
+	
+	    /* 답글 토글 */
+	    document.querySelectorAll('.reply-btn').forEach(btn => {
+	        btn.addEventListener('click', () => {
+	            const form = document.getElementById('reply-form-' + btn.dataset.id);
+	            if (!form) return;
+	            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+	        });
+	    });
+	
+	    /* 게시글 메뉴 */
+	    const menuBtn = document.getElementById('postMenuBtn');
+	    const menu = document.getElementById('postMenu');
+	    if (menuBtn && menu) {
+	        menuBtn.addEventListener('click', e => {
+	            e.stopPropagation();
+	            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+	        });
+	        document.addEventListener('click', () => menu.style.display = 'none');
+	    }
+	
+	    /* 좋아요 */
+	    document.getElementById('likeBtn')?.addEventListener('click', function () {
+	        console.log('LIKE CLICKED');
+	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
+	        	   console.log('RESPONSE = ', res);
+	            if (res.status === 'LOGIN_REQUIRED') {
+	                alert('로그인이 필요합니다.');
+	                return;
+	            }
+	            $('#likeCount').text(res.count);
+	            $('#likeBtn').toggleClass('active', res.liked);
+	        }, 'json');
+	    });
+	
+	});
+</script>
 
 </body>
 </html>

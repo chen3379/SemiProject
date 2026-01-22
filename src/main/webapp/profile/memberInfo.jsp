@@ -87,12 +87,11 @@
 
     /* 비공개 정보 영역 */
     .is-private {
-        display: none; /* JS에서 제어 */
+        display: none; 
         grid-column: 1 / span 2;
         margin-top: 15px;
         padding-top: 15px;
         border-top: 1px solid var(--border-glass);
-        display: grid;
         grid-template-columns: 100px 1fr;
         gap: 15px 0;
     }
@@ -107,7 +106,7 @@
     }
 
     .btn-group {
-        display: none; /* JS에서 제어 */
+        display: none; 
         margin-top: 30px;
         gap: 15px;
         justify-content: flex-end;
@@ -158,6 +157,9 @@
                 <dt>닉네임</dt>
                 <dd id="memberNickname"></dd>
                 
+                <dt>아이디</dt>
+                <dd id="memberIdPublic"></dd>
+                
                 <dt>가입일</dt>
                 <dd id="memberCreateDay"></dd>
 
@@ -165,8 +167,6 @@
                 <div class="is-private">
                     <dt>회원번호</dt>
                     <dd id="memberIdx"></dd>
-                    <dt>아이디</dt>
-                    <dd id="memberId"></dd>
                     <dt>이름</dt>
                     <dd id="memberName"></dd>
                     <dt>성별</dt>
@@ -180,7 +180,7 @@
                 </div>
             </dl>
 
-            <div class="btn-group d-flex">
+            <div class="btn-group">
                 <button id="editBtn" type="button"><i class="bi bi-pencil-square me-2"></i>정보 수정</button>
                 <form id="deleteForm" action="memberDeleteAction.jsp" method="post">
                     <input type="hidden" name="id" value="${sessionScope.memberInfo.id}">
@@ -192,12 +192,15 @@
 </div>
 
 <script>
-    var urlParams = new URLSearchParams(window.location.search);
-    var targetId = urlParams.get('id');
-
     $(document).ready(function () {
-        if (!targetId) {
-            $('.member-info').html('<p class="text-center py-5">잘못된 접근입니다.</p>').show();
+        var urlParams = new URLSearchParams(window.location.search);
+        // [수정] JSP 파라미터 -> URL 파라미터 -> 세션 로그인ID 순으로 Fallback 처리
+        var targetId = "${param.id}" 
+                       || urlParams.get('id') 
+                       || "${sessionScope.memberInfo.id}";
+ 
+        if (!targetId || targetId === "null") {
+            $('.member-info').html('<p class="text-center py-5">로그인이 필요하거나 잘못된 접근입니다.</p>').show();
             return;
         }
 
@@ -245,7 +248,7 @@
                     $('#info-message').hide();
                 } else {
                     $('.member-info').hide();
-                    $('#info-message').text(data.message || '정보를 불러올 수 없습니다.').show();
+                    $('#info-message').text(data.message || '회원 정보를 불러올 수 없거나 존재하지 않습니다.').show();
                 }
             },
             error: function () {
@@ -274,13 +277,17 @@
         $('.member-info').css('display', 'flex');
         targetId = data.id;
         
-        $('#photo').attr('src', contextPath + data.photo);
+        // [수정] 사진 없을 시 기본 이미지 처리
+        var photoPath = data.photo ? (contextPath + data.photo) : (contextPath + "/save/no_photo.png");
+        $('#photo').attr('src', photoPath);
+        
         $('#memberNickname').text(data.nickname);
+        $('#memberIdPublic').text(data.id); // 공개용 아이디
         $('#memberCreateDay').text(data.createDay);
 
+        // [수정] 권한에 따른 분기 처리 및 정보 클리어
         if (data.isMine) {
             $('#memberIdx').text(data.memberIdx);
-            $('#memberId').text(data.id);
             $('#memberName').text(data.name);
             $('#memberGender').text(data.gender);
             $('#memberAge').text(data.age);
@@ -289,6 +296,8 @@
             $('.is-private').css('display', 'grid');
             $('.btn-group').css('display', 'flex');
         } else {
+            // 타인 프로필일 경우 개인정보 필드 초기화 및 숨김
+            $('#memberIdx, #memberName, #memberGender, #memberAge, #memberHp, #memberAddr').text('');
             $('.is-private').hide();
             $('.btn-group').hide();
         }
