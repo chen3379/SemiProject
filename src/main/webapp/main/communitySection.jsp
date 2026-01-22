@@ -30,7 +30,7 @@
 <jsp:include page="../login/loginModal.jsp" />
 <jsp:include page="../profile/profileModal.jsp"/>
 
-<div class="container community-main">
+<div class="container community-main" style="padding-top: 40px;">
 
     <!-- ===== 게시판 바로가기 ===== -->
     <div class="row g-4 mb-5">
