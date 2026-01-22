@@ -189,14 +189,14 @@
 			</ul>
         </div>
         <ul class="nav-actions">
-            <li><a href="../main/sessionCheck.jsp" class="nav-item" style="font-size:0.8rem; opacity:0.5;">Dev:세션</a></li>
+            <li><a href="<%=request.getContextPath()%>/main/sessionCheck.jsp" class="nav-item" style="font-size:0.8rem; opacity:0.5;">Dev:세션</a></li>
             
             <% if ("true".equals(loginStatus)) { %>
                 <li><a href="#" id="openProfile" data-bs-toggle="modal" data-bs-target="#profileModal" class="nav-item">
                     <i class="bi bi-person-circle" style="font-size: 1.2rem;"></i>
                 </a></li>
                 <li>
-                    <form action="../login/logoutAction.jsp" method="post" style="margin:0;">
+                    <form action="<%=request.getContextPath()%>/login/logoutAction.jsp" method="post" style="margin:0;">
                         <button id="logoutBtn" type="submit">로그아웃</button>
                     </form>
                 </li>

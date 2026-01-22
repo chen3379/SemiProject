@@ -223,5 +223,30 @@ public class ReviewBoardDao {
 	    }
 	}
 
+	// ReviewBoardDao.java
+	public List<ReviewBoardDto> getOtherBoards(int boardIdx, int limit) {
+	    List<ReviewBoardDto> list = new ArrayList<>();
 
+	    String sql = "SELECT board_idx, title, id, create_day  FROM review_board   WHERE board_idx != ?   ORDER BY create_day DESC LIMIT ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, boardIdx);
+	        ps.setInt(2, limit);
+
+	        ResultSet rs = ps.executeQuery();
+	        while (rs.next()) {
+	            ReviewBoardDto dto = new ReviewBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setId(rs.getString("id"));
+	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            list.add(dto);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
+	}
 }
