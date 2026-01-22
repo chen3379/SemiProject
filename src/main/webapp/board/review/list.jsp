@@ -131,6 +131,7 @@ td.title a {
     overflow: hidden;
     text-overflow: ellipsis;
     color: #fff;
+    text-decoration: none;
 }
 /* 스포일러 */
 .spoiler {

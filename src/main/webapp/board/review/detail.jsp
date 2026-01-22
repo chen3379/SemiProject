@@ -174,35 +174,39 @@ boolean canEdit = isOwner || isAdmin;
     <div class="mt-4">
         <%= dto.getContent() %>
     </div>
+	<% if (dto.getFilename() != null && !dto.getFilename().isEmpty()) { %>
+    <div class="post-attachment mt-4">
+        <i class="bi bi-paperclip"></i>
+        <a href="<%=request.getContextPath()%>/save/<%=dto.getFilename()%>"
+           download>
+            <%= dto.getFilename() %>
+        </a>
+    </div>
+	<% } %>
+	<%
+	ReviewLikeDao frLikeDao = new ReviewLikeDao();
+	
+	String frLoginId = (String) session.getAttribute("loginid");
+	
+	// 좋아요 개수
+	int frLikeCount = likeDao.getLikeCount(board_idx);
+	
+	// 내가 좋아요 눌렀는지
+	boolean isLiked = false;
+	if (loginId != null) {
+	    isLiked = likeDao.isLiked(board_idx, loginId);
+	}
+	%>
 
-   	<!-- 본문 -->
-		<div class="post-content">
-			<%= dto.getContent() %>
-		</div>
-		<%
-		ReviewLikeDao frLikeDao = new ReviewLikeDao();
-		
-		String frLoginId = (String) session.getAttribute("loginid");
-		
-		// 좋아요 개수
-		int frLikeCount = likeDao.getLikeCount(board_idx);
-		
-		// 내가 좋아요 눌렀는지
-		boolean isLiked = false;
-		if (loginId != null) {
-		    isLiked = likeDao.isLiked(board_idx, loginId);
-		}
-		%>
-
-		<!-- 좋아요 -->
-		<div class="like-area">
-		    <div class="like-wrapper <%=isLiked ? "active" : "" %>"
-		         id="likeBtn"
-		         data-board="<%= board_idx %>">
-		        <i class="bi bi-hand-thumbs-up"></i>
-		        <span class="like-count" id="likeCount"><%= likeCount %></span>
-		    </div>
-		</div>
+	<!-- 좋아요 -->
+	<div class="like-area">
+	    <div class="like-wrapper <%=isLiked ? "active" : "" %>"
+	         id="likeBtn"
+	         data-board="<%= board_idx %>">
+	        <i class="bi bi-hand-thumbs-up"></i>
+	        <span class="like-count" id="likeCount"><%= likeCount %></span>
+	    </div>
+	</div>
 
 
     <!-- 하단 액션 -->
