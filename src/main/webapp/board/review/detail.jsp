@@ -433,7 +433,17 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 	        }, 'json');
 	    });
 	    
-	    console.log('confirmCustomAlert =', typeof confirmCustomAlert);
+	    /* 좋아요 */
+	    document.getElementById('likeBtn')?.addEventListener('click', function () {
+	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
+	            if (res.status === 'LOGIN_REQUIRED') {
+	                alert('로그인이 필요합니다.');
+	                return;
+	            }
+	            $('#likeCount').text(res.count);
+	            $('#likeBtn').toggleClass('active', res.liked);
+	        }, 'json');
+	    });
 
 	    document.getElementById('deletePostBtn')?.addEventListener('click', function () {
 	        const boardIdx = this.dataset.board;

@@ -54,7 +54,6 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 %>
 
 <body>
-
 	<script>
 	$(function () {
 	
@@ -98,7 +97,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 	    const parentIdx = $(this).data('parent');
 
 	    const content = $(this)
-	        .closest('.reply-form')   // ⭐ 이 답글 폼 기준
+	        .closest('.reply-form')   
 	        .find('textarea')
 	        .val()
 	        .trim();
@@ -168,8 +167,6 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 				<%
 				String loginId = (String) session.getAttribute("loginid");
 				boolean isOwner = loginId != null && loginId.equals(dto.getId());
-				
-				// 🔧 테스트용 스위치
 				boolean isTestMode = false;   // 테스트 끝나면 false
 				boolean canEdit = isTestMode || isOwner || isAdmin;
 				%>
