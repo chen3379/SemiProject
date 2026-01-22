@@ -17,16 +17,10 @@
 	String order = request.getParameter("order");   // 최신/오래된순
 	String categoryType = request.getParameter("categoryType");
 	
-	//List<FaqDto> faqList = fDao.getActiveFaq();
-	
 	//로그인 확인
 	String id = (String)session.getAttribute("id");
-	
     boolean isLogin = (id != null);
     String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
-
-    System.out.println("SESSION roleType=" + roleType);
-
     boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
     
 	// 문의유형 필터 변수
@@ -226,19 +220,6 @@ a {
                 <h2 class="section-title">고객지원</h2>
             </div>
 
-            <!-- FAQ 영역 -->
-<%--             <div class="mb-4">
-                <h5 class="mb-3">자주 묻는 질문</h5>
-                <ul>
-                <% for(FaqDto f : faqList){ %>
-                    <li class="mb-2">
-                        <strong><%=f.getTitle()%></strong><br>
-                        <span class="text-muted"><%=f.getContent()%></span>
-                    </li>
-                <% } %>
-                </ul>
-            </div> --%>
-
             <!-- 필터 -->
             <form method="get" id="filterForm" class="d-flex gap-2 mb-4">
             
@@ -268,119 +249,124 @@ a {
             </form>
 
             <!-- 문의글 목록 -->
-            <div class="table-responsive support-table-wrap">
-                <table class="table table-dark table-hover align-middle support-table">
-                    <thead>
-                        <tr>
-                            <th>No</th>
-                            <th>문의유형</th>
-                            <th>제목</th>
-                            <th>작성자</th>
-                            <th>작성일</th>
-                            <th>조회수</th>
-                            <% if(isAdmin){ %><th>답변상태</th><% } %>
-                        </tr>
-                    </thead>
-
-					<tbody>
-					
-					<%
-					int visibleCount = 0;   // 화면에 보여줄 "문의글" 수
-					%>
-					
-					<% for(SupportDto dto : list){ %>
-					
-						<%-- 문의글 5개까지만 출력 --%>
-					    <% if(visibleCount >= 5) break; %>
-					
-					    <%-- 삭제된 문의글 클릭 시 alert만 상세페이지 이동X --%>
-					    <% if("1".equals(dto.getDeleteType())){ %>
-					    
-					    	<% visibleCount++; %>
-					
-					        <tr class="deleted-row"
-					            onclick="event.stopPropagation(); alert('삭제된 글입니다');">
-					            <td><%=dto.getSupportIdx()%></td>
-					            <td colspan="<%= isAdmin ? 6 : 5 %>">
-					                삭제된 문의글입니다
-					            </td>
-					        </tr>
-					
-					    <% } else { %>
-					    
-					    	<% visibleCount++; %>
-					
-					    <%-- 정상 문의글 --%>
-					    <tr style="cursor:pointer;"
-					        onclick="location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>'">
-					
-					        <td><%=dto.getSupportIdx()%></td>
-					
-					        <td>
-					            <%= "0".equals(dto.getCategoryType()) ? "회원정보" :
-					                "1".equals(dto.getCategoryType()) ? "신고" : "기타" %>
-					        </td>
-					
-					        <td class="title">
-					            [<%= "0".equals(dto.getStatusType()) ? "답변대기" : "답변완료" %>]
-					            <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
-					            <span><%=dto.getTitle()%></span>
-					        </td>
-					
-					        <td><%= dto.getId().split("@")[0] %></td>
-					        <td><%=sdf.format(dto.getCreateDay())%></td>
-					        <td><%=dto.getReadcount()%></td>
-					
-					        <% if(isAdmin){ %>
-					        <td>
-					            <span class="badge <%= "1".equals(dto.getStatusType()) ? "bg-success" : "bg-secondary" %>">
-					                <%= "1".equals(dto.getStatusType()) ? "답변완료" : "답변대기" %>
-					            </span>
-					        </td>
-					        <% } %>
-					    </tr>
-					
-					    <% } %>
-					
-					    <%-- 관리자 답변 표시(답변완료 상태일 때만) --%>
-					    <% if("0".equals(dto.getDeleteType()) && "1".equals(dto.getStatusType()) && visibleCount < 5 ){ %>
-					
-					        <tr class="bg-light"
-					            style="cursor:pointer;"
-					            onclick="
-					                event.stopPropagation();
-					                handleAnswerClick(
-					                    '<%=dto.getSecretType()%>',
-					                    '<%=dto.getId()%>',
-					                    '<%=dto.getSupportIdx()%>'
-					                );
-					            ">
-					
-					            <td></td>
-					            <td colspan="<%= isAdmin ? 6 : 5 %>" style="padding-left:30px;">
-					                ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
-					            </td>
-					        </tr>
-					
-					    <% } %>
-					
-					<% } %>
-					
-					</tbody>
-
-                </table>
-            </div>
-
-            <!-- 글쓰기 -->
-            <div class="mt-4 text-end">
-            <% if(isLogin){ %>
-                <a href="supportForm.jsp" class="btn btn-danger">문의하기</a>
-            <% } else { %>
-                <button class="btn btn-secondary"
-                        onclick="alert('로그인 후 이용해주세요')">
-                    문의하기
-                </button>
-            <% } %>
+            <div class="support-wrap"> 
+	                <table class="table table-dark table-hover align-middle support-table">
+	                    <thead>
+	                        <tr>
+	                            <th>No</th>
+	                            <th>문의유형</th>
+	                            <th>제목</th>
+	                            <th>작성자</th>
+	                            <th>작성일</th>
+	                            <th>조회수</th>
+	                            <% if(isAdmin){ %><th>답변상태</th><% } %>
+	                        </tr>
+	                    </thead>
+	
+						<tbody>
+						
+						<%
+						int rowCount = 0;   // 실제 화면에 찍히는 행 수
+						int maxRow = 5;
+						%>
+						
+						<% for(SupportDto dto : list){ %>
+						
+							<%-- 문의글 5개까지만 출력 --%>
+						    <% if(rowCount >= maxRow) break; %>
+						
+						    <%-- 삭제된 문의글 클릭 시 alert만 상세페이지 이동X --%>
+						    <% if("1".equals(dto.getDeleteType())){ %>
+						        <tr class="deleted-row"
+						            onclick="event.stopPropagation(); alert('삭제된 글입니다');">
+						            <td><%=dto.getSupportIdx()%></td>
+						            <td colspan="<%= isAdmin ? 6 : 5 %>">
+						                삭제된 문의글입니다
+						            </td>
+						        </tr>
+						
+						    <% } else { %>
+						    <%-- 정상 문의글 --%>
+						    <tr style="cursor:pointer;"
+						        onclick="location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>'">
+						
+						        <td><%=dto.getSupportIdx()%></td>
+						
+						        <td>
+						            <%= "0".equals(dto.getCategoryType()) ? "회원정보" :
+						                "1".equals(dto.getCategoryType()) ? "신고" : "기타" %>
+						        </td>
+						
+						        <td class="title">
+						            [<%= "0".equals(dto.getStatusType()) ? "답변대기" : "답변완료" %>]
+						            <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
+						            <span><%=dto.getTitle()%></span>
+						        </td>
+						
+						        <td><%= dto.getId().split("@")[0] %></td>
+						        <td><%=sdf.format(dto.getCreateDay())%></td>
+						        <td><%=dto.getReadcount()%></td>
+						
+						        <% if(isAdmin){ %>
+						        <td>
+						            <span class="badge <%= "1".equals(dto.getStatusType()) ? "bg-success" : "bg-secondary" %>">
+						                <%= "1".equals(dto.getStatusType()) ? "답변완료" : "답변대기" %>
+						            </span>
+						        </td>
+						        <% } %>
+						    </tr>
+						    
+						    <% rowCount++; %>
+						
+						    <% } %>
+						
+						    <%-- 관리자 답변 표시(답변완료 상태일 때만) --%>
+						    <% if("0".equals(dto.getDeleteType()) && "1".equals(dto.getStatusType()) ){ %>
+								
+								<% if(rowCount >= maxRow) break; %>
+								
+						        <tr class="bg-light"
+						            style="cursor:pointer;"
+						            onclick=" 
+						            
+						            
+						            
+						                event.stopPropagation();
+						                handleAnswerClick(
+						                    '<%=dto.getSecretType()%>',
+						                    '<%=dto.getId()%>',
+						                    '<%=dto.getSupportIdx()%>'
+						                );
+						            ">
+						
+						            <td></td>
+						            <td colspan="<%= isAdmin ? 6 : 5 %>" style="padding-left:30px;">
+						                ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
+						            </td>
+						        </tr>
+						        
+						        <% rowCount++; %>
+						
+						    <% } %>
+						
+						<% } %>
+						
+						</tbody>
+						
+	                </table>
+	                
+	                <!-- 글쓰기 -->
+		            <div class="mt-4 text-end">
+		            <% if(isLogin){ %>
+		                <a href="supportForm.jsp" class="btn btn-danger">문의하기</a>
+		            <% } else { %>
+		                <button class="btn btn-secondary"
+		                        onclick="alert('로그인 후 이용해주세요')">
+		                    문의하기
+		                </button>
+		            <% } %>
+		            </div>
+	               
             </div>
             
             <!-- 페이징 -->
@@ -390,11 +376,7 @@ a {
 	    <%-- 이전 --%>
 	    <% if(startPage > 1){ %>
 	        <li class="arrow">
-	            <a href="supportList.jsp?currentPage=<%=startPage-1%>
-	            &status=<%=status==null?"":status%>
-	            &categoryType=<%=categoryType==null?"":categoryType%>">
-	                &lt;
-	            </a>
+	            <a href="supportList.jsp?currentPage=<%=startPage-1%>&status=<%=status==null?"":status%>&categoryType=<%=categoryType==null?"":categoryType%>">&lt;</a>
 	        </li>
 	    <% } %>
 	
@@ -404,11 +386,7 @@ a {
 	            <li class="active"><a href="#"><%=p%></a></li>
 	        <% } else { %>
 	            <li>
-	                <a href="supportList.jsp?currentPage=<%=p%>
-	                &status=<%=status==null?"":status%>
-	                &categoryType=<%=categoryType==null?"":categoryType%>">
-	                    <%=p%>
-	                </a>
+	                <a href="supportList.jsp?currentPage=<%=p%>&status=<%=status==null?"":status%>&categoryType=<%=categoryType==null?"":categoryType%>"><%=p%></a>
 	            </li>
 	        <% } %>
 	    <% } %>
@@ -416,11 +394,7 @@ a {
 	    <%-- 다음 --%>
 	    <% if(endPage < totalPage){ %>
 	        <li class="arrow">
-	            <a href="supportList.jsp?currentPage=<%=endPage+1%>
-	            &status=<%=status==null?"":status%>
-	            &categoryType=<%=categoryType==null?"":categoryType%>">
-	                &gt;
-	            </a>
+	            <a href="supportList.jsp?currentPage=<%=endPage+1%>&status=<%=status==null?"":status%>&categoryType=<%=categoryType==null?"":categoryType%>">&gt;</a>
 	        </li>
 	    <% } %>
 	

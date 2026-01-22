@@ -570,12 +570,10 @@ h1.fw-bold small {
 	
 	 /* ===== (reviewCount==0일 때) 작성하기 버튼 ===== */
 	 
-	 //임시 주석
 	 var isLogin = <%=isLogin ? "true" : "false"%>;
 	 
 	  $(document).on("click", "#btnReviewWrite", function(){
 		
-		//임시 주석
 		//비회원일때는 로그인창으로 넘어가기
 		if(!isLogin){
 		    alert("로그인이 필요합니다.");

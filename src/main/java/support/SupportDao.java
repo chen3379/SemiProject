@@ -244,25 +244,27 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 
-	        String sql = "select count(*) from support";
-	        
+	        String sql = "select count(*) from support where 1=1";
+
 	        if(categoryType != null && !categoryType.equals("")){
-	        	sql += " where category_type = ?";
+	            sql += " and category_type = ?";
 	        }
-	        
+
 	        if(status != null && !status.equals("")){
-	            sql += " and status_type=?";
+	            sql += " and status_type = ?";
 	        }
 
 	        try {
 	            pstmt = conn.prepareStatement(sql);
 
 	            int idx = 1;
-	            if(status != null && !status.equals("")){
-	                pstmt.setString(idx++, status);
-	            }
+
 	            if(categoryType != null && !categoryType.equals("")){
 	                pstmt.setString(idx++, categoryType);
+	            }
+
+	            if(status != null && !status.equals("")){
+	                pstmt.setString(idx++, status);
 	            }
 
 	            rs = pstmt.executeQuery();
@@ -276,6 +278,7 @@ public class SupportDao {
 
 	        return count;
 	    }
+
 	    
 	    // (페이징용) 목록 조회
 	    public List<SupportDto> getPagingList(int startNum, int perPage,String status, String categoryType) {
@@ -286,14 +289,14 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 
-	        String sql = "select * from support";
+	        String sql = "select * from support where 1=1";
 
 	        if(categoryType != null && !categoryType.equals("")){
-	        	sql += " where category_type = ?";
+	            sql += " and category_type = ?";
 	        }
-	        
+
 	        if(status != null && !status.equals("")){
-	            sql += " and status_type=?";
+	            sql += " and status_type = ?";
 	        }
 
 	        sql += " order by support_idx desc limit ?,?";
