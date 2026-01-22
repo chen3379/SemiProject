@@ -12,29 +12,32 @@ import mysql.db.DBConnect;
 public class ReviewBoardDao {
 	DBConnect db= new DBConnect();
 	
-	//리스트 함수
-	public List<ReviewBoardDto> getReviewList() {
+	// 페이징 리스트
+	public List<ReviewBoardDto> getReviewList(int start, int pageSize) {
 
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	    		   "SELECT board_idx, genre_type, title, id, readcount, create_day " +
-			        "FROM review_board " +
-			        "ORDER BY board_idx DESC";
+	        "SELECT board_idx, genre_type, title, id, readcount, create_day " +
+	        "FROM review_board " +
+	        "ORDER BY board_idx DESC LIMIT ?, ?";
 
 	    try (Connection conn = db.getDBConnect();
-	         PreparedStatement pstmt = conn.prepareStatement(sql);
-	         ResultSet rs = pstmt.executeQuery()) {
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, start);
+	        pstmt.setInt(2, pageSize);
+
+	        ResultSet rs = pstmt.executeQuery();
 
 	        while (rs.next()) {
 	            ReviewBoardDto dto = new ReviewBoardDto();
 	            dto.setBoard_idx(rs.getInt("board_idx"));
-	            dto.setGenre_type(rs.getString("genre_type")); 
+	            dto.setGenre_type(rs.getString("genre_type"));
 	            dto.setTitle(rs.getString("title"));
 	            dto.setId(rs.getString("id"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
-
 	            list.add(dto);
 	        }
 
@@ -44,6 +47,26 @@ public class ReviewBoardDao {
 
 	    return list;
 	}
+
+	// 전체 개수
+	public int getTotalCount() {
+
+	    int count = 0;
+	    String sql = "SELECT COUNT(*) FROM review_board";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);
+	         ResultSet rs = pstmt.executeQuery()) {
+
+	        if (rs.next()) count = rs.getInt(1);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return count;
+	}
+
 	
 	public List<ReviewBoardDto> getTop10ByReadcount() {
 	    List<ReviewBoardDto> list = new ArrayList<>();

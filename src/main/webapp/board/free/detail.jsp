@@ -21,7 +21,7 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/detail.css">
-<title>Insert title here</title>
+<title>자유게시판 리뷰 상</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
 <%
@@ -204,6 +204,17 @@ int commentCount = cdao.getCommentCount(board_idx);
 		<div class="post-content">
 			<%= dto.getContent() %>
 		</div>
+		
+		<% if (dto.getFilename() != null && !dto.getFilename().isEmpty()) { %>
+		    <div class="post-attachment mt-4">
+		        <i class="bi bi-paperclip"></i>
+		        <a href="<%=request.getContextPath()%>/save/<%=dto.getFilename()%>"
+		           download>
+		            <%= dto.getFilename() %>
+		        </a>
+		    </div>
+		<% } %>
+		
 		<%
 		FreeLikeDao frLikeDao = new FreeLikeDao();
 		

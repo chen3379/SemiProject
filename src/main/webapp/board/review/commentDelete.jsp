@@ -1,6 +1,9 @@
 <%@page import="board.comment.ReviewCommentDao"%>
 <%@ page contentType="application/json; charset=UTF-8" %>
 
+<%@ page import="board.comment.ReviewCommentDao" %>
+
+
 <%
 String loginId = (String) session.getAttribute("loginid");
 
