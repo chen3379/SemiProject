@@ -20,6 +20,7 @@
 	List<FaqDto> faqList = fDao.getActiveFaq();
 	List<SupportDto> list = sDao.getList(status, order, categoryType);
 	
+	//로그인 확인
 	String id = (String)session.getAttribute("id");
 	
     boolean isLogin = (id != null);
@@ -32,8 +33,6 @@
 	// 문의유형 필터 변수
 	String categoryParam = request.getParameter("categoryType");
 	
-	// 필요업
-	boolean canSeeSecret = false;
 	
 %>
 <!DOCTYPE html>
@@ -48,125 +47,99 @@
 <title>WHATFLIX - Support</title>
 
 <style>
-    /* [Core System] Design Tokens */
-    :root {
-        --primary-red: #E50914;
-        --primary-red-hover: #B20710;
-        --bg-main: #141414;
-        --bg-surface: #181818;
-        --bg-glass: rgba(20, 20, 20, 0.7);
-        --border-glass: rgba(255, 255, 255, 0.1);
-        --text-white: #FFFFFF;
-        --text-gray: #B3B3B3;
-        --text-muted: #666666;
-        
-        /* Layout Dimensions */
-        --nav-height: 70px;
-        --sidebar-width: 240px;
-        
-        /* Animation */
-        --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    }
+/* 기본 */
+body {
+    background-color: #141414;
+    color: #ffffff;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    margin: 0;
+}
 
-    /* [Global Reset] */
-    body {
-        background-color: var(--bg-main);
-        color: var(--text-white);
-        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-        overflow-x: hidden;
-        margin: 0;
-    }
+a {
+    text-decoration: none;
+    color: inherit;
+}
 
-    a { text-decoration: none; color: inherit; transition: color 0.2s; }
-    ul { list-style: none; padding: 0; margin: 0; }
+/* 레이아웃 */
+.app-container {
+    min-height: 100vh;
+    padding-top: 70px;
+}
 
-    /* [Layout System] Sticky Nav + Sidebar Grid */
-    .app-container {
-        display: grid;
-        grid-template-columns: var(--sidebar-width) 1fr;
-        min-height: 100vh;
-        padding-top: var(--nav-height); /* Header 높이만큼 띄움 */
-    }
+.main-content {
+    padding: 40px 50px;
+}
 
-    .main-content {
-        padding: 40px 50px;
-        min-width: 0; /* Grid overflow 방지 */
-    }
+/* 섹션 헤더 */
+.section-header {
+    margin-bottom: 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
 
-    /* [Component] Section Headers (Movie & Community) */
-    .content-section {
-        margin-bottom: 60px;
-        opacity: 0;
-        animation: fadeInUp 0.6s var(--ease-smooth) forwards;
-    }
+.section-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+}
 
-    .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
+/* FAQ */
+.text-muted {
+    color: #aaaaaa !important;
+}
 
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-white);
-        letter-spacing: -0.5px;
-    }
+/* 테이블 카드 */
+.support-table-wrap {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 16px;
+}
 
-    .more-link {
-        font-size: 0.9rem;
-        color: var(--text-gray);
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        transition: all 0.2s;
-    }
+.support-table {
+    width: 100%;
+    border-collapse: collapse;
+}
 
-    .more-link:hover {
-        color: var(--text-white);
-        transform: translateX(5px);
-    }
-    
-    .more-link i { font-size: 0.8rem; }
-    
-    .table-hover tbody tr:hover {
-	    background-color: rgba(255,255,255,0.08);
-	}
-	
+.support-table th,
+.support-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 14px;
+    text-align: center;
+}
 
-    /* Animation Keyframes */
-    @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* Scrollbar Customization */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-main); }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555; }
+.support-table th {
+    color: #b3b3b3;
+    font-weight: 600;
+}
 
-    /* 모바일 대응 (반응형) */
-    @media (max-width: 768px) {
-        .app-container { grid-template-columns: 1fr; }
-        .sidebar-container { display: none; } /* 모바일에서 사이드바 숨김 (또는 햄버거 메뉴로 변경) */
-        .main-content { padding: 20px; }
-    }
-    
-    @media (max-width: 1200px) {
-	    .app-container {
-	        grid-template-columns: 1fr;
-	    }
-	}
-    
-    /* 사이드바 없는 페이지용 */
-	.app-container.full {
-	    grid-template-columns: 1fr;
-	}
+.support-table td.title {
+    text-align: left;
+}
+
+.support-table td.title a {
+    max-width: 520px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.support-table tbody tr:hover {
+    background-color: rgba(255,255,255,0.07);
+    cursor: pointer;
+}
+
+/* 삭제된 글 */
+.deleted-row {
+    color: #f28b82;
+    background-color: rgba(229, 9, 20, 0.08);
+    cursor: default;
+}
+
+.deleted-row:hover {
+    background-color: rgba(229, 9, 20, 0.12);
+}
+
 </style>
 
 
@@ -189,7 +162,7 @@
             </div>
 
             <!-- FAQ 영역 -->
-            <div class="mb-4">
+<%--             <div class="mb-4">
                 <h5 class="mb-3">자주 묻는 질문</h5>
                 <ul>
                 <% for(FaqDto f : faqList){ %>
@@ -199,7 +172,7 @@
                     </li>
                 <% } %>
                 </ul>
-            </div>
+            </div> --%>
 
             <!-- 필터 -->
             <form method="get" id="filterForm" class="d-flex gap-2 mb-4">
@@ -230,8 +203,8 @@
             </form>
 
             <!-- 문의글 목록 -->
-            <div class="table-responsive">
-                <table class="table table-dark table-hover align-middle">
+            <div class="table-responsive support-table-wrap">
+                <table class="table table-dark table-hover align-middle support-table">
                     <thead>
                         <tr>
                             <th>No</th>
@@ -239,8 +212,8 @@
                             <th>제목</th>
                             <th>작성자</th>
                             <th>작성일</th>
-                            <th>조회</th>
-                            <% if(isAdmin){ %><th>상태</th><% } %>
+                            <th>조회수</th>
+                            <% if(isAdmin){ %><th>답변상태</th><% } %>
                         </tr>
                     </thead>
                     <tbody>

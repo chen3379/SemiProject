@@ -1,3 +1,4 @@
+<%@page import="movie.MovieWishDao"%>
 <%@page import="member.MemberDao"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="movie.MovieRatingStatDao"%>
@@ -52,10 +53,17 @@ MovieRatingStatDao statDao = new MovieRatingStatDao();
 BigDecimal avgScore = statDao.getAvgScore(movieIdx);
 int ratingCount = statDao.getRatingCount(movieIdx);
 
-//로그인 수정 필요
-String id = (String) session.getAttribute("id");
-Boolean loginStatus = (Boolean) session.getAttribute("loginStatus");
-boolean isLogin = (loginStatus != null && loginStatus == true && id != null);
+//로그인 정보 조회
+String id = (String)session.getAttribute("id");
+boolean isLogin = (id != null);
+
+//위시
+MovieWishDao wishDao = new MovieWishDao();
+boolean isWished = false;
+
+if (isLogin) {
+    isWished = wishDao.isWished(movieIdx, id);
+}
 %>
 <!DOCTYPE html>
 <html>
@@ -339,9 +347,9 @@ h1.fw-bold small {
 					</span> &nbsp;&nbsp;&nbsp;
 					<button type="button" id="wishBtn"
 						class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-1"
-						data-wished="false">
-						<span id="wishText" class="text-muted">위시</span> <i id="wishIcon"
-							class="bi bi-heart text-danger fs-4"></i>
+						data-wished="<%=isWished%>">
+						<span id="wishText" class="<%=isWished ? "text-danger fw-semibold" : "text-muted"%>">위시</span> 
+						<i id="wishIcon" class="bi <%=isWished ? "bi-heart-fill" : "bi-heart"%> text-danger fs-4"></i>
 					</button>
 				</div>
 
