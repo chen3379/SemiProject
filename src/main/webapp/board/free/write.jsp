@@ -1,5 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%
+String loginId = (String) session.getAttribute("loginid");
+String roleType = (String) session.getAttribute("roleType");
+
+boolean isLogin = (loginId != null);
+boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+
+if (!isLogin || isAdmin) {
+    response.sendRedirect("list.jsp");
+    return;
+}
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +23,6 @@
 <!-- Toast UI Editor -->
 <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-
 
 <title>글쓰기-왓플릭스</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -41,7 +53,6 @@
 	
 	  <!-- 에디터 값 저장용 -->
 	  <input type="hidden" name="content" id="content">
-	
 	  <!-- 파일 업로드 -->
 	  <input type="file" name="uploadFile" class="form-control mt-3">
 	
@@ -75,15 +86,33 @@
     </div>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  const editor = new toastui.Editor({
-    el: document.querySelector('#editor'),
-    height: '500px',
-    initialEditType: 'wysiwyg',
-    previewStyle: 'vertical',
-    language: 'ko-KR',
-    placeholder: '이곳에 글을 작성하세요.'
-  });
+const editor = new toastui.Editor({
+	  el: document.querySelector('#editor'),
+	  height: '500px',
+	  initialEditType: 'wysiwyg',
+	  previewStyle: 'vertical',
+	  language: 'ko-KR',
+	  placeholder: '이곳에 글을 작성하세요.',
+
+	  hooks: {
+	    addImageBlobHook: (blob, callback) => {
+	      const formData = new FormData();
+	      formData.append('image', blob);
+
+	      fetch('imageUpload.jsp', {
+	        method: 'POST',
+	        body: formData
+	      })
+	      .then(res => res.json())
+	      .then(data => {
+	        callback(data.url, 'image');
+	      });
+	    }
+	  }
+	});
+
 
   const form = document.querySelector('form');
   const categorySelect = document.querySelector('select[name="category"]');
@@ -103,6 +132,7 @@
     document.getElementById('content').value = editor.getHTML();
   });
 </script>
+
 
 </body>
 </html>

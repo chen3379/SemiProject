@@ -34,9 +34,12 @@ String dbHashedPassword = memberDao.getHashedPassword(inputId);
 		session.setAttribute("saveId", (saveId != null ? "true" : "false"));
 		session.setAttribute("loginStatus", true);
 		session.setAttribute("memberInfo", memberDto);
+		session.setAttribute("roleType", memberDto.getRoleType());
+
 		session.setMaxInactiveInterval(60 * 60 * 8);
 
 		session.removeAttribute("guestUUID");
+		System.out.println("로그인 roleType = " + memberDto.getRoleType());
 
 		json.put("status", "SUCCESS");
 	} else {

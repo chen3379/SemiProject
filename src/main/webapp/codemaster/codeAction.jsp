@@ -32,11 +32,12 @@ if (groupCode == null || codeId == null) {
 }
 
 //sortOrder 안전 처리
-int sortOrder = 0;
-String sortOrderParam = request.getParameter("sortOrder");
-if (sortOrderParam != null && !sortOrderParam.trim().isEmpty()) {
-    sortOrder = Integer.parseInt(sortOrderParam);
+int sortOrder = Integer.parseInt(request.getParameter("sortOrder"));
+
+if (sortOrder < 1 || sortOrder > 10) {
+    throw new IllegalArgumentException("표기순서는 1~10만 가능합니다.");
 }
+
 
 //useYn null 
 String useYn= request.getParameter("useYn");

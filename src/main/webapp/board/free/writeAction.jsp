@@ -32,7 +32,13 @@ MultipartRequest multi = new MultipartRequest(
 String category = multi.getParameter("category");
 String title = multi.getParameter("title");
 String content = multi.getParameter("content");
+out.print("<pre>");
+out.print("category = " + category + "\n");
+out.print("title = " + title + "\n");
+out.print("content = " + content + "\n");
+out.print("</pre>");
 
+String uploadFileName = multi.getFilesystemName("uploadFile");
 /* ===== DTO ===== */
 FreeBoardDto dto = new FreeBoardDto();
 dto.setCategory_type(category);
@@ -40,6 +46,7 @@ dto.setTitle(title);
 dto.setContent(content);
 dto.setId(loginId);           
 dto.setIs_spoiler_type(false);
+dto.setFilename(uploadFileName);
 
 FreeBoardDao dao = new FreeBoardDao();
 dao.insertBoard(dto);

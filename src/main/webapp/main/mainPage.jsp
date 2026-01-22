@@ -48,7 +48,7 @@
     /* [Layout System] Sticky Nav + Sidebar Grid */
     .app-container {
         display: grid;
-        grid-template-columns: var(--sidebar-width) 1fr;
+        grid-template-columns: 1fr;
         min-height: 100vh;
         padding-top: var(--nav-height); /* Header 높이만큼 띄움 */
     }
@@ -125,7 +125,7 @@
 
     <div class="app-container">
         <aside class="sidebar-container">
-            <jsp:include page="sideBar.jsp" />
+            <%-- <jsp:include page="sideBar.jsp" /> --%>
         </aside>
 
         <main class="main-content">

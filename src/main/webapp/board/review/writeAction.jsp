@@ -1,16 +1,54 @@
+<%@ page import="com.oreilly.servlet.MultipartRequest" %>
+<%@ page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy" %>
+<%@ page import="board.review.*" %>
+<%@ page import="java.io.File" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-</head>
-<body>
 
-</body>
-</html>
+<%
+request.setCharacterEncoding("UTF-8");
+
+/* ===== 로그인 체크 ===== */
+String loginId = (String) session.getAttribute("loginid");
+if (loginId == null) {
+    response.sendRedirect("../login/loginModal.jsp");
+    return;
+}
+
+/* ===== 파일 업로드 설정 ===== */
+String uploadPath = application.getRealPath("/save");
+File uploadDir = new File(uploadPath);
+if (!uploadDir.exists()) uploadDir.mkdirs();
+
+int maxSize = 10 * 1024 * 1024;
+
+/* ===== multipart 처리 ===== */
+MultipartRequest multi = new MultipartRequest(
+    request,
+    uploadPath,
+    maxSize,
+    "UTF-8",
+    new DefaultFileRenamePolicy()
+);
+
+/* ===== 파라미터 ===== */
+String genre = multi.getParameter("genre");   // 영화 장르
+String title = multi.getParameter("title");
+String content = multi.getParameter("content");
+String filename = multi.getFilesystemName("uploadFile");
+
+/* ===== DTO ===== */
+ReviewBoardDto dto = new ReviewBoardDto();
+dto.setGenre_type(genre);
+dto.setTitle(title);
+dto.setContent(content);
+dto.setId(loginId);
+dto.setFilename(filename);
+
+/* ===== DB 저장 ===== */
+ReviewBoardDao dao = new ReviewBoardDao();
+dao.insertBoard(dto);
+
+/* ===== 이동 ===== */
+response.sendRedirect("list.jsp");
+%>
