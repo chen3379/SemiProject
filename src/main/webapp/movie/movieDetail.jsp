@@ -76,6 +76,7 @@ if (isLogin) {
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <style>
 /* [1] 전역 테마 및 배경 설정 */
 :root {
@@ -322,6 +323,7 @@ h1.fw-bold small {
 
 	<input type="hidden" id="movieIdx" value="<%=movie_idx%>">
 	<jsp:include page="../main/nav.jsp" />
+	<jsp:include page="../login/loginModal.jsp" />
 
 	<div class="container">
 		<div class="mb-4 border-bottom pb-3">
@@ -572,20 +574,20 @@ h1.fw-bold small {
 	 /* ===== (reviewCount==0일 때) 작성하기 버튼 ===== */
 	 
 	 var isLogin = <%=isLogin ? "true" : "false"%>;
-	 
-	  $(document).on("click", "#btnReviewWrite", function(){
-		
-		//비회원일때는 로그인창으로 넘어가기
-		if(!isLogin){
-		    alert("로그인이 필요합니다.");
-		    location.href = "../login/loginModal.jsp";
-		    return;
-		}
-		
-	    $("#reviewBox").hide();                 // 안내박스 숨김
-	    $("#reviewSecondBox").removeClass("d-none"); // 폼 보이기
-	  });
 
+	 $(document).on("click", "#btnReviewWrite", function(){
+		    if(!isLogin){
+		        alert("로그인이 필요합니다.", function(){
+		            // [수정] 부트스트랩 5 표준 방식으로 모달 열기
+		            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+		            modal.show();
+		        });
+		        return; 
+		    }    	
+
+    $("#reviewBox").hide();
+    $("#reviewSecondBox").removeClass("d-none");
+});
 
 	  /* ===== 별점 UI (폼이 있을 때만) ===== */
 	  (function initStarUI(){
@@ -638,14 +640,17 @@ h1.fw-bold small {
 
 
 	  /* ===== 등록 버튼 (한줄평 + 별점) ===== */
+	  /* ===== 등록 버튼 (한줄평 + 별점) ===== */
 	  $(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
-		  
-	  	if(!isLogin){
-		  alert("로그인이 필요합니다.");
-		  location.href = "../login/loginModal.jsp";
-		  return;
-	  	}
-		
+    if(!isLogin){
+        alert("로그인이 필요합니다.", function(){
+            // [수정]
+            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
+        });
+        return; 
+    }
+
 	    var movieIdx = $("#movieIdxHidden").val();
 	    var score = $("#reviewScore").val();
 	    var content = $("#reviewContent").val();
@@ -756,15 +761,16 @@ h1.fw-bold small {
 	}
 	
 	/* ===== 위시 추가/삭제 ===== */
-	$("#wishBtn").on("click", function(e){	
-	e.preventDefault();
-	e.stopPropagation();
-
-	if(!isLogin){
-	    alert("로그인이 필요합니다.");
-	    location.href = "../login/loginModal.jsp";
-	    return;
-	}
+$("#wishBtn").on("click", function(e){    
+    // ... 기존 코드 ...
+    if(!isLogin){
+        alert("로그인이 필요합니다.", function(){
+            // [수정]
+            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
+        });
+        return; 
+    }
 
 	var movieIdx = $("#movieIdx").val();
     var wished = $(this).data("wished");
@@ -813,5 +819,8 @@ h1.fw-bold small {
 	
 	
 </script>
+<footer>
+<jsp:include page="../main/footer.jsp" />
+</footer>
 </body>
 </html>
