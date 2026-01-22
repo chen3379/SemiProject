@@ -1,5 +1,18 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%
+String loginId = (String) session.getAttribute("loginid");
+String roleType = (String) session.getAttribute("roleType");
+
+boolean isLogin = (loginId != null);
+boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+
+if (!isLogin || isAdmin) {
+    response.sendRedirect("list.jsp");
+    return;
+}
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,7 +23,6 @@
 <!-- Toast UI Editor -->
 <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-
 
 <title>글쓰기-왓플릭스</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
@@ -74,6 +86,7 @@
     </div>
   </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const editor = new toastui.Editor({
 	  el: document.querySelector('#editor'),
@@ -119,6 +132,7 @@ const editor = new toastui.Editor({
     document.getElementById('content').value = editor.getHTML();
   });
 </script>
+
 
 </body>
 </html>

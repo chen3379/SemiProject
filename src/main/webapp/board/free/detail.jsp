@@ -21,7 +21,7 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/detail.css">
-<title>자유게시판 리뷰 상</title>
+<title>자유게시판 리뷰 상세</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
 <%
