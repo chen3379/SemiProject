@@ -300,7 +300,10 @@ String msg = request.getParameter("msg");
     alert("복구되었습니다.");
 <% } %>
 </script>
-<div class="container">
+<jsp:include page="/main/nav.jsp" />
+<jsp:include page="/login/loginModal.jsp" />
+
+<div class="container" style="padding-top: 80px; ">
 	<div class="review-header">
         <h2>
         	🗨️ 자유게시판
