@@ -185,9 +185,12 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 				if (canEdit) {
 				%>
 				<div class="post-menu" id="postMenu">
-					<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> <a
-						href="delete.jsp?board_idx=<%=board_idx%>"
-						onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
+					<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> 
+					<a href="javascript:void(0);"
+					   id="deletePostBtn"
+					   data-board="<%=board_idx%>">
+					   삭제
+					</a>
 				</div>
 				<%
 				}
@@ -455,6 +458,14 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 	            $('#likeCount').text(res.count);
 	            $('#likeBtn').toggleClass('active', res.liked);
 	        }, 'json');
+	    });
+	    
+	    document.getElementById('deletePostBtn')?.addEventListener('click', function () {
+	        const boardIdx = this.dataset.board;
+
+	        confirmCustomAlert('정말 삭제하시겠습니까?', function () {
+	            location.href = 'delete.jsp?board_idx=' + boardIdx;
+	        });
 	    });
 	
 	});
