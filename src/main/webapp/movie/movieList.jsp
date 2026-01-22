@@ -356,12 +356,10 @@
     
    <%
     String id=(String)session.getAttribute("id");
-    
-    MemberDao memberDao=new MemberDao();
+    String roleType=(String)session.getAttribute("roleType");
 
     if(id!=null){
         
-    String roleType=memberDao.getRoleType(id);
     //roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
     //nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
     if("3".equals(roleType)||"9".equals(roleType)){
