@@ -18,21 +18,23 @@
 <%
 	request.setCharacterEncoding("UTF-8");
 
+	String groupCode=request.getParameter("groupCode");
+	String currentPage=request.getParameter("currentPage");
+
+	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
 	//그룹코드 조회groupCode
 	CodeDao dao=new CodeDao();
 	List<CodeDto> groupList = dao.getGroupList();
 	
-	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	
-	String groupCode=request.getParameter("groupCode");
-	String currentPage=request.getParameter("currentPage");
+	int totalCount = 0;
 	
 	CodeDto dtog = null;
 	List<CodeDto> list = null;
 	
-	int totalCount = 0;
 	
 	if(groupCode != null && !groupCode.equals("")){
+		
 	    dtog = dao.getGroup(groupCode);
 	    list = dao.getCodeList(groupCode);
 	    totalCount = list.size();

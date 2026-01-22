@@ -264,7 +264,10 @@ td.title a {
 </style>
 </head>
 <body>
-<div class="container">
+<jsp:include page="/main/nav.jsp" />
+<jsp:include page="/login/loginModal.jsp" />
+
+<div class="container" style="padding-top: 80px; ">
      <div class="review-header">
         <h2>
             🎬 영화 리뷰
