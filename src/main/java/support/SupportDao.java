@@ -20,11 +20,11 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 	        
-	        String sql ="select * from support where delete_type='0' ";
+	        String sql ="select * from support";
 
 	        // 문의유형 필터
 	        if (categoryType != null && !categoryType.equals("")) {
-	            sql += " and category_type = ?";
+	            sql += " where category_type = ?";
 	        }
 	        
 	        // 답변상태 필터
@@ -190,21 +190,20 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public void updateSupport(int supportIdx, String title, String content){
+	    public void updateSupport(int supportIdx, String title, String content, String secretType){
 
 	        Connection conn = db.getDBConnect();
 	        PreparedStatement pstmt = null;
 
 	        String sql =
-	          "update support " +
-	          "set title=?, content=?, update_day=now() " +
-	          "where support_idx=?";
+	          "update support set title=?, content=?, secret_type=? update_day=now() where support_idx=?";
 
 	        try{
 	            pstmt = conn.prepareStatement(sql);
 	            pstmt.setString(1, title);
 	            pstmt.setString(2, content);
-	            pstmt.setInt(3, supportIdx);
+	            pstmt.setString(3, secretType);
+	            pstmt.setInt(4, supportIdx);
 	            pstmt.executeUpdate();
 	        }catch(Exception e){
 	            e.printStackTrace();
@@ -235,4 +234,114 @@ public class SupportDao {
 	            db.dbClose(null,pstmt,conn);
 	        }
 	    }
+	    
+	    // (페이징용) 전체 글 갯수
+	    public int getTotalCount(String status, String categoryType) {
+	        int count = 0;
+
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
+
+	        String sql = "select count(*) from support where 1=1";
+
+	        if(categoryType != null && !categoryType.equals("")){
+	            sql += " and category_type = ?";
+	        }
+
+	        if(status != null && !status.equals("")){
+	            sql += " and status_type = ?";
+	        }
+
+	        try {
+	            pstmt = conn.prepareStatement(sql);
+
+	            int idx = 1;
+
+	            if(categoryType != null && !categoryType.equals("")){
+	                pstmt.setString(idx++, categoryType);
+	            }
+
+	            if(status != null && !status.equals("")){
+	                pstmt.setString(idx++, status);
+	            }
+
+	            rs = pstmt.executeQuery();
+	            if(rs.next()) count = rs.getInt(1);
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	            db.dbClose(rs, pstmt, conn);
+	        }
+
+	        return count;
+	    }
+
+	    
+	    // (페이징용) 목록 조회
+	    public List<SupportDto> getPagingList(int startNum, int perPage,String status, String categoryType) {
+
+	        List<SupportDto> list = new ArrayList<>();
+
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
+
+	        String sql = "select * from support where 1=1";
+
+	        if(categoryType != null && !categoryType.equals("")){
+	            sql += " and category_type = ?";
+	        }
+
+	        if(status != null && !status.equals("")){
+	            sql += " and status_type = ?";
+	        }
+
+	        sql += " order by support_idx desc limit ?,?";
+
+	        try {
+	            pstmt = conn.prepareStatement(sql);
+
+	            int idx = 1;
+	            if(status != null && !status.equals("")){
+	                pstmt.setString(idx++, status);
+	            }
+	            if(categoryType != null && !categoryType.equals("")){
+	                pstmt.setString(idx++, categoryType);
+	            }
+
+	            pstmt.setInt(idx++, startNum);
+	            pstmt.setInt(idx, perPage);
+
+	            rs = pstmt.executeQuery();
+
+	            while(rs.next()){
+	                SupportDto dto = new SupportDto();
+	                
+	                dto.setSupportIdx(rs.getInt("support_idx"));
+	                dto.setCategoryType(rs.getString("category_type"));
+	                dto.setTitle(rs.getString("title"));
+	                dto.setId(rs.getString("id"));
+	                dto.setSecretType(rs.getString("secret_type"));
+	                dto.setStatusType(rs.getString("status_type"));
+	                dto.setReadcount(rs.getInt("readcount"));
+	                dto.setCreateDay(rs.getTimestamp("create_day"));
+	                dto.setDeleteType(rs.getString("delete_type"));
+
+	                list.add(dto);
+	            }
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	            db.dbClose(rs, pstmt, conn);
+	        }
+
+	        return list;
+	    }
+
+	    
+
+	    
 }

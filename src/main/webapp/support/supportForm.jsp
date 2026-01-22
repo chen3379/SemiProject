@@ -1,3 +1,4 @@
+<%@page import="member.MemberDao"%>
 <%@page import="support.SupportDao"%>
 <%@page import="support.SupportDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -5,11 +6,12 @@
 <%
 
 //로그인 여부 확인
-String loginId = (String)session.getAttribute("id");
-String roleType = (String)session.getAttribute("roleType");
+String id = (String)session.getAttribute("id");
+boolean isLogin = (id != null);
+String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
-if(loginId == null){
+if(id == null){
 %>
 <script>
 alert("로그인 후 이용 가능합니다");
@@ -31,7 +33,7 @@ if(isUpdate){
     dto = dao.getOneData(supportIdx);
     
  	// 수정 권한 체크
-    if(!loginId.equals(dto.getId()) && !isAdmin){
+    if(!id.equals(dto.getId()) && !isAdmin){
 %>
 <script>
 alert("수정 권한이 없습니다");
@@ -51,39 +53,225 @@ history.back();
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <title>Insert title here</title>
+<style type="text/css">
+/* 전체 */
+/* ===== 전체 ===== */
+body {
+    background: #f5f6f8;
+    color: #222;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* 컨테이너 */
+.support-container {
+    max-width: 860px;
+    margin: 60px auto 100px;
+    padding: 0 16px;
+}
+
+/* 헤더 */
+.support-header {
+    margin-bottom: 28px;
+}
+
+.support-header.span {
+    font-size: 20px;     
+    font-weight: 600;
+    color: #333;
+}
+
+/* 폼 카드 */
+.support-form {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* 폼 그룹 */
+.form-group {
+    margin-bottom: 22px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* 인풋 / 셀렉트 / 텍스트에리어 */
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid #dcdcdc;
+    font-size: 14px;
+    outline: none;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #e50914;
+}
+
+/* 내용 textarea */
+.content-area {
+    min-height: 180px;
+    resize: vertical;
+}
+
+/* 체크박스 */
+.form-check {
+    margin-top: 10px;
+}
+
+.form-check-input {
+    margin-right: 6px;
+}
+
+.form-check-label {
+    font-size: 14px;
+    color: #555;
+}
+
+/* 버튼 영역 */
+.form-actions {
+    margin-top: 34px;
+    text-align: right;
+}
+
+/* 등록 버튼 */
+.btn-submit {
+    background: #e50914;
+    color: #fff;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background: #b20710;
+}
+
+/* 취소 버튼 */
+.btn-cancel {
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background: #d5d5d5;
+}
+
+/* ===== 모바일 ===== */
+@media (max-width: 768px) {
+    .support-container {
+        margin-top: 40px;
+    }
+
+    .support-form {
+        padding: 24px 18px;
+    }
+
+    .form-actions {
+        text-align: center;
+    }
+}
+
+</style>
 </head>
 <body>
 
-<h2>고객지원 문의</h2>
+<div class="support-container">
 
-<form id="supportForm">
+    <!-- 헤더 -->
+    <div class="support-header">
+        <h2>고객지원 문의</h2>
+        <span>문의 내용을 자세히 작성해주세요</span>
+    </div>
 
-  <% if(isUpdate){ %>
-    <input type="hidden" id="supportIdx" value="<%= supportIdxStr %>">
-  <% } %>
+    <!-- 폼 카드 -->
+    <div class="support-form">
 
-  <!-- 문의 유형 선택 -->
-  <label>문의 유형</label><br>
-  <select name="categoryType" id="categoryType">
-    <option value="0" <%= (isUpdate && "0".equals(dto.getCategoryType())) ? "selected" : "" %>>회원정보</option>
-    <option value="1" <%= (isUpdate && "1".equals(dto.getCategoryType())) ? "selected" : "" %>>신고</option>
-    <option value="2" <%= (!isUpdate || "2".equals(dto.getCategoryType())) ? "selected" : "" %>>기타</option>
-  </select>
-  <br><br>
-  
-  <label>제목</label><br>
-  <input type="text" name="title" id="title" value="<%= isUpdate ? dto.getTitle() : "" %>" placeholder="제목" required><br><br>
+        <form id="supportForm">
 
-  <label>내용</label><br>
-  <textarea name="content" id="content" rows="6" cols="50" placeholder="문의 내용을 입력하세요" required><%= isUpdate ? dto.getContent() : "" %></textarea><br><br>
+            <% if(isUpdate){ %>
+                <input type="hidden" id="supportIdx" value="<%= supportIdxStr %>">
+            <% } %>
 
-  <label>
-    <input type="checkbox" name="secret" id="secret" value="1" <%= (isUpdate && "1".equals(dto.getSecretType())) ? "checked" : "" %>>비밀글
-  </label><br><br>
+            <!-- 문의 유형 -->
+            <div class="form-group">
+                <label>문의 유형</label>
+                <select name="categoryType" id="categoryType" class="form-select">
+                    <option value="0" <%= (isUpdate && "0".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                        회원정보
+                    </option>
+                    <option value="1" <%= (isUpdate && "1".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                        신고
+                    </option>
+                    <option value="2" <%= (!isUpdate || "2".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                        기타
+                    </option>
+                </select>
+            </div>
 
-  <button type="button" onclick="saveSupport()"><%= isUpdate ? "수정" : "등록" %></button>
-  <button type="button" onclick="history.back()">뒤로가기</button>
-</form>
+            <!-- 제목 -->
+            <div class="form-group">
+                <label>제목</label>
+                <input type="text"
+                       name="title"
+                       id="title"
+                       class="form-control"
+                       placeholder="제목을 입력하세요"
+                       value="<%= isUpdate ? dto.getTitle() : "" %>"
+                       required>
+            </div>
+
+            <!-- 내용 -->
+            <div class="form-group">
+                <label>내용</label>
+                <textarea name="content"
+                          id="content"
+                          class="form-control content-area"
+                          placeholder="문의 내용을 입력하세요"
+                          required><%= isUpdate ? dto.getContent() : "" %></textarea>
+            </div>
+
+            <!-- 비밀글 -->
+            <div class="form-check">
+                <input type="checkbox"
+                       name="secret"
+                       id="secret"
+                       value="1"
+                       class="form-check-input"
+                       <%= (isUpdate && "1".equals(dto.getSecretType())) ? "checked" : "" %>>
+                <label for="secret" class="form-check-label">
+                    비밀글로 작성
+                </label>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="form-actions">
+                <button type="button" class="btn-submit" onclick="saveSupport()"><%= isUpdate ? "수정" : "등록" %></button>
+                <button type="button" class="btn-cancel" onclick="history.back()">뒤로가기</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
 
 <script type="text/javascript">
 
