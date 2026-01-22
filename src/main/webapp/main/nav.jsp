@@ -163,18 +163,31 @@
 <nav class="global-nav">
     <div class="nav-content">
         <div class="d-flex align-items-center">
-            <a href="../main/mainPage.jsp" class="brand-logo-link">
-                <img src="../save/whatflix-grunge-transparent2.PNG" alt="WHATFLIX" class="brand-logo-img">
-            </a>
-
+	        <a href="<%=request.getContextPath()%>/main/mainPage.jsp"
+	           class="brand-logo-link">
+	            <img src="<%=request.getContextPath()%>/save/whatflix-grunge-transparent2.PNG"
+	                 alt="WHATFLIX"
+	                 class="brand-logo-img">
+	        </a>
             <ul class="nav-links">
-                <li><a href="../main/mainPage.jsp" class="nav-item">홈</a></li>
-                <li><a href="../movie/movieList.jsp" class="nav-item">영화</a></li>
-                <li><a href="../main/communitySection.jsp" class="nav-item">커뮤니티</a></li>
-                <li><a href="../support/supportList.jsp" class="nav-item">지원</a></li>
-            </ul>
+			    <li>
+			        <a href="<%=request.getContextPath()%>/main/mainPage.jsp"
+			           class="nav-item">홈</a>
+			    </li>
+			    <li>
+			        <a href="<%=request.getContextPath()%>/movie/movieList.jsp"
+			           class="nav-item">영화</a>
+			    </li>
+			    <li>
+			        <a href="<%=request.getContextPath()%>/main/communitySection.jsp"
+			           class="nav-item">커뮤니티</a>
+			    </li>
+			    <li>
+			        <a href="<%=request.getContextPath()%>/support/supportList.jsp"
+			           class="nav-item">지원</a>
+			    </li>
+			</ul>
         </div>
-
         <ul class="nav-actions">
             <li><a href="../main/sessionCheck.jsp" class="nav-item" style="font-size:0.8rem; opacity:0.5;">Dev:세션</a></li>
             
