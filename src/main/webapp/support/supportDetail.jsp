@@ -12,7 +12,13 @@
     String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
     boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
-    int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
+    String supportIdxStr = request.getParameter("supportIdx");
+	//수정 오류 보완
+    if(supportIdxStr == null || supportIdxStr.equals("undefined")){
+        response.sendRedirect("supportList.jsp");
+        return;
+    }
+    int supportIdx = Integer.parseInt(supportIdxStr);
 
     SupportDao dao = new SupportDao();
     SupportDto dto = dao.getOneData(supportIdx);
@@ -65,6 +71,8 @@
     
     // 작성자, 관리자만 수정버튼 노출
     boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
+    
+    String secretType = request.getParameter("secret") == null ? "0" : "1";
 %>
 <!DOCTYPE html>
 <html>

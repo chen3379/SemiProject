@@ -190,21 +190,20 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public void updateSupport(int supportIdx, String title, String content){
+	    public void updateSupport(int supportIdx, String title, String content, String secretType){
 
 	        Connection conn = db.getDBConnect();
 	        PreparedStatement pstmt = null;
 
 	        String sql =
-	          "update support " +
-	          "set title=?, content=?, update_day=now() " +
-	          "where support_idx=?";
+	          "update support set title=?, content=?, secret_type=? update_day=now() where support_idx=?";
 
 	        try{
 	            pstmt = conn.prepareStatement(sql);
 	            pstmt.setString(1, title);
 	            pstmt.setString(2, content);
-	            pstmt.setInt(3, supportIdx);
+	            pstmt.setString(3, secretType);
+	            pstmt.setInt(4, supportIdx);
 	            pstmt.executeUpdate();
 	        }catch(Exception e){
 	            e.printStackTrace();

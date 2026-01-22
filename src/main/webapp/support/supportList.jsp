@@ -161,42 +161,107 @@ a {
     background-color: rgba(229, 9, 20, 0.12);
 }
 
+/* 모바일 */
+@media (max-width: 768px) {
+
+    .main-content {
+        padding: 20px;
+    }
+
+    .support-table thead {
+        display: none;
+    }
+
+    .support-table,
+    .support-table tbody,
+    .support-table tr,
+    .support-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .support-table tr {
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #1e1e1e;
+        border: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .support-table td {
+        border: none;
+        padding: 6px 0;
+        text-align: left;
+        font-size: 13px;
+    }
+
+    .support-table td::before {
+        display: inline-block;
+        width: 80px;
+        font-weight: 600;
+        color: #999;
+    }
+
+    .support-table td.category::before { content: "문의유형"; }
+    .support-table td.title::before { content: "제목"; }
+    .support-table td.writer::before { content: "작성자"; }
+    .support-table td.date::before { content: "작성일"; }
+    .support-table td.count::before { content: "조회수"; }
+}
+
 /* ===== 페이지네이션 ===== */
 .page-wrap {
     display: flex;
     justify-content: center;
-    margin: 40px 0;
+    margin: 40px 0 60px;
 }
 
 .page-list {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 18px;
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
 .page-list li a {
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 50%;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
-    color: #aaa;
+    color: #9e9e9e;
+    transition: all 0.2s ease;
 }
 
-.page-list li.active a {
-    background: #e50914;
+.page-list li a:hover {
     color: #fff;
 }
 
+.page-list li.active a {
+    background-color: #e50914;
+    color: #fff;
+    box-shadow: 0 0 14px rgba(229, 9, 20, 0.7);
+}
+
 .page-list li.arrow a {
-    font-size: 20px;
+    font-size: 22px;
+    color: #9e9e9e;
+}
+
+.page-list li.arrow a:hover {
+    color: #fff;
+}
+
+/* supportList 가로 기준 */
+.support-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
 </style>
@@ -213,7 +278,7 @@ a {
 
     <main class="main-content">
 
-        <section class="content-section">
+        <section class="content-section support-wrap">
 
             <!-- 섹션 헤더 -->
             <div class="section-header">
@@ -227,7 +292,7 @@ a {
                 <select name="categoryType"
                         onchange="this.form.submit()"
                         class="form-select form-select-sm"
-                        style="max-width:180px;">
+                        style="max-width:110px;">
                     <option value="">전체</option>
                     <option value="0" <%= "0".equals(categoryParam) ? "selected" : "" %>>회원정보</option>
                     <option value="1" <%= "1".equals(categoryParam) ? "selected" : "" %>>신고</option>
@@ -239,7 +304,7 @@ a {
                 <select name="status"
                         onchange="this.form.submit()"
                         class="form-select form-select-sm"
-                        style="max-width:160px;">
+                        style="max-width:150px;">
                     <option value="">답변상태 전체</option>
                     <option value="0" <%= "0".equals(status) ? "selected" : "" %>>답변대기</option>
                     <option value="1" <%= "1".equals(status) ? "selected" : "" %>>답변완료</option>
@@ -249,16 +314,16 @@ a {
             </form>
 
             <!-- 문의글 목록 -->
-            <div class="support-wrap"> 
+            <div class="support-table-wrap"> 
 	                <table class="table table-dark table-hover align-middle support-table">
 	                    <thead>
 	                        <tr>
 	                            <th>No</th>
-	                            <th>문의유형</th>
-	                            <th>제목</th>
-	                            <th>작성자</th>
-	                            <th>작성일</th>
-	                            <th>조회수</th>
+	                            <th class="category">문의유형</th>
+	                            <th class="title">제목</th>
+	                            <th class="writer">작성자</th>
+	                            <th class="date">작성일</th>
+	                            <th class="count">조회수</th>
 	                            <% if(isAdmin){ %><th>답변상태</th><% } %>
 	                        </tr>
 	                    </thead>
