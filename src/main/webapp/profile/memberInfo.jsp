@@ -149,7 +149,7 @@
     <!-- 회원 정보 카드 -->
     <div class="member-info shadow-lg" style="display:none;">
         <div class="member-photo">
-            <img id="photo" src="${pageContext.request.contextPath}${sessionScope.memberInfo.photo}" alt="프로필 이미지" />
+            <img id="photo" src="${pageContext.request.contextPath}${empty sessionScope.memberInfo.photo ? '/profile_photo/default_photo.jpg' : sessionScope.memberInfo.photo}" alt="프로필 이미지" />
         </div>
         
         <div class="info-details">
@@ -184,6 +184,7 @@
                 <button id="editBtn" type="button"><i class="bi bi-pencil-square me-2"></i>정보 수정</button>
                 <form id="deleteForm" action="memberDeleteAction.jsp" method="post">
                     <input type="hidden" name="id" value="${sessionScope.memberInfo.id}">
+                    <input type="hidden" name="password" id="deletePassword">
                     <button type="button" id="deleteBtn">회원탈퇴</button>
                 </form>
             </div>
@@ -262,9 +263,22 @@
             $("#content-area").load("memberInfoEdit.jsp?id=" + targetId);
         });
 
-        // 회원탈퇴 로직 보존
+        // 회원탈퇴 로직: 모달 띄우기
         $('#deleteBtn').click(function () {
-            if (confirm("정말 WHATFLIX를 떠나시겠습니까? 모든 정보가 삭제됩니다.")) {
+            $('#withdrawModal').modal('show');
+        });
+
+        // 모달 내 탈퇴 승인 버튼 클릭 시
+        $('#confirmWithdrawBtn').click(function() {
+            var pw = $('#withdrawPasswordInput').val();
+            if (!pw) {
+                alert("비밀번호를 입력해주세요.");
+                $('#withdrawPasswordInput').focus();
+                return;
+            }
+            
+            if (confirm("정말 WHATFLIX를 떠나시겠습니까? 모든 정보가 삭제되며 복구할 수 없습니다.")) {
+                $('#deletePassword').val(pw);
                 $('#deleteForm').submit();
             }
         });
@@ -278,7 +292,7 @@
         targetId = data.id;
         
         // [수정] 사진 없을 시 기본 이미지 처리
-        var photoPath = data.photo ? (contextPath + data.photo) : (contextPath + "/save/no_photo.png");
+        var photoPath = data.photo ? (contextPath + data.photo) : (contextPath + "/profile_photo/default_photo.jpg");
         $('#photo').attr('src', photoPath);
         
         $('#memberNickname').text(data.nickname);
@@ -303,3 +317,33 @@
         }
     }
 </script>
+
+<!-- 회원탈퇴 확인용 모달 -->
+<div class="modal fade" id="withdrawModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="background-color: #1a1a1a; color: white; border: 1px solid #333; border-radius: 12px;">
+            <div class="modal-header" style="border-bottom: 1px solid #333;">
+                <h5 class="modal-title" style="font-weight: 700; color: #E50914;">회원 탈퇴 확인</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 25px;">
+                <p style="color: #ccc; font-size: 0.95rem; margin-bottom: 20px;">
+                    보안을 위해 비밀번호를 다시 한 번 입력해 주세요.<br>
+                    <strong>탈퇴 시 모든 데이터는 영구 삭제됩니다.</strong>
+                </p>
+                <div class="mb-3">
+                    <label for="withdrawPasswordInput" class="form-label" style="font-size: 0.85rem; color: #888;">비밀번호</label>
+                    <input type="password" class="form-control" id="withdrawPasswordInput" 
+                           style="background: #222; border: 1px solid #444; color: white; border-radius: 6px; padding: 12px;"
+                           placeholder="비밀번호를 입력하세요">
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #333;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
+                        style="background: #333; border: none; font-weight: 600;">취소</button>
+                <button type="button" id="confirmWithdrawBtn" class="btn btn-danger" 
+                        style="background: #E50914; border: none; font-weight: 600; padding-left: 20px; padding-right: 20px;">탈퇴하기</button>
+            </div>
+        </div>
+    </div>
+</div>

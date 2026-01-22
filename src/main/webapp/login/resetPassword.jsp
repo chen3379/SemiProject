@@ -134,7 +134,7 @@
     </form>
 
     <span id="resetPasswordMsg"></span>
-    <p>세션에 저장된 인증번호 : <%=session.getAttribute("otp") %>, ${sessionScope.otp}</p>
+    <p>세션에 저장된 인증번호 : <span id="adminOtpDisplay"><%=session.getAttribute("otp") != null ? session.getAttribute("otp") : "" %></span></p>
 </div>
 
 <script>
@@ -161,6 +161,7 @@
                         return;
                     } else if (res.status == 'SUCCESS') {
                         $('#sendOtpMsg').text('해당 이메일로 6자리의 인증번호가 전송되었습니다.');
+                        $('#adminOtpDisplay').text(res.otp);
                         $('#otpConfirmForm').show();
                         $fields.eq(0).focus()
                     }
