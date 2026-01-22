@@ -393,9 +393,6 @@ a {
 						        <tr class="bg-light"
 						            style="cursor:pointer;"
 						            onclick=" 
-						            
-						            
-						            
 						                event.stopPropagation();
 						                handleAnswerClick(
 						                    '<%=dto.getSecretType()%>',
@@ -405,9 +402,15 @@ a {
 						            ">
 						
 						            <td></td>
-						            <td colspan="<%= isAdmin ? 6 : 5 %>" style="padding-left:30px;">
+						            <td colspan="3" style="padding-left:30px;">
 						                ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
 						            </td>
+						            <td></td>
+						            <td></td>
+								    <% if(isAdmin){ %>
+								        <!-- 답변상태 -->
+								        <td></td>
+								    <% } %>
 						        </tr>
 						        
 						        <% rowCount++; %>
@@ -465,34 +468,28 @@ a {
 	
 	    </ul>
 	</div>
-            
-            
-            
-            
-            
-            
-            
-
         </section>
 
     </main>
     
-    <script>
-function handleAnswerClick(secretType, writerId, supportIdx){
-    const isAdmin = <%= isAdmin %>;
-    const isLogin = <%= isLogin %>;
-    const loginId = "<%= isLogin ? id : "" %>";
-
-    if(secretType === "1" && !(isAdmin || (isLogin && loginId === writerId))){
-        alert("비밀글입니다");
-        return;
-    }
-
-    location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
-}
-</script>
+    <script type="text/javascript">
+		function handleAnswerClick(secretType, writerId, supportIdx){
+		    const isAdmin = <%= isAdmin %>;
+		    const isLogin = <%= isLogin %>;
+		    const loginId = "<%= isLogin ? id : "" %>";
+		
+		    if(secretType === "1" && !(isAdmin || (isLogin && loginId === writerId))){
+		        alert("비밀글입니다");
+		        return;
+		    }
+		
+		    location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
+		}
+	</script>
     
 </div>
+
+<jsp:include page="../main/footer.jsp" />
 
 </body>
 

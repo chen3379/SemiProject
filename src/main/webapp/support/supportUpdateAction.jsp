@@ -1,5 +1,5 @@
 <%@page import="support.SupportDao"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
+<%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%
 request.setCharacterEncoding("UTF-8");
@@ -12,12 +12,12 @@ if(id == null){
 }
 
 // 파라미터 받기
-String supportIdxStr = request.getParameter("supportIdx");
-int supportIdx = Integer.parseInt(supportIdxStr);
+int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
 String categoryType = request.getParameter("categoryType");
 String title = request.getParameter("title");
 String content = request.getParameter("content");
 String secret = request.getParameter("secret");
+String secretType = request.getParameter("secret") == null ? "0" : "1";
 
 // 최소 방어
 if(categoryType == null || categoryType.trim().equals("")){
@@ -29,6 +29,6 @@ if(secret == null){
 
 // DAO 호출
 SupportDao dao = new SupportDao();
-dao.updateSupport(supportIdx, title, content);
+dao.updateSupport(supportIdx, title, content, secretType);
 
 %>
