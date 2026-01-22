@@ -333,7 +333,7 @@ to {
 </section>
 <section class="content-section">
 	<div class="section-header">
-		<h2 class="section-title">🏆 실시간 인기 순위</h2>
+		<h2 class="section-title">실시간 인기 순위</h2>
 		<a href="../movie/movieList.jsp" class="more-link">더보기 <i
 			class="bi bi-chevron-right"></i></a>
 	</div>
