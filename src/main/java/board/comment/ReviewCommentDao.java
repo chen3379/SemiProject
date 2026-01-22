@@ -99,19 +99,20 @@ public class ReviewCommentDao {
     }
 
  	
-	// 댓글 삭제 (소프트 삭제)
+	// 댓글 삭제
 	public void deleteComment(int comment_idx, String loginId) {
 
-	    String sql =
-	        "UPDATE review_comment " +
-	        "SET is_deleted = 1, update_day = NOW(), update_id = ? " +
-	        "WHERE comment_idx = ?";
+		String sql =
+			    "UPDATE review_comment " +
+			    "SET is_deleted = 1, update_day = NOW(), update_id = ? " +
+			    "WHERE comment_idx = ? AND writer_id = ?";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-	        pstmt.setString(1, loginId);
-	        pstmt.setInt(2, comment_idx);
+	    	pstmt.setString(1, loginId);
+	    	pstmt.setInt(2, comment_idx);
+	    	pstmt.setString(3, loginId);
 	        pstmt.executeUpdate();
 
 	    } catch (Exception e) {
