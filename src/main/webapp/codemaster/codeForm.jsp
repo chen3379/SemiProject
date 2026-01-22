@@ -12,8 +12,8 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <%
 	//프로젝트의 경로
-	String root=request.getContextPath();
-
+/* 	String root=request.getContextPath();
+ */
 	String groupCode=request.getParameter("groupCode");
 	//String groupName=request.getParameter("groupName");
 	String currentPage=request.getParameter("currentPage");
@@ -118,7 +118,7 @@ function check(f) {
 				
 				<button type="button" class="btn btn-warning"
 					style="width: 120px;"
-					onclick="location.href='../codemaster/codeList.jsp&groupCode=<%=groupCode%>'">목록</button>
+					onclick="location.href='../codemaster/codeList.jsp?groupCode=<%=groupCode%>'">목록</button>
 			</td>		
 		</tr>
 	</table>
