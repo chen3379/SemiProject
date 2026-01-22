@@ -142,6 +142,7 @@ public class ReviewBoardDao {
 	            dto.setGenre_type(rs.getString("genre_type"));
 	            dto.setTitle(rs.getString("title"));
 	            dto.setContent(rs.getString("content"));
+	            dto.setFilename(rs.getString("filename"));
 	            dto.setId(rs.getString("id"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
@@ -153,6 +154,73 @@ public class ReviewBoardDao {
 	    }
 
 	    return dto;
+	}
+
+	// 리뷰 글 등록
+	public void insertBoard(ReviewBoardDto dto) {
+
+	    String sql =
+	        "INSERT INTO review_board " +
+	        "(genre_type, title, content, id, filename, readcount, create_day) " +
+	        "VALUES (?, ?, ?, ?, ?, 0, NOW())";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, dto.getGenre_type());
+	        pstmt.setString(2, dto.getTitle());
+	        pstmt.setString(3, dto.getContent());
+	        pstmt.setString(4, dto.getId());
+	        pstmt.setString(5, dto.getFilename());
+
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updateBoard(
+		    int board_idx,
+		    String title,
+		    String content,
+		    String genre,
+		    String filename
+		) {
+		    String sql =
+		        "UPDATE review_board " +
+		        "SET title=?, content=?, genre_type=?, filename=?, update_day=NOW() " +
+		        "WHERE board_idx=?";
+
+		    try (Connection conn = db.getDBConnect();
+		         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+		        pstmt.setString(1, title);
+		        pstmt.setString(2, content);
+		        pstmt.setString(3, genre);
+		        pstmt.setString(4, filename);
+		        pstmt.setInt(5, board_idx);
+
+		        pstmt.executeUpdate();
+
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+
+	public void deleteBoard(int board_idx) {
+
+	    String sql = "DELETE FROM review_board WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
 

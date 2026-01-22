@@ -1,6 +1,15 @@
 @charset "UTF-8";
 
 /* ===== 커뮤니티 메인 공통 ===== */
+
+a,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
+
 body {
     background-color: #141414;
     color: #fff;

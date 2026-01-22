@@ -273,5 +273,82 @@ public class FreeBoardDao {
 	        db.dbClose(null, pstmt, conn);
 	    }
 	}
+	
+	// 관리자용 게시글 목록 (삭제/숨김 포함)
+	public List<FreeBoardDto> getAdminBoardList(String category, int start, int pageSize) {
 
+	    List<FreeBoardDto> list = new ArrayList<>();
+
+	    String sql =
+	        "SELECT * FROM free_board " +
+	        (category.equals("all") ? "" : "WHERE category_type = ? ") +
+	        "ORDER BY board_idx DESC LIMIT ?, ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        int idx = 1;
+
+	        if (!category.equals("all")) {
+	            pstmt.setString(idx++, category);
+	        }
+	        pstmt.setInt(idx++, start);
+	        pstmt.setInt(idx, pageSize);
+
+	        ResultSet rs = pstmt.executeQuery();
+
+	        while (rs.next()) {
+	            FreeBoardDto dto = new FreeBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setCategory_type(rs.getString("category_type"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setId(rs.getString("id"));
+	            dto.setReadcount(rs.getInt("readcount"));
+	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            dto.setIs_deleted(rs.getInt("is_deleted")); // ⭐ 관리자용
+	            list.add(dto);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return list;
+	}
+
+	// 게시글 숨김 처리
+	public void hideBoard(int board_idx) {
+
+	    String sql = "UPDATE free_board SET is_deleted = 1 WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	// 게시글 복구 처리
+	public void restoreBoard(int board_idx) {
+
+	    String sql = "UPDATE free_board SET is_deleted = 0 WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+
+	
 }

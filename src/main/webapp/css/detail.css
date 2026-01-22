@@ -1,5 +1,12 @@
 @charset "UTF-8";
 
+a,
+a:hover,
+a:focus,
+a:active {
+    text-decoration: none;
+    color: inherit;
+}
 .post-container {
 	max-width: 720px;
 	margin: 40px auto;

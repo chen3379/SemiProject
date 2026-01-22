@@ -14,6 +14,11 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <title>커뮤니티-왓플릿스</title>
 <%
+
+response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+response.setHeader("Pragma", "no-cache");
+response.setDateHeader("Expires", 0);
+
 String category = request.getParameter("category");
 if (category == null) category = "all";
 
@@ -23,17 +28,31 @@ int pageSize = 5;
 int currentPage = (pageParam == null) ? 1 : Integer.parseInt(pageParam);
 int start = (currentPage - 1) * pageSize;
 
+String loginId = (String) session.getAttribute("loginid");
+boolean isLogin = (loginId != null);
+String roleType = (String) session.getAttribute("RoleType");
+boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+
+
 FreeBoardDao dao = new FreeBoardDao();
-List<FreeBoardDto> list =
-    dao.getBoardList(category, start, pageSize);
+List<FreeBoardDto> list;
+
+if (isAdmin) {
+    list = dao.getAdminBoardList(category, start, pageSize);
+} else {
+    list = dao.getBoardList(category, start, pageSize);
+}
 
 int totalCount = dao.getTotalCount(category);
 int totalPage = (int)Math.ceil((double)totalCount / pageSize);
 
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-%>
 
+
+%>
+<%=session.getAttribute("RoleType")%>
+<%=session.getAttribute("roleType")%>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
 
@@ -136,6 +155,7 @@ td.title a {
     overflow: hidden;
     text-overflow: ellipsis;
     color: #fff;
+    text-decoration: none;
 }
 /* 스포일러 */
 .spoiler {
@@ -270,7 +290,22 @@ td.title a {
 </style>
 </head>
 <body>
-<div class="container">
+
+<%
+String msg = request.getParameter("msg");
+%>
+
+<script>
+<% if ("hidden".equals(msg)) { %>
+    alert("숨김 처리되었습니다.");
+<% } else if ("restored".equals(msg)) { %>
+    alert("복구되었습니다.");
+<% } %>
+</script>
+<!--<jsp:include page="/main/nav.jsp" />
+<jsp:include page="/login/loginModal.jsp" />-->
+
+<div class="container" style="padding-top: 80px; ">
 	<div class="review-header">
         <h2>
         	🗨️ 자유게시판
@@ -307,6 +342,9 @@ td.title a {
                 <th>작성자</th>
                 <th>작성일</th>
                 <th>조회수</th>
+                <% if (isAdmin) { %>
+			        <th>관리</th>
+			    <% } %>
             </tr>
         </thead>
 		<tbody>
@@ -323,6 +361,10 @@ td.title a {
 			            <% if (dto.isIs_spoiler_type()) { %>
 			                <span class="spoiler">[스포]</span>
 			            <% } %>
+		                <% if (isAdmin && dto.getIs_deleted() == 1) { %>
+					        <span class="badge bg-danger">숨김</span>
+					    <% } %>
+			            
 			            <a href="detail.jsp?board_idx=<%= dto.getBoard_idx()%>">
 			                <%= dto.getTitle() %>
 			            </a>
@@ -331,19 +373,43 @@ td.title a {
 			        <td class="writer"><%= dto.getId() %></td>
 			       <td class="date"><%= sdf.format(dto.getCreate_day()) %></td>
 			        <td class="count"><%= dto.getReadcount() %></td>
+				    <% if (isAdmin) { %>
+				    <td>
+				        <% if (dto.getIs_deleted() == 0) { %>
+				           <form action="adminHideAction.jsp" method="post" style="display:inline;">
+							    <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+							    <button type="submit" class="btn btn-sm btn-danger">숨김</button>
+							</form>
+				        <% } else { %>
+				            <form action="adminRestoreAction.jsp" method="post" style="display:inline;">
+							    <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+							    <button type="submit" class="btn btn-sm btn-secondary">복구</button>
+							</form>
+				        <% } %>
+				    </td>
+				    <% } %>
 			    </tr>
 			<%
 			    }
 			%>
 		</tbody>
-			
-        
-        	
 	    </table>
 	    </div>
-    <div class="write-btn">
-        <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;글쓰기</a>
-    </div>
+	   <% if (!isAdmin) { %>
+		<div class="write-btn">
+		    <% if (!isLogin) { %>
+		        <a href="javascript:void(0);" onclick="needLoginAlert()">
+		            <i class="bi bi-pen"></i>&nbsp;글쓰기
+		        </a>
+		    <% } else { %>
+		        <a href="write.jsp">
+		            <i class="bi bi-pen"></i>&nbsp;글쓰기
+		        </a>
+		    <% } %>
+		</div>
+		<% } %>
+
+    
     <div class="page-wrap">
     <ul class="page-list">
 
@@ -365,7 +431,12 @@ td.title a {
 
     </ul>
 	</div>	
-    
+    <script>
+	function needLoginAlert() {
+	    alert("로그인이 필요합니다.");
+	    location.href = "../login/loginModal.jsp"; // 또는 로그인 페이지
+	}
+	</script>
 </div>
 
 </body>
