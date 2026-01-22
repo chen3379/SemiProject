@@ -460,7 +460,8 @@ h1.fw-bold small {
 				</div>
 
 				<div class="d-flex justify-content-end">
-					<button type="button" class="btn btn-outline-danger text-white fw-bold"
+					<button type="button"
+						class="btn btn-outline-danger text-white fw-bold"
 						id="btnReviewSubmit">등록</button>
 				</div>
 			</div>
@@ -534,7 +535,7 @@ h1.fw-bold small {
 		</div>
 	</div>
 	<jsp:include page="chatWidget.jsp" />
-	
+
 	<script type="text/javascript">
 	// 영화 삭제
 	function delMovie(idx) {
@@ -794,11 +795,9 @@ h1.fw-bold small {
     
     
 	});
-	 <%MemberDao memberDao = new MemberDao();
+	 <%if (id != null) {
 
-if (id != null) {
-
-	String roleType = memberDao.getRoleType(id);
+	String roleType = (String) session.getAttribute("roleType");
 	//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
 	//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
 	if ("3".equals(roleType) || "9".equals(roleType)) {%>
