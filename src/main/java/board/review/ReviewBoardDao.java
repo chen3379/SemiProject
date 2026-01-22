@@ -12,29 +12,32 @@ import mysql.db.DBConnect;
 public class ReviewBoardDao {
 	DBConnect db= new DBConnect();
 	
-	//리스트 함수
-	public List<ReviewBoardDto> getReviewList() {
+	// 페이징 리스트
+	public List<ReviewBoardDto> getReviewList(int start, int pageSize) {
 
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	    		   "SELECT board_idx, genre_type, title, id, readcount, create_day " +
-			        "FROM review_board " +
-			        "ORDER BY board_idx DESC";
+	        "SELECT board_idx, genre_type, title, id, readcount, create_day " +
+	        "FROM review_board " +
+	        "ORDER BY board_idx DESC LIMIT ?, ?";
 
 	    try (Connection conn = db.getDBConnect();
-	         PreparedStatement pstmt = conn.prepareStatement(sql);
-	         ResultSet rs = pstmt.executeQuery()) {
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, start);
+	        pstmt.setInt(2, pageSize);
+
+	        ResultSet rs = pstmt.executeQuery();
 
 	        while (rs.next()) {
 	            ReviewBoardDto dto = new ReviewBoardDto();
 	            dto.setBoard_idx(rs.getInt("board_idx"));
-	            dto.setGenre_type(rs.getString("genre_type")); 
+	            dto.setGenre_type(rs.getString("genre_type"));
 	            dto.setTitle(rs.getString("title"));
 	            dto.setId(rs.getString("id"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
-
 	            list.add(dto);
 	        }
 
@@ -44,6 +47,26 @@ public class ReviewBoardDao {
 
 	    return list;
 	}
+
+	// 전체 개수
+	public int getTotalCount() {
+
+	    int count = 0;
+	    String sql = "SELECT COUNT(*) FROM review_board";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql);
+	         ResultSet rs = pstmt.executeQuery()) {
+
+	        if (rs.next()) count = rs.getInt(1);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return count;
+	}
+
 	
 	public List<ReviewBoardDto> getTop10ByReadcount() {
 	    List<ReviewBoardDto> list = new ArrayList<>();
@@ -119,6 +142,7 @@ public class ReviewBoardDao {
 	            dto.setGenre_type(rs.getString("genre_type"));
 	            dto.setTitle(rs.getString("title"));
 	            dto.setContent(rs.getString("content"));
+	            dto.setFilename(rs.getString("filename"));
 	            dto.setId(rs.getString("id"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
@@ -130,6 +154,73 @@ public class ReviewBoardDao {
 	    }
 
 	    return dto;
+	}
+
+	// 리뷰 글 등록
+	public void insertBoard(ReviewBoardDto dto) {
+
+	    String sql =
+	        "INSERT INTO review_board " +
+	        "(genre_type, title, content, id, filename, readcount, create_day) " +
+	        "VALUES (?, ?, ?, ?, ?, 0, NOW())";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, dto.getGenre_type());
+	        pstmt.setString(2, dto.getTitle());
+	        pstmt.setString(3, dto.getContent());
+	        pstmt.setString(4, dto.getId());
+	        pstmt.setString(5, dto.getFilename());
+
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void updateBoard(
+		    int board_idx,
+		    String title,
+		    String content,
+		    String genre,
+		    String filename
+		) {
+		    String sql =
+		        "UPDATE review_board " +
+		        "SET title=?, content=?, genre_type=?, filename=?, update_day=NOW() " +
+		        "WHERE board_idx=?";
+
+		    try (Connection conn = db.getDBConnect();
+		         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+		        pstmt.setString(1, title);
+		        pstmt.setString(2, content);
+		        pstmt.setString(3, genre);
+		        pstmt.setString(4, filename);
+		        pstmt.setInt(5, board_idx);
+
+		        pstmt.executeUpdate();
+
+		    } catch (Exception e) {
+		        e.printStackTrace();
+		    }
+		}
+
+	public void deleteBoard(int board_idx) {
+
+	    String sql = "DELETE FROM review_board WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 
 

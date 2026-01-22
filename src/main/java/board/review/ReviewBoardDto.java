@@ -11,6 +11,17 @@ public class ReviewBoardDto {
     private boolean is_spoiler_type;
     private int readcount;
     private Timestamp create_day;
+    
+    private String filename;
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
 	public int getBoard_idx() {
 		return board_idx;
 	}

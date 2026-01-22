@@ -95,6 +95,26 @@ public class FreeCommentDao {
 	    return count;
 	}
 
+	// 댓글 삭제 (소프트 삭제)
+	public void deleteComment(int comment_idx, String loginId) {
+
+	    String sql =
+	        "UPDATE free_comment " +
+	        "SET is_deleted = 1, update_day = NOW(), update_id = ? " +
+	        "WHERE comment_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setString(1, loginId);
+	        pstmt.setInt(2, comment_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 	
 
 }
