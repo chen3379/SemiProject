@@ -32,11 +32,21 @@ function check(f) {
         f.codeId.focus();
         return false;
     }
+    
     if (f.codeName.value.trim() === "") {
         alert("코드명을 입력하세요");
         f.codeName.focus();
         return false;
     }
+    
+    if (f.sortOrder.value === "" ||
+         f.sortOrder.value < 1 ||
+         f.sortOrder.value > 10) {
+         alert("표기순서는 1부터 10까지 입력 가능합니다");
+         f.sortOrder.focus();
+         return false;
+    }
+    
     return true;
 }
 
@@ -83,8 +93,9 @@ function check(f) {
 		<tr>
 			<th width="100" class="table-secondary">표기순서</th>
 			<td>
-				<input type="number" name="sortOrder"  class="form-control"
-					required="required" style="width: 200px;">			
+				<input type="number" name="sortOrder" class="form-control"
+			       required min="1" max="10" step="1" style="width: 200px;">
+		
 			</td>
 		</tr>	
 			
@@ -107,7 +118,7 @@ function check(f) {
 				
 				<button type="button" class="btn btn-warning"
 					style="width: 120px;"
-					onclick="location.href='../codemaster/groupList.jsp'">목록</button>
+					onclick="location.href='../codemaster/codeList.jsp&groupCode=<%=groupCode%>'">목록</button>
 			</td>		
 		</tr>
 	</table>

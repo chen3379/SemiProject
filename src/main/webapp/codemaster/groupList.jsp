@@ -64,32 +64,37 @@
 %>
 <body>
 
+<div class="container-fluid mt-3">
 
-<div  style="margin: 10px 30px; width: 800px; float:right;">
-	<button type="button" class="btn btn-warning"
-	onclick="location.href='../codemaster/groupForm.jsp'">등록</button>
+ 	<!-- 상단 버튼 -->
+	<div class="row mb-3">
+    	<div class="col text-end">
+        	<button type="button" class="btn btn-warning"
+                onclick="location.href='../codemaster/groupForm.jsp'">
+            	등록
+        	</button>
+    	</div>
+	</div>
 
-</div> 
+    <h5 class="fw-bold"><%=totalCount %>개의 그룹이 있습니다</h5>
 
-<div style="margin: 10px 30px; width: 900px;">
-	<h5><b><%=totalCount %>개의 그룹이 있습니다</b></h5>
-	<table class="table table-bordered" style="width: 1000px;">
-	<caption align="top"><b>공통코드 관리</b></caption>
-	
+   <!-- 테이블 -->
+   <div class="table-responsive">
+       <table class="table table-bordered align-middle text-center">
+            <caption class="caption-top fw-bold">공통코드 관리</caption>
+ 
 		<tr class="table-secondary" align="center">
 		    <th width="150">그룹코드</th>
 		    <th width="280">그룹명</th>
  		    <th width="150">사용여부</th>
-		    <th width="300">가입일</th>
-		    <th width="150">생성자</th>
+ 		    <th class="d-none d-md-table-cell">가입일</th>
+            <th class="d-none d-md-table-cell">생성자</th>
 		    <th width="250">처리</th>
 		</tr>
 		<%
     	if(totalCount==0){%>
 	  	  <tr>
-	  	    <td align="center">
-	  	      <b>등록된 게시글이 없습니다</b>
-	  	    </td>
+	  	     <td colspan="6"><b>등록된 그룹이 없습니다</b></td>
 	  	  </tr>
     <%	}else{
 		
@@ -102,8 +107,16 @@
 			</td>
 			<td><%=dto.getGroup_name() %></td>
 			<td><%=dto.getUse_yn() %></td>
-			<td><%=sdf.format(dto.getCreate_day()) %></td>
+			
+			 <td class="d-none d-md-table-cell">
+                        <%=sdf.format(dto.getCreate_day())%>
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <%=dto.getCreate_id()%>
+                    </td>
+			<%-- <td><%=sdf.format(dto.getCreate_day()) %></td>
 			<td><%=dto.getCreate_id() %></td>
+			 --%>
 			<td>
     	      	<div style="float: center;">
  					<button type="button" class="btn btn-outline-info"
@@ -123,47 +136,34 @@
 %>
 	</table>
 	
-	<!-- 페이지 번호 출력 -->
-   
-	<div>
-		 <nav aria-label="Page navigation example">
-		  <ul class="pagination justify-content-center">
-		  
-		  <%
-		  	 //이전
-		     if(startPage>1)
-		     {%>
-		    	 <li class="page-item">
-		      		<a class="page-link" href="../codemaster/groupList.jsp?currentPage=<%=startPage-1%>">이전</a>
-		    	</li>
-		     <%}
-		  
-		  
-		      //1~5
-		      for(int pp=startPage;pp<=endPage;pp++)
-		      {
-		    	  if(pp==currentPage) //현재페이지와 같을경우 active css클래스 추가
-		    	  {%>
-		    		  <li class="page-item active"><a href="../codemaster/groupList.jsp?currentPage=<%=pp%>" class="page-link"><%=pp%></a></li>
-		    	  <%}else
-		    	  {%>
-		    		  <li class="page-item"><a href="../codemaster/groupList.jsp?currentPage=<%=pp%>" class="page-link"><%=pp%></a></li>
-		    	  <%}
-		      }
-		      
-		      //다음
-		    if(endPage<totalPage)
-		     {%>
-		    	 <li class="page-item">
-		      		<a class="page-link" href="../codemaster/groupList.jsp?currentPage=<%=endPage+1%>">다음</a>
-		    	</li>
-		      <%} 
-		  %>
-		   
-		  </ul>
-		</nav>
+	 <!-- 페이지네이션 -->
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center flex-wrap">
 
-	</div>
+            <% if (startPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="../codemaster/groupList.jsp?currentPage=<%=startPage-1%>">이전</a>
+                </li>
+            <% } %>
+
+            <% for (int pp = startPage; pp <= endPage; pp++) { %>
+                <li class="page-item <%=pp == currentPage ? "active" : ""%>">
+                    <a class="page-link"
+                       href="../codemaster/groupList.jsp?currentPage=<%=pp%>"><%=pp%></a>
+                </li>
+            <% } %>
+
+            <% if (endPage < totalPage) { %>
+                <li class="page-item">
+                    <a class="page-link"
+                       href="../codemaster/groupList.jsp?currentPage=<%=endPage+1%>">다음</a>
+                </li>
+            <% } %>
+
+        </ul>
+    </nav>
+    
 </div>
 
 </body>

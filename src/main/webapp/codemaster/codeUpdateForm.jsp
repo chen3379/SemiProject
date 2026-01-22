@@ -25,11 +25,6 @@
 	String codeId=request.getParameter("codeId");
 	String currentPage=request.getParameter("currentPage");
 
-  /* 	if (groupCode == null || codeId == null) {
-	    response.sendRedirect("../codemaster/codeList.jsp?groupCode="+ groupCode);
-	    return;
-	} */
-
 	CodeDao dao=new CodeDao();
 	CodeDto dto=dao.getCode(groupCode, codeId);
 	
