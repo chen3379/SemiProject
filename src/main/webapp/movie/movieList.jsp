@@ -323,6 +323,7 @@
 </div>
 
 <jsp:include page="chatWidget.jsp" />
+<jsp:include page="../main/footer.jsp" />
 
 <script>
     $(document).ready(function() {

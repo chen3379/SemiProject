@@ -21,7 +21,7 @@
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <link rel="stylesheet" href="<%=request.getContextPath()%>/css/detail.css">
-<title>Insert title here</title>
+<title>자유게시판 리뷰 상</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
 <%
@@ -80,6 +80,62 @@ int commentCount = cdao.getCommentCount(board_idx);
 	        );
 	    });
 	
+	});
+	
+	$(document).on('click', '.reply-submit-btn', function () {
+
+	    const parentIdx = $(this).data('parent');
+
+	    const content = $(this)
+	        .closest('.reply-form')   // ⭐ 이 답글 폼 기준
+	        .find('textarea')
+	        .val()
+	        .trim();
+
+	    if (!content) {
+	        alert('답글 내용을 입력하세요');
+	        return;
+	    }
+
+	    $.post(
+	        'commentInsert.jsp',
+	        {
+	            board_idx: '<%= board_idx %>',
+	            parent_comment_idx: parentIdx,
+	            content: content
+	        },
+	        function (res) {
+	            if (res.status === 'SUCCESS') {
+	                location.reload();
+	            }
+	        },
+	        'json'
+	    );
+	});
+
+	
+	$(document).on('click', '.comment-delete-btn', function () {
+
+	    if (!confirm('댓글을 삭제하시겠습니까?')) return;
+
+	    const commentIdx = $(this).data('id');
+
+	    $.post(
+	        'commentDelete.jsp',
+	        { comment_idx: commentIdx },
+	        function (res) {
+
+	            if (res.status === 'LOGIN_REQUIRED') {
+	                alert('로그인이 필요합니다.');
+	                return;
+	            }
+
+	            if (res.status === 'SUCCESS') {
+	                location.reload();
+	            }
+	        },
+	        'json'
+	    );
 	});
 	</script>
 	<div class="post-container">
@@ -148,6 +204,17 @@ int commentCount = cdao.getCommentCount(board_idx);
 		<div class="post-content">
 			<%= dto.getContent() %>
 		</div>
+		
+		<% if (dto.getFilename() != null && !dto.getFilename().isEmpty()) { %>
+		    <div class="post-attachment mt-4">
+		        <i class="bi bi-paperclip"></i>
+		        <a href="<%=request.getContextPath()%>/save/<%=dto.getFilename()%>"
+		           download>
+		            <%= dto.getFilename() %>
+		        </a>
+		    </div>
+		<% } %>
+		
 		<%
 		FreeLikeDao frLikeDao = new FreeLikeDao();
 		
@@ -212,89 +279,108 @@ int commentCount = cdao.getCommentCount(board_idx);
 	  	
 		<!-- 댓글 영역 -->
 		<div class="comment-list mt-5">
-			<% for (FreeCommentDto c : clist) { %>
-			    <%-- ================= 삭제된 댓글 ================= --%>
-			    <% if (c.getIs_deleted() == 1) { %>
-			
-			        <div class="comment-item <%= c.getParent_comment_idx() != 0 ? "reply" : "" %>">
-			            <div class="comment-avatar">👤</div>
-			            <div class="comment-body">
-			                <div class="comment-content text-muted fst-italic">
-			                    삭제된 댓글입니다.
-			                </div>
-			            </div>
-			        </div>
-			
-			    <% } else { %>
-			
-			        <%-- ================= 정상 댓글 ================= --%>
-			
-			        <% if (c.getParent_comment_idx() == 0) { %>
-			        <!-- ===== 원댓글 ===== -->
-			        <div class="comment-item">
-			
-			            <div class="comment-avatar">👤</div>
-			
-			            <div class="comment-body">
-			                <div class="comment-top">
-			                    <span class="comment-writer"><%= c.getWriter_id() %></span>
-			                    <span class="comment-date"><%= c.getCreate_day() %></span>
-			                </div>
-			
-			                <div class="comment-content">
-			                    <%= c.getContent() %>
-			                </div>
-			
-			                <div class="comment-actions">
-			                    <span class="reply-btn" data-id="<%= c.getComment_idx() %>">답글</span>
-			                    <span class="action-divider">·</span>
-			                    <span>신고</span>
-			                </div>
-			
-			                <!-- 답글 입력 -->
-			                <div class="reply-form" id="reply-form-<%= c.getComment_idx() %>">
-			                    <form action="commentInsert.jsp" method="post">
-			                        <input type="hidden" name="board_idx" value="<%= board_idx %>">
-			                        <input type="hidden" name="parent_comment_idx"
-			                               value="<%= c.getComment_idx() %>">
-			                        <textarea name="content" placeholder="답글을 입력하세요" required></textarea>
-			                        <button type="submit">등록</button>
-			                    </form>
-			                </div>
-			            </div>
-			        </div>
-			
-			        <% } else { %>
-			
-			        <!-- ===== 답글 ===== -->
-			        <div class="comment-item reply">
-			
-			            <div class="comment-avatar">👤</div>
-			
-			            <div class="comment-body">
-			                <div class="comment-top">
-			                    <span class="comment-writer"><%= c.getWriter_id() %></span>
-			                    <span class="comment-date"><%= c.getCreate_day() %></span>
-			                </div>
-			
-			                <div class="comment-content">
-			                    <%= c.getContent() %>
-			                </div>
-			
-			                <div class="comment-actions">
-			                    <span>신고</span>
-			                </div>
-			            </div>
-			        </div>
-			
-			        <% } %>
-			
-			    <% } %>
-			
-			<% } %>
+
+		<% for (FreeCommentDto parent : clist) { %>
+		    <% if (parent.getParent_comment_idx() != 0) continue; %>
+		
+		    <!-- ================= 원댓글 ================= -->
+		    <div class="comment-item">
+		
+		        <div class="comment-avatar">👤</div>
+		
+		        <div class="comment-body">
+		
+		            <%-- 🔹 삭제된 원댓글 --%>
+		            <% if (parent.getIs_deleted() == 1) { %>
+		
+		                <div class="comment-content text-muted fst-italic">
+		                    삭제된 댓글입니다.
+		                </div>
+		
+		            <% } else { %>
+		
+		                <div class="comment-top">
+		                    <span class="comment-writer"><%= parent.getWriter_id() %></span>
+		                    <span class="comment-date"><%= parent.getCreate_day() %></span>
+		                </div>
+		
+		                <div class="comment-content">
+		                    <%= parent.getContent() %>
+		                </div>
+		
+		                <div class="comment-actions">
+		                    <span class="reply-btn"
+		                          data-id="<%= parent.getComment_idx() %>">답글</span>
+		                    <span class="action-divider">·</span>
+		
+		                    <% if (loginId != null && loginId.equals(parent.getWriter_id())) { %>
+		                        <span class="comment-delete-btn"
+		                              data-id="<%= parent.getComment_idx() %>">삭제</span>
+		                    <% } else { %>
+		                        <span>신고</span>
+		                    <% } %>
+		                </div>
+		
+		                <!-- 답글 입력 -->
+		                <div class="reply-form"
+		                     id="reply-form-<%= parent.getComment_idx() %>">
+		                    <textarea placeholder="답글을 입력하세요"></textarea>
+		                    <button type="button"
+		                            class="reply-submit-btn"
+		                            data-parent="<%= parent.getComment_idx() %>">
+		                        등록
+		                    </button>
+		                </div>
+		
+		            <% } %>
+		        </div>
+		    </div>
+		
+		    <!-- ================= 대댓글 ================= -->
+		    <% for (FreeCommentDto reply : clist) { %>
+		        <% if (reply.getParent_comment_idx() == parent.getComment_idx()) { %>
+		
+		            <div class="comment-item reply">
+		                <div class="comment-avatar">👤</div>
+		
+		                <div class="comment-body">
+		
+		                    <% if (reply.getIs_deleted() == 1) { %>
+		
+		                        <div class="comment-content text-muted fst-italic">
+		                            삭제된 댓글입니다.
+		                        </div>
+		
+		                    <% } else { %>
+		
+		                        <div class="comment-top">
+		                            <span class="comment-writer"><%= reply.getWriter_id() %></span>
+		                            <span class="comment-date"><%= reply.getCreate_day() %></span>
+		                        </div>
+		
+		                        <div class="comment-content">
+		                            <%= reply.getContent() %>
+		                        </div>
+		
+		                        <div class="comment-actions">
+		                            <% if (loginId != null && loginId.equals(reply.getWriter_id())) { %>
+		                                <span class="comment-delete-btn"
+		                                      data-id="<%= reply.getComment_idx() %>">삭제</span>
+		                            <% } else { %>
+		                                <span>신고</span>
+		                            <% } %>
+		                        </div>
+		
+		                    <% } %>
+		                </div>
+		            </div>
+		
+		        <% } %>
+		    <% } %>
+		
+		<% } %>
+		
 		</div>
-	</div>
-	
 	<script>
 	document.addEventListener('DOMContentLoaded', function () {
 	

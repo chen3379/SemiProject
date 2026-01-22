@@ -17,6 +17,14 @@ public class FreeBoardDto {
     private String update_id;
     
     
+    private String filename;
+
+    public String getFilename() {
+        return filename;
+    }
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 	public int getBoard_idx() {
 		return board_idx;
 	}

@@ -12,13 +12,13 @@ import mysql.db.DBConnect;
 public class FreeBoardDao {
 	DBConnect db= new DBConnect();
 	
-	//insert 
-	public void insertBoard(FreeBoardDto dto)
-	{
+	public void insertBoard(FreeBoardDto dto) {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
 
-	    String sql = "INSERT INTO free_board (category_type, title, content, id, is_spoiler_type, readcount, create_day) VALUES (?, ?, ?, ?, ?, 0, NOW())";
+	    String sql = "INSERT INTO free_board "
+	        + "(category_type, title, content, id, is_spoiler_type, filename, readcount, create_day) "
+	        + "VALUES (?, ?, ?, ?, ?, ?, 0, NOW())";
 
 	    try {
 	        conn = db.getDBConnect();
@@ -27,8 +27,9 @@ public class FreeBoardDao {
 	        pstmt.setString(1, dto.getCategory_type());
 	        pstmt.setString(2, dto.getTitle());
 	        pstmt.setString(3, dto.getContent());
-	        pstmt.setString(4, dto.getId());               // 작성자
-	        pstmt.setBoolean(5, dto.isIs_spoiler_type());  // 스포 여부
+	        pstmt.setString(4, dto.getId());
+	        pstmt.setBoolean(5, dto.isIs_spoiler_type());
+	        pstmt.setString(6, dto.getFilename()); 
 
 	        pstmt.executeUpdate();
 
@@ -42,7 +43,7 @@ public class FreeBoardDao {
 	
 	
 	//리스트 함수
-	public List<FreeBoardDto> getBoardList(String category) {
+	public List<FreeBoardDto> getBoardList(String category, int start, int pageSize) {
 
 	    List<FreeBoardDto> list = new ArrayList<>();
 	    Connection conn = null;
@@ -56,18 +57,23 @@ public class FreeBoardDao {
 	            "SELECT board_idx, category_type, title, id, readcount, create_day " +
 	            "FROM free_board ";
 
-	        // 🔥 전체가 아닐 때만 WHERE 추가
+	        // 🔥 전체가 아닐 때만 WHERE
 	        if (!"all".equals(category)) {
 	            sql += "WHERE category_type = ? ";
 	        }
 
-	        sql += "ORDER BY board_idx DESC";
+	        sql += "ORDER BY board_idx DESC LIMIT ?, ?";
 
 	        pstmt = conn.prepareStatement(sql);
 
+	        int idx = 1;
+
 	        if (!"all".equals(category)) {
-	            pstmt.setString(1, category);
+	            pstmt.setString(idx++, category);
 	        }
+
+	        pstmt.setInt(idx++, start);     // 시작 위치
+	        pstmt.setInt(idx, pageSize);    // 가져올 개수
 
 	        rs = pstmt.executeQuery();
 
@@ -90,6 +96,40 @@ public class FreeBoardDao {
 	    }
 
 	    return list;
+	}
+
+	//전체글 개수 (페이지 계산용)
+	public int getTotalCount(String category) {
+
+	    int count = 0;
+	    Connection conn = null;
+	    PreparedStatement pstmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conn = db.getDBConnect();
+
+	        String sql = "SELECT COUNT(*) FROM free_board ";
+	        if (!"all".equals(category)) {
+	            sql += "WHERE category_type = ?";
+	        }
+
+	        pstmt = conn.prepareStatement(sql);
+
+	        if (!"all".equals(category)) {
+	            pstmt.setString(1, category);
+	        }
+
+	        rs = pstmt.executeQuery();
+	        if (rs.next()) count = rs.getInt(1);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        db.dbClose(rs, pstmt, conn);
+	    }
+
+	    return count;
 	}
 	
 	//community.jsp 하단 – 자유게시판 TOP 10
