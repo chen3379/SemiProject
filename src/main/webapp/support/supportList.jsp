@@ -26,28 +26,35 @@
 	// 문의유형 필터 변수
 	String categoryParam = request.getParameter("categoryType");
 	
+	// status 필터는 관리자만 가능
+	if(!isAdmin){
+	    status = null;
+	}
+	
 	// 페이징
     // 전체 글 수
-    int totalCount = sDao.getTotalCount(status, categoryType)
-    				+ sDao.getAnsweredCount(status, categoryType);
+    int totalCount = sDao.getTotalCount(status, categoryType);
 
-    int perPage = 5;      // ⭐ 한 페이지 5개
-    int perBlock = 5;     // ⭐ 페이지 번호 5개씩
-    int currentPage;
+    int perPage = 5;      // 질문 5개/페이지
+    int perBlock = 5;     // 페이지 번호 5개씩
+    int currentPage = 1;
 
-    if(request.getParameter("currentPage") == null)
-        currentPage = 1;
-    else
+    if(request.getParameter("currentPage") != null){
         currentPage = Integer.parseInt(request.getParameter("currentPage"));
+    }
 
     // 전체 페이지 수
-    int totalPage = totalCount / perPage
-            + (totalCount % perPage == 0 ? 0 : 1);
+    int totalPage = totalCount / perPage + (totalCount % perPage == 0 ? 0 : 1);
 
+    // 페이지 보정
+    if(totalPage == 0) totalPage = 1;
+	if(currentPage > totalPage) currentPage = totalPage;
+	if(currentPage < 1) currentPage = 1;
+    
     // 블럭 시작 / 끝 페이지
-    int startPage = (currentPage - 1) / perBlock * perBlock + 1;
-    int endPage = startPage + perBlock - 1;
-    if(endPage > totalPage) endPage = totalPage;
+	int startPage = (currentPage - 1) / perBlock * perBlock + 1;
+	int endPage = startPage + perBlock - 1;
+	if(endPage > totalPage) endPage = totalPage;
 
     // DB limit 시작 번호
     int startNum = (currentPage - 1) * perPage;
@@ -301,9 +308,9 @@ a {
                         class="form-select form-select-sm"
                         style="max-width:110px;">
                     <option value="">전체</option>
-                    <option value="0" <%= "0".equals(categoryParam) ? "selected" : "" %>>회원정보</option>
-                    <option value="1" <%= "1".equals(categoryParam) ? "selected" : "" %>>신고</option>
-                    <option value="2" <%= "2".equals(categoryParam) ? "selected" : "" %>>기타</option>
+                    <option value="0" <%= "0".equals(categoryType) ? "selected" : "" %>>회원정보</option>
+                    <option value="1" <%= "1".equals(categoryType) ? "selected" : "" %>>신고</option>
+                    <option value="2" <%= "2".equals(categoryType) ? "selected" : "" %>>기타</option>
                 </select>
 
                 <!-- 관리자 전용 답변상태 필터 -->
@@ -345,22 +352,14 @@ a {
 						
 						    <%-- 1. 삭제된 문의글 --%>
 						    <% if("1".equals(dto.getDeleteType())){ %>
-						
-						        <% if(rowCount < maxRow){ %>
-						        <tr class="deleted-row"
-						            onclick="event.stopPropagation(); alert('삭제된 글입니다');">
+						        <tr class="deleted-row" onclick="event.stopPropagation(); alert('삭제된 글입니다');">
 						            <td><%=dto.getSupportIdx()%></td>
-						            <td colspan="<%= isAdmin ? 6 : 5 %>">
-						                삭제된 문의글입니다
-						            </td>
+						            <td colspan="<%= isAdmin ? 6 : 5 %>">삭제된 문의글입니다</td>
 						        </tr>
-						        <% rowCount++; %>
-						        <% } %>
 										
 						    <% } else { %>
 						
 						        <%-- 2. 정상 문의글 --%>
-						        <% if(rowCount < maxRow){ %>
 						        <tr style="cursor:pointer;" onclick="
 						            if('<%=dto.getSecretType()%>' === '1'
 						                && '<%=dto.getId()%>' !== '<%=id%>'
@@ -375,15 +374,22 @@ a {
 						                <%= "0".equals(dto.getCategoryType()) ? "회원정보" :
 						                    "1".equals(dto.getCategoryType()) ? "신고" : "기타" %>
 						            </td>
+						
 						            <td class="title">
 						                [<%= "0".equals(dto.getStatusType()) ? "답변대기" : "답변완료" %>]
 						                <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
 						                <span><%=dto.getTitle()%></span>
+						
+						                <% if("1".equals(dto.getStatusType())){ %>
+						                    <div class="answer-content">ㄴ <b>[답변이 등록되었습니다]</b></div>
+						                <% } %>
 						            </td>
+						
 						            <td><%= dto.getId().split("@")[0] %></td>
 						            <td><%=sdf.format(dto.getCreateDay())%></td>
 						            <td><%=dto.getReadcount()%></td>
-						
+									
+									 <%-- 관리자 답변글 --%>
 						            <% if(isAdmin){ %>
 						            <td>
 						                <span class="badge <%= "1".equals(dto.getStatusType()) ? "bg-success" : "bg-secondary" %>">
@@ -392,40 +398,8 @@ a {
 						            </td>
 						            <% } %>
 						        </tr>
-						        <% rowCount++; %>
-						        <% } %>
-						
-						
-						        <%-- 3. 관리자 답변글 --%>
-						        <% if("1".equals(dto.getStatusType())){ %>
-						
-						            <% if(rowCount < maxRow){ %>
-						            <tr class="bg-light"
-						                style="cursor:pointer;"
-						                onclick="
-						                    event.stopPropagation();
-						                    handleAnswerClick(
-						                        '<%=dto.getSecretType()%>',
-						                        '<%=dto.getId()%>',
-						                        '<%=dto.getSupportIdx()%>'
-						                    );
-						                ">
-						                <td></td>
-						                <td></td>
-						                <td colspan="3" class="answer-content">
-						                    ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
-						                </td>
-						                <td></td>
-						                <% if(isAdmin){ %><td></td><% } %>
-						            </tr>
-						            <% rowCount++; %>
-						            <% } %>
-
-						
-						        <% } %>
 						
 						    <% } %>
-						
 						<% } %>
 						
 						</tbody>
