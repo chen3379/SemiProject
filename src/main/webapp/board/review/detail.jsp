@@ -48,7 +48,7 @@ String loginId = (String)session.getAttribute("loginid");
 boolean isOwner = loginId != null && loginId.equals(dto.getId());
 String roleType = (String) session.getAttribute("roleType");
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
-boolean canEdit = isOwner || isAdmin;
+boolean canEdit = isOwner;
 
 List<ReviewBoardDto> otherList = dao.getOtherBoards(board_idx, 5);
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
@@ -56,7 +56,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 <body>
 <jsp:include page="/common/customAlert.jsp" />
 	<div class="container">
-
 		<!-- 상단 -->
 		<div class="d-flex justify-content-between">
 			<div>
@@ -74,7 +73,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 			<%
 		}
 		%>
-
 			<%
 		if (canEdit) {
 		%>
@@ -358,26 +356,21 @@ $(function () {
        댓글 삭제
     ========================= */
     $(document).on('click', '.comment-delete-btn', function () {
-        if (!alert('댓글을 삭제하시겠습니까?')) return;
-
         const commentIdx = $(this).data('id');
 
-        $.post(
-            'commentDelete.jsp',
-            { comment_idx: commentIdx },
-            function (res) {
-                if (res.status === 'LOGIN_REQUIRED') {
-                    alert('로그인이 필요합니다.');
-                    return;
-                }
-                if (res.status === 'SUCCESS') {
-                    location.reload();
-                }
-            },
-            'json'
-        );
+        alert('댓글을 삭제하시겠습니까?', function () {
+            $.post(
+                'commentDelete.jsp',
+                { comment_idx: commentIdx },
+                function (res) {
+                    if (res.status === 'SUCCESS') {
+                        location.reload();
+                    }
+                },
+                'json'
+            );
+        });
     });
-
 
     /* =========================
        답글 폼 토글
@@ -418,9 +411,6 @@ $(function () {
         $('#postMenu').toggle();
     });
 
-    $(document).on('click', function () {
-        $('#postMenu').hide();
-    });
 
 
     /* =========================

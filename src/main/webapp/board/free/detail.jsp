@@ -75,7 +75,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 				String loginId = (String) session.getAttribute("loginid");
 				boolean isOwner = loginId != null && loginId.equals(dto.getId());
 				boolean isTestMode = false;   // 테스트 끝나면 false
-				boolean canEdit = isTestMode || isOwner || isAdmin;
+				boolean canEdit = isTestMode || isOwner;
 				%>
 				<%
 				if (canEdit) {
@@ -394,27 +394,32 @@ $(function () {
 
         const commentIdx = $(this).data('id');
 
-        if (!alert('댓글을 삭제하시겠습니까?')) return;
+        alert('댓글을 삭제하시겠습니까?', function () {
 
-        $.post(
-            'commentDelete.jsp',
-            { comment_idx: commentIdx },
-            function (res) {
-                if (res.status === 'LOGIN_REQUIRED') {
-                    alert('로그인이 필요합니다.');
-                    return;
-                }
+            console.log('삭제 요청 comment_idx:', commentIdx);
 
-                if (res.status === 'SUCCESS') {
-                    location.reload();
-                } else {
-                    alert('댓글 삭제 실패');
-                }
-            },
-            'json'
-        );
+            $.post(
+                'commentDelete.jsp',
+                { comment_idx: commentIdx },
+                function (res) {
+                    console.log(res);
+
+                    if (res.status === 'LOGIN_REQUIRED') {
+                        alert('로그인이 필요합니다.');
+                        return;
+                    }
+
+                    if (res.status === 'SUCCESS') {
+                        location.reload();
+                    } else {
+                        alert('댓글 삭제 실패');
+                    }
+                },
+                'json'
+            );
+        });
+
     });
-
 
     /* =========================
        답글 폼 토글

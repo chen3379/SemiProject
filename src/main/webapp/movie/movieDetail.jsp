@@ -80,15 +80,21 @@ SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <style>
 /* [1] 전역 테마 및 배경 설정 */
 :root {
 	--primary-red: #E50914;
+	--primary-red-hover: #B20710;
 	--bg-main: #141414;
 	--bg-card: #1f1f1f;
+	--bg-surface: #181818;
+	--bg-glass: rgba(20, 20, 20, 0.7);
 	--text-white: #FFFFFF;
 	--text-gray: #B3B3B3;
+	--text-muted: #666666;
 	--glass-border: rgba(255, 255, 255, 0.1);
+	--border-glass: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -327,6 +333,7 @@ h1.fw-bold small {
 	<input type="hidden" id="movieIdx" value="<%=movie_idx%>">
 	<jsp:include page="../main/nav.jsp" />
 	<jsp:include page="../login/loginModal.jsp" />
+	<jsp:include page="../profile/profileModal.jsp"/>
 
 	<div class="container">
 		<div class="mb-4 border-bottom pb-3">
@@ -616,9 +623,8 @@ h1.fw-bold small {
 	/* ===== 작성하기 버튼 ===== */
 	$(document).on("click", "#btnReviewWrite", function(){
 	  if(!isLogin){
-	    alert("로그인이 필요합니다.");
-	    location.href = "../login/loginModal.jsp";
-	    return;
+	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
 	  }
 	
 	  $("#reviewBox").hide();
@@ -683,9 +689,8 @@ h1.fw-bold small {
 	$(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
 	
 	  if(!isLogin){
-	    alert("로그인이 필요합니다.");
-	    location.href = "../login/loginModal.jsp";
-	    return;
+	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
 	  }
 	
 	  var movieIdx = $("#movieIdxHidden").val();
@@ -791,7 +796,6 @@ h1.fw-bold small {
 	function openReviewEdit(reviewIdx, oldScore, oldContent) {
 	  if(!isLogin){
 	    alert("로그인이 필요합니다.");
-	    location.href = "../login/loginModal.jsp";
 	    return;
 	  }
 	
