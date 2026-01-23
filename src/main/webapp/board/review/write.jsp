@@ -94,8 +94,29 @@ const editor = new toastui.Editor({
     initialEditType: 'wysiwyg',
     previewStyle: 'vertical',
     language: 'ko-KR',
-    placeholder: '영화에 대한 리뷰를 작성해주세요.'
+    placeholder: '영화 리뷰를 작성해주세요.',
+
+    hooks: {
+        addImageBlobHook: (blob, callback) => {
+            const formData = new FormData();
+            formData.append('image', blob);
+
+            fetch('<%=request.getContextPath()%>/board/review/imageUpload.jsp', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.url) {
+                    callback(data.url, 'image');
+                } else {
+                    alert('이미지 업로드 실패');
+                }
+            });
+        }
+    }
 });
+
 
 /* submit 시 에디터 내용 세팅 */
 const form = document.querySelector('form');
