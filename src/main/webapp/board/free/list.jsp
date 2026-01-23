@@ -387,8 +387,17 @@ String msg = request.getParameter("msg");
 									value="<%=dto.getBoard_idx()%>">
 								<button type="submit" class="btn btn-sm btn-secondary">복구</button>
 							</form> <% } %>
+							
+							<form action="adminDeleteForeverAction.jsp" method="post"
+					          style="display:inline;"
+					          onsubmit="return confirm('⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n정말 삭제하시겠습니까?');">
+					        <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+					        <button type="submit" class="btn btn-sm btn-dark">완전삭제</button>
+					    </form>
 						</td>
+						
 						<% } %>
+						
 					</tr>
 					<%
 			    }

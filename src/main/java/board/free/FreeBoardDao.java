@@ -424,6 +424,23 @@ public class FreeBoardDao {
 
 	    return list;
 	}
+	
+	// 관리자 전용 - 게시글 완전 삭제 (물리 삭제)
+	public void deleteBoardForever(int board_idx) {
+
+	    String sql = "DELETE FROM free_board WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 	
 }
