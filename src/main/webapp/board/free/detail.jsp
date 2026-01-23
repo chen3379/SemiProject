@@ -75,7 +75,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 				String loginId = (String) session.getAttribute("loginid");
 				boolean isOwner = loginId != null && loginId.equals(dto.getId());
 				boolean isTestMode = false;   // 테스트 끝나면 false
-				boolean canEdit = isTestMode || isOwner || isAdmin;
+				boolean canEdit = isTestMode || isOwner;
 				%>
 				<%
 				if (canEdit) {

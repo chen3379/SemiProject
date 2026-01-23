@@ -45,7 +45,17 @@ ReviewBoardDto dto = dao.getBoard(board_idx);
 
         <!-- 장르 (필요하면 유지) -->
         <input type="hidden" name="genre" value="<%= dto.getGenre_type() %>">
-
+		<!-- 스포 여부 -->
+		<div class="mb-3">
+		   <select name="is_spoiler" class="form-select">
+			    <option value="0" <%= !dto.isIs_spoiler_type() ? "selected" : "" %>>
+			        스포 없음
+			    </option>
+			    <option value="1" <%= dto.isIs_spoiler_type() ? "selected" : "" %>>
+			        🚨 스포 있음
+			    </option>
+			</select>
+		</div>
         <!-- 제목 -->
         <input type="text"
                name="title"

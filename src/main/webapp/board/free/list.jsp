@@ -59,6 +59,15 @@ if (isAdmin) {
 
 int totalPage = (int)Math.ceil((double)totalCount / pageSize);
 
+int pageBlock = 5; // 한 번에 보여줄 페이지 수
+
+int startPage = ((currentPage - 1) / pageBlock) * pageBlock + 1;
+int endPage = startPage + pageBlock - 1;
+
+if (endPage > totalPage) {
+ endPage = totalPage;
+}
+
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 %>
 
@@ -420,21 +429,36 @@ String msg = request.getParameter("msg");
 		</div>
 		<% } %>
 		<div class="page-wrap">
-			<ul class="page-list">
-
-				<% for (int i = 1; i <= totalPage; i++) { %>
-				<li class="<%= (i == currentPage) ? "active" : "" %>"><a
-					href="list.jsp?category=<%=category%>&page=<%=i%>"> <%= i %>
-				</a></li>
-				<% } %>
-
-				<% if (currentPage < totalPage) { %>
-				<li class="arrow"><a
-					href="list.jsp?category=<%=category%>&page=<%=currentPage + 1%>">
-						&gt; </a></li>
-				<% } %>
-
-			</ul>
+		  <ul class="page-list">
+		
+		    <%-- ◀ 이전 5페이지 --%>
+		    <% if (startPage > 1) { %>
+		    <li class="arrow">
+		      <a href="list.jsp?category=<%=category%>&page=<%=startPage - 1%>">
+		        &lt;
+		      </a>
+		    </li>
+		    <% } %>
+		
+		    <%-- 페이지 번호 5개씩 --%>
+		    <% for (int i = startPage; i <= endPage; i++) { %>
+		    <li class="<%= (i == currentPage) ? "active" : "" %>">
+		      <a href="list.jsp?category=<%=category%>&page=<%=i%>">
+		        <%= i %>
+		      </a>
+		    </li>
+		    <% } %>
+		
+		    <%-- ▶ 다음 5페이지 --%>
+		    <% if (endPage < totalPage) { %>
+		    <li class="arrow">
+		      <a href="list.jsp?category=<%=category%>&page=<%=endPage + 1%>">
+		        &gt;
+		      </a>
+		    </li>
+		    <% } %>
+		
+		  </ul>
 		</div>
 		<script>
 	function needLoginAlert() {

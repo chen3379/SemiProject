@@ -7,8 +7,10 @@
     box-sizing: border-box;
 }
 
-
-
+.toastui-editor-contents p img {
+    max-width: 50%;   /* 예: 50%로 축소 */
+    height: auto;
+}
 .post-header {
 	display: flex;
 	justify-content: space-between;
@@ -49,6 +51,14 @@
     height: auto;        
     display: inline-block; 
     margin: 16px;  
+}
+
+.post-content img,
+.mt-4 img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 16px auto;
 }
 
 .post-content * {
