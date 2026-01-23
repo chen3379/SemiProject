@@ -174,11 +174,11 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 			<div class="post-menu" id="postMenu">
 			    <a href="update.jsp?board_idx=<%=board_idx%>">수정</a>
 			    <a href="javascript:void(0);"
-				   onclick="confirmCustomAlert('정말 삭제하시겠습니까?', function () {
-				       location.href='delete.jsp?board_idx=<%=board_idx%>';
-				   })">
+				   id="deletePostBtn"
+				   data-board="<%=board_idx%>">
 				   삭제
 				</a>
+
 			</div>
 			<%
 		}
@@ -432,9 +432,31 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 	            $('#likeBtn').toggleClass('active', res.liked);
 	        }, 'json');
 	    });
+	    
+	    /* 좋아요 */
+	    document.getElementById('likeBtn')?.addEventListener('click', function () {
+	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
+	            if (res.status === 'LOGIN_REQUIRED') {
+	                alert('로그인이 필요합니다.');
+	                return;
+	            }
+	            $('#likeCount').text(res.count);
+	            $('#likeBtn').toggleClass('active', res.liked);
+	        }, 'json');
+	    });
+
+	    document.getElementById('deletePostBtn')?.addEventListener('click', function () {
+	        const boardIdx = this.dataset.board;
+
+	        confirmCustomAlert('정말 삭제하시겠습니까?', function () {
+	            location.href = 'delete.jsp?board_idx=' + boardIdx;
+	        });
+	    });
+
 	
 	});
 </script>
+
  <footer>
         <jsp:include page="/main/footer.jsp"/>
  </footer>
