@@ -96,6 +96,7 @@
             <%=statusText%>
         </span>
         <br class="d-md-none">
+        <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
         <strong><%=dto.getTitle()%></strong>
     </h3>
 
@@ -213,6 +214,8 @@
 		    </div>	    
 
 	<% } %>
+
+<jsp:include page="../common/customAlert.jsp" />
 
 </body>
 </html>

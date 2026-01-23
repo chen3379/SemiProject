@@ -114,12 +114,7 @@ history.back();
 
             <!-- 비밀글 -->
             <div class="form-check">
-                <input type="checkbox"
-                       name="secret"
-                       id="secret"
-                       value="1"
-                       class="form-check-input"
-                       <%= (isUpdate && "1".equals(dto.getSecretType())) ? "checked" : "" %>>
+                <input type="checkbox" name="secret" id="secret" value="1" class="form-check-input" <%= (isUpdate &&  dto != null && "1".equals(dto.getSecretType())) ? "checked" : "" %>>
                 <label for="secret" class="form-check-label">
                     비밀글로 작성
                 </label>
@@ -139,23 +134,23 @@ history.back();
 
 <script type="text/javascript">
 
-var isUpdate = <%= isUpdate %>;
-
-function saveSupport(){
-	  
+	var isUpdate = <%= isUpdate %>;
+	
+	function saveSupport(){
+	
 	  var supportIdx = $("#supportIdx").val();
 	  var categoryType = $("#categoryType").val();
 	  var title = $("#title").val();
 	  var content = $("#content").val();
 	  var secret = $("#secret").is(":checked") ? "1" : "0";
-
-	  if(title.trim()=="" || content.trim()==""){
+	
+	  if(title.trim() === "" || content.trim() === ""){
 	    alert("제목과 내용을 입력하세요");
 	    return;
 	  }
-
+	
 	  $.ajax({
-	    url : "supportInsertAction.jsp",
+	    url : isUpdate ? "supportUpdateAction.jsp" : "supportInsertAction.jsp",
 	    type : "post",
 	    dataType : "json",
 	    data : {
@@ -166,33 +161,29 @@ function saveSupport(){
 	      secret : secret
 	    },
 	    success : function(res){
-	      if(res.result == "OK"){
-	    	  
-	    	alert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다");
-	    	if(isUpdate){
-    	      location.href = "supportDetail.jsp?supportIdx=" + res.supportIdx;
-    	    } else {
-    	      location.href = "supportList.jsp";
-    	    }
 	    	
-	      } else if(res.result == "NO_LOGIN"){
-	        alert("로그인이 필요합니다");
-	        location.href = "../login/loginForm.jsp";
-	      } else {	  
-	        alert("등록 실패");
-	      }
-	    },
-	    error : function(){
-	      alert("서버 오류");
-	    }
-	    
-	    
-	  });
-	  
-	  
-	}
+	    	console.log("서버응답:", res);
+	    	  if(res.result === "OK"){
+	    	    alert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다");
 
+	    	    if(isUpdate){
+	    	      location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
+	    	    } else {
+	    	      location.href = "supportList.jsp";
+	    	    }
+
+	    	  } else if(res.result === "NO_LOGIN"){
+	    	    alert("로그인이 필요합니다");
+	    	    location.href = "../login/loginForm.jsp";
+	    	  } else {
+	    	    alert("처리에 실패했습니다");
+	    	  }
+	    	}
+	  });
+	}
 </script>
+
+<jsp:include page="../common/customAlert.jsp" />
 
 </body>
 </html>

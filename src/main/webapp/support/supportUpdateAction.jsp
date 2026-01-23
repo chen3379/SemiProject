@@ -1,6 +1,7 @@
 <%@page import="support.SupportDao"%>
 <%@ page language="java" contentType="application/json; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
 <%
 request.setCharacterEncoding("UTF-8");
 
@@ -11,24 +12,40 @@ if(id == null){
     return;
 }
 
-// 파라미터 받기
-int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
+// ===== 파라미터 받기  =====
+String supportIdxParam = request.getParameter("supportIdx");
 String categoryType = request.getParameter("categoryType");
 String title = request.getParameter("title");
 String content = request.getParameter("content");
-String secret = request.getParameter("secret");
-String secretType = request.getParameter("secret") == null ? "0" : "1";
+int secretType = Integer.parseInt(request.getParameter("secret"));
 
-// 최소 방어
+// supportIdx 필수 체크
+if(supportIdxParam == null || supportIdxParam.trim().equals("")){
+    out.print("{\"result\":\"FAIL\",\"msg\":\"NO_SUPPORT_IDX\"}");
+    return;
+}
+
+// categoryType 방어
 if(categoryType == null || categoryType.trim().equals("")){
-    categoryType = "2"; // 기타
-}
-if(secret == null){
-    secret = "0";
+    categoryType = "2";
 }
 
-// DAO 호출
+int supportIdx = Integer.parseInt(supportIdxParam);
+
+// ===== DAO =====
 SupportDao dao = new SupportDao();
-dao.updateSupport(supportIdx, title, content, secretType);
+boolean success = dao.updateSupport(
+    supportIdx,
+    categoryType,
+    title,
+    content,
+    secretType
+);
 
+// ===== 응답 =====
+if(success){
+    out.print("{\"result\":\"OK\",\"supportIdx\":" + supportIdx + "}");
+}else{
+    out.print("{\"result\":\"FAIL\",\"msg\":\"UPDATE_ZERO\"}");
+}
 %>
