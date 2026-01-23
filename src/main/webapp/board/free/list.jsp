@@ -51,6 +51,12 @@ if (isAdmin) {
 }
 
 int totalCount = dao.getTotalCount(category);
+if (isAdmin) {
+    totalCount = dao.getAdminTotalCount(category);
+} else {
+    totalCount = dao.getTotalCount(category);
+}
+
 int totalPage = (int)Math.ceil((double)totalCount / pageSize);
 
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -363,7 +369,7 @@ String msg = request.getParameter("msg");
 							href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>"> <%= dto.getTitle() %>
 						</a> <% } %>
 						</td>
-						<td class="writer"><%= dto.getNickname() %></td>
+						<td class="writer"><%= dto.getId() %></td>
 						<td class="date"><%= sdf.format(dto.getCreate_day()) %></td>
 						<td class="count"><%= dto.getReadcount() %></td>
 						<% if (isAdmin) { %>
@@ -381,8 +387,17 @@ String msg = request.getParameter("msg");
 									value="<%=dto.getBoard_idx()%>">
 								<button type="submit" class="btn btn-sm btn-secondary">복구</button>
 							</form> <% } %>
+							
+							<form action="adminDeleteForeverAction.jsp" method="post"
+					          style="display:inline;"
+					          onsubmit="return confirm('⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n정말 삭제하시겠습니까?');">
+					        <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+					        <button type="submit" class="btn btn-sm btn-dark">완전삭제</button>
+					    </form>
 						</td>
+						
 						<% } %>
+						
 					</tr>
 					<%
 			    }
