@@ -13,6 +13,8 @@ public class ReviewBoardDto {
     private Timestamp create_day;
     
     private String filename;
+    // ⭐ 관리자용 (숨김/삭제 여부)
+    private int is_deleted; // 0: 정상, 1: 숨김(삭제)
 
     public String getFilename() {
         return filename;
@@ -69,6 +71,14 @@ public class ReviewBoardDto {
 	}
 	public void setCreate_day(Timestamp create_day) {
 		this.create_day = create_day;
+	}
+
+	public int getIs_deleted() {
+		return is_deleted;
+	}
+
+	public void setIs_deleted(int is_deleted) {
+		this.is_deleted = is_deleted;
 	}
     
     
