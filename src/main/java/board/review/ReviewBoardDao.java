@@ -3,6 +3,7 @@ package board.review;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,7 +172,10 @@ public class ReviewBoardDao {
 	// 조회수 증가
 	public void updateReadCount(int board_idx) {
 
-	    String sql = "UPDATE review_board SET readcount = readcount + 1 WHERE board_idx = ?";
+	    String sql =
+	        "UPDATE free_board " +
+	        "SET readcount = readcount + 1 " +
+	        "WHERE board_idx = ? AND is_deleted = 0";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -248,9 +252,7 @@ public class ReviewBoardDao {
 		    String filename
 		) {
 		    String sql =
-		        "UPDATE review_board " +
-		        "SET title=?, content=?, genre_type=?, is_spoiler=?, filename=?, update_day=NOW() " +
-		        "WHERE board_idx=?";
+		        "UPDATE review_board SET title=?, content=?, genre_type=?, is_spoiler=?, filename=? WHERE board_idx=?";
 
 		    try (Connection conn = db.getDBConnect();
 		         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -263,11 +265,12 @@ public class ReviewBoardDao {
 		        pstmt.setInt(6, board_idx);
 
 		        pstmt.executeUpdate();
-
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
+		    } catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+
 
 	// 리뷰 글 숨김
 	public void deleteBoard(int board_idx) {

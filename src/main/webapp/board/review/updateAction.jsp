@@ -8,7 +8,7 @@
 
 <%
 
-String loginId = (String) session.getAttribute("id");
+String loginId = (String) session.getAttribute("loginid");
 MemberDto loginMember = (MemberDto) session.getAttribute("memberInfo");
 
 if (loginId == null || loginMember == null) {
@@ -68,7 +68,7 @@ String finalFileName = dto.getFilename(); // 기존 파일
 if (newFileName != null) {
     finalFileName = newFileName;
 }
-
+System.out.println("savePath = " + savePath);
 dao.updateBoard(
 	    board_idx,
 	    title,
