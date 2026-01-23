@@ -37,27 +37,83 @@
 %>
 
 <style>
-    .admin-movie-container { padding: 20px; color: #fff; }
+    :root {
+        --primary-red: #E50914;
+        --primary-red-hover: #B20710;
+        --bg-surface: #1a1a1a;
+        --border-color: rgba(255, 255, 255, 0.1);
+        --text-gray: #B3B3B3;
+    }
+
+    .admin-movie-container { padding: 30px; color: #fff; background-color: #141414; border-radius: 8px; }
     .search-wrapper { display: flex; gap: 10px; align-items: center; }
+    
     .admin-search-box {
         background: rgba(255, 255, 255, 0.05);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 4px; padding: 5px 15px; display: flex; align-items: center; width: 250px;
+        border-radius: 4px; padding: 7px 15px; display: flex; align-items: center; width: 250px;
+        transition: border-color 0.2s;
     }
+    .admin-search-box:focus-within { border-color: var(--primary-red); }
     .admin-search-box input { background: none; border: none; color: #fff; outline: none; width: 100%; font-size: 0.9rem; }
-    .btn-search { background: #444; border: none; color: #fff; padding: 6px 15px; border-radius: 4px; transition: 0.2s; cursor: pointer; }
-    .btn-search:hover { background: #666; }
-    .admin-table { width: 100%; margin-top: 20px; border-top: 2px solid #e50914; }
-    .admin-table tr { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .admin-table td { padding: 12px 10px; vertical-align: middle; }
-    .thumb-img { width: 45px; height: 65px; object-fit: cover; border-radius: 3px; background: #333; }
-    .admin-pagination { display: flex; justify-content: center; gap: 5px; list-style: none; padding: 20px 0; }
-    .admin-pagination .page-link {
-        background: #1a1a1a; border: 1px solid #333; color: #999; padding: 8px 14px; border-radius: 4px; text-decoration: none; cursor: pointer;
+    
+    .btn-search { 
+        background: #333; border: 1px solid #444; color: #fff; padding: 7px 20px; border-radius: 4px; 
+        transition: 0.2s; cursor: pointer; height: 38px; display: flex; align-items: center; justify-content: center;
     }
-    .admin-pagination .page-item.active .page-link { background: #e50914; border-color: #e50914; color: #fff; font-weight: bold; }
+    .btn-search:hover { background: #444; border-color: #666; }
+
+    .btn-admin-action {
+        height: 38px;
+        min-width: 120px;
+        font-weight: 600;
+        white-space: nowrap;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 15px;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+    }
+
+    /* 통일된 색감의 버튼 스타일 */
+    .btn-db-reg { background-color: var(--primary-red); border: none; color: #fff; }
+    .btn-db-reg:hover { background-color: var(--primary-red-hover); transform: translateY(-1px); }
+    
+    .btn-api-sync { background-color: #333; border: 1px solid #555; color: #fff; }
+    .btn-api-sync:hover { background-color: #444; border-color: #777; transform: translateY(-1px); }
+    
+    .btn-recent-reg { background-color: transparent; border: 1px solid var(--primary-red); color: var(--primary-red); }
+    .btn-recent-reg:hover { background-color: rgba(229, 9, 20, 0.1); transform: translateY(-1px); }
+
+    .admin-table { width: 100%; margin-top: 20px; border-collapse: separate; border-spacing: 0; }
+    .admin-table thead th { border-bottom: 2px solid var(--primary-red); padding: 12px; color: var(--text-gray); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
+    .admin-table tr { border-bottom: 1px solid var(--border-color); transition: background 0.2s; }
+    .admin-table td { padding: 15px 12px; vertical-align: middle; }
+    .admin-movie-row:hover { background: rgba(255, 255, 255, 0.03); }
+
+    .thumb-img { width: 50px; height: 75px; object-fit: cover; border-radius: 4px; background: #222; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+    
+    .btn-row-action {
+        width: 60px;
+        height: 32px;
+        font-size: 0.8rem;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+
+    .admin-pagination { display: flex; justify-content: center; gap: 8px; list-style: none; padding: 30px 0; }
+    .admin-pagination .page-link {
+        background: #1a1a1a; border: 1px solid #333; color: #999; padding: 8px 16px; border-radius: 4px; text-decoration: none; cursor: pointer; transition: 0.2s;
+    }
+    .admin-pagination .page-link:hover:not(.disabled) { background: #333; color: #fff; border-color: #555; }
+    .admin-pagination .page-item.active .page-link { background: var(--primary-red); border-color: var(--primary-red); color: #fff; font-weight: bold; }
     .admin-pagination .page-link.disabled { opacity: 0.3; cursor: default; }
-    .admin-movie-row:hover { background: rgba(255, 255, 255, 0.05); }
 </style>
 
 <div class="admin-movie-container">
@@ -67,8 +123,10 @@
             <div class="admin-search-box">
                 <input type="text" id="adminMovieSearch" placeholder="영화 제목 입력" value="<%=searchWord%>" onkeyup="if(window.event.keyCode==13){searchMovie()}">
             </div>
-            <button type="button" class="btn-search" onclick="searchMovie()">검색</button>
-            <button class="btn btn-danger btn-sm px-3" onclick="$('#content-area').load('adminMovieForm.jsp')">신규 등록</button>
+            <button type="button" class="btn-search" onclick="searchMovie()"><i class="bi bi-search"></i>&nbsp;검색</button>
+            <button type="button" class="btn-admin-action btn-db-reg" onclick="$('#content-area').load('../movie/movieInsertForm.jsp')">DB 등록</button>
+            <button type="button" class="btn-admin-action btn-api-sync" onclick="$('#content-area').load('../movie/movieApi.jsp')">API 연동</button>
+            <button type="button" class="btn-admin-action btn-recent-reg" onclick="$('#content-area').load('../movie/movieAutoInsert.jsp')">최근 인기 영화 등록</button>
         </div>
     </div>
 
@@ -98,8 +156,8 @@
                         </div>
                     </td>
                     <td class="text-end">
-                        <button class="btn btn-outline-light btn-sm" onclick="location.href='../movie/movieUpdateForm.jsp?movie_idx=<%=dto.getMovieIdx()%>'">수정</button>
-                        <button class="btn btn-outline-danger btn-sm ms-1" onclick="delMovie(<%=dto.getMovieIdx()%>)">삭제</button>
+                        <button class="btn btn-outline-light btn-row-action" onclick="location.href='../movie/movieUpdateForm.jsp?movie_idx=<%=dto.getMovieIdx()%>'">수정</button>
+                        <button class="btn btn-outline-danger btn-row-action ms-1" onclick="delMovie(<%=dto.getMovieIdx()%>)">삭제</button>
                     </td>
                 </tr>
             <%
