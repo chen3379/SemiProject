@@ -12,6 +12,10 @@ import mysql.db.DBConnect;
 public class FreeBoardDao {
 	DBConnect db= new DBConnect();
 	
+
+	//[숨김] → is_deleted = 1
+
+	//[복구] → is_deleted = 0
 	public void insertBoard(FreeBoardDto dto) {
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
@@ -54,15 +58,16 @@ public class FreeBoardDao {
 	        conn = db.getDBConnect();
 
 	        String sql =
-	            "SELECT board_idx, category_type, title, id, readcount, create_day " +
-	            "FROM free_board ";
+	        	    "SELECT board_idx, category_type, title, id, readcount, create_day " +
+	        	    "FROM free_board " +
+	        	    "WHERE is_deleted = 0 ";
 
-	        // 🔥 전체가 아닐 때만 WHERE
-	        if (!"all".equals(category)) {
-	            sql += "WHERE category_type = ? ";
-	        }
+	        	if (!"all".equals(category)) {
+	        	    sql += "AND category_type = ? ";
+	        	}
 
-	        sql += "ORDER BY board_idx DESC LIMIT ?, ?";
+	        	sql += "ORDER BY board_idx DESC LIMIT ?, ?";
+
 
 	        pstmt = conn.prepareStatement(sql);
 
@@ -109,10 +114,12 @@ public class FreeBoardDao {
 	    try {
 	        conn = db.getDBConnect();
 
-	        String sql = "SELECT COUNT(*) FROM free_board ";
+	        String sql = "SELECT COUNT(*) FROM free_board WHERE is_deleted = 0 ";
+
 	        if (!"all".equals(category)) {
-	            sql += "WHERE category_type = ?";
+	            sql += "AND category_type = ?";
 	        }
+
 
 	        pstmt = conn.prepareStatement(sql);
 
@@ -132,6 +139,35 @@ public class FreeBoardDao {
 	    return count;
 	}
 	
+	// 관리자용 전체 글 개수 (숨김 포함)
+	public int getAdminTotalCount(String category) {
+
+	    int count = 0;
+
+	    String sql = "SELECT COUNT(*) FROM free_board ";
+
+	    if (!"all".equals(category)) {
+	        sql += "WHERE category_type = ?";
+	    }
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        if (!"all".equals(category)) {
+	            pstmt.setString(1, category);
+	        }
+
+	        ResultSet rs = pstmt.executeQuery();
+	        if (rs.next()) count = rs.getInt(1);
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return count;
+	}
+
+	
 	//community.jsp 하단 – 자유게시판 TOP 10
 	public List<FreeBoardDto> getTop10ByReadcount() {
 
@@ -141,9 +177,12 @@ public class FreeBoardDao {
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
 
-	    String sql = "SELECT board_idx, title, readcount " +
-	                 "FROM free_board " +
-	                 "ORDER BY readcount DESC LIMIT 10";
+	    String sql =
+	    	    "SELECT board_idx, title, readcount " +
+	    	    "FROM free_board " +
+	    	    "WHERE is_deleted = 0 " +
+	    	    "ORDER BY readcount DESC LIMIT 10";
+
 
 	    try {
 	        conn = db.getDBConnect();
@@ -173,7 +212,9 @@ public class FreeBoardDao {
 		Connection conn=db.getDBConnect();
 		PreparedStatement pstmt =null;
 		
-	    String sql = "UPDATE free_board SET readcount = readcount + 1 WHERE board_idx = ?";
+	    String sql = "UPDATE free_board\r\n"
+	    		+ "SET readcount = readcount + 1"
+	    		+ "WHERE board_idx = ? AND is_deleted = 0";
 	    
 	    conn= db.getDBConnect();
 	    try {
@@ -196,7 +237,8 @@ public class FreeBoardDao {
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
 
-	    String sql = "SELECT * FROM free_board WHERE board_idx = ?";
+	    String sql = "SELECT * FROM free_board WHERE board_idx = ? AND is_deleted = 0";
+
 
 	    try {
 	        conn = db.getDBConnect();
@@ -257,23 +299,19 @@ public class FreeBoardDao {
 	// 게시글 삭제
 	public void deleteBoard(int board_idx) {
 
-	    Connection conn = null;
-	    PreparedStatement pstmt = null;
+	    String sql = "UPDATE free_board SET is_deleted = 1 WHERE board_idx = ?";
 
-	    String sql = "DELETE FROM free_board WHERE board_idx = ?";
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-	    try {
-	        conn = db.getDBConnect();
-	        pstmt = conn.prepareStatement(sql);
 	        pstmt.setInt(1, board_idx);
 	        pstmt.executeUpdate();
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
-	    } finally {
-	        db.dbClose(null, pstmt, conn);
 	    }
 	}
+
 	
 	// 관리자용 게시글 목록 (삭제/숨김 포함)
 	public List<FreeBoardDto> getAdminBoardList(String category, int start, int pageSize) {
@@ -386,6 +424,23 @@ public class FreeBoardDao {
 
 	    return list;
 	}
+	
+	// 관리자 전용 - 게시글 완전 삭제 (물리 삭제)
+	public void deleteBoardForever(int board_idx) {
+
+	    String sql = "DELETE FROM free_board WHERE board_idx = ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        pstmt.executeUpdate();
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+
 
 	
 }
