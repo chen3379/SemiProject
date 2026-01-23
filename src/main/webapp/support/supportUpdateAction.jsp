@@ -48,4 +48,5 @@ if(success){
 }else{
     out.print("{\"result\":\"FAIL\",\"msg\":\"UPDATE_ZERO\"}");
 }
+
 %>
