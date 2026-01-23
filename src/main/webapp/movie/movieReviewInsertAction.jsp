@@ -19,6 +19,12 @@ try {
 
     String id = (String)session.getAttribute("id");
 
+    if (id == null) {
+        json.put("status", "FAIL");
+        json.put("message", "로그인이 필요합니다.");
+        out.print(json.toString());
+        return;
+    }
     MovieReviewDto dto = new MovieReviewDto();
     dto.setMovieIdx(movieIdx);
     dto.setId(id);

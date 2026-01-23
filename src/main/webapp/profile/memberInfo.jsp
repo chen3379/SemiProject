@@ -149,7 +149,8 @@
     <!-- 회원 정보 카드 -->
     <div class="member-info shadow-lg" style="display:none;">
         <div class="member-photo">
-            <img id="photo" src="${pageContext.request.contextPath}${empty sessionScope.memberInfo.photo ? '/profile_photo/default_photo.jpg' : sessionScope.memberInfo.photo}" alt="프로필 이미지" />
+            <img id="photo" src="${pageContext.request.contextPath}${sessionScope.memberInfo.photo}" onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'"
+            alt="프로필 이미지" />
         </div>
         
         <div class="info-details">
