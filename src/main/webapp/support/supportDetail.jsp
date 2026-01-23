@@ -39,7 +39,7 @@
     if ("1".equals(dto.getSecretType())) {
         boolean isWriter = isLogin && id.equals(dto.getId());
         if (!isAdmin && !isWriter) {
-            out.print("<script>alert('접근 권한이 없습니다');history.back();</script>");
+            out.print("<script>alert('비밀글 입니다');history.back();</script>");
             return;
         }
     }
@@ -72,7 +72,9 @@
     // 작성자, 관리자만 수정버튼 노출
     boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
     
-    String secretType = request.getParameter("secret") == null ? "0" : "1";
+    
+    
+    
 %>
 <!DOCTYPE html>
 <html>
@@ -94,6 +96,7 @@
             <%=statusText%>
         </span>
         <br class="d-md-none">
+        <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
         <strong><%=dto.getTitle()%></strong>
     </h3>
 
@@ -133,8 +136,21 @@
     <%
         SupportAdminDao aDao = new SupportAdminDao();
         SupportAdminDto answer = aDao.getAdminAnswer(supportIdx);
-	%>
+        
+        // 답변 열람 권한 (원글 기준)
+        boolean canSeeAnswer = false;
 
+        // 비밀글 아님 → 누구나
+        if ("0".equals(dto.getSecretType())) {
+            canSeeAnswer = true;
+        }
+        // 비밀글 → 관리자 or 작성자
+        else if (isAdmin || (isLogin && id.equals(dto.getId()))) {
+            canSeeAnswer = true;
+        }         
+	%>
+	
+	<%-- ================== 관리자 전용 영역 ================== --%>
 	<% if (isAdmin) { %>
 	
 	    <h5 class="mt-4">관리자 답변</h5>
@@ -162,7 +178,7 @@
 	        </form>
 	
 	    <% } else { %>
-	        <!-- 답변 존재 → 출력 + 수정/삭제 -->
+	        <!-- 답변 수정/삭제 -->
 	        <div class="border p-3 bg-light mb-2">
 	            <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
 	        </div>
@@ -174,21 +190,32 @@
 	                      rows="4"><%= answer.getContent() %></textarea>
 	
 	            <button class="btn btn-primary btn-sm">답변 수정</button>
+	        
+	
+		        <a href="supportAdminDeleteAction.jsp?supportIdx=<%=supportIdx%>"
+		           class="btn btn-outline-danger btn-sm ms-2"
+		           onclick="return confirm('답변을 삭제하시겠습니까?');">
+		            답변 삭제
+		        </a>
+		
+		        <a href="supportList.jsp"
+		           class="btn btn-outline-secondary btn-sm ms-2">
+		            목록
+		        </a>
 	        </form>
-	
-	        <a href="supportAdminDeleteAction.jsp?supportIdx=<%=supportIdx%>"
-	           class="btn btn-outline-danger btn-sm ms-2"
-	           onclick="return confirm('답변을 삭제하시겠습니까?');">
-	            답변 삭제
-	        </a>
-	
-	        <a href="supportList.jsp"
-	           class="btn btn-outline-secondary btn-sm ms-2">
-	            목록
-	        </a>
 	    <% } %>
-	
+	    
+		<% } else if (answer != null && canSeeAnswer) { %>
+		
+		<%-- ================== 일반 사용자 열람 영역 ================== --%>
+		    <h5 class="mt-4">관리자 답변</h5>
+		    <div class="border p-3 bg-light">
+		        <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
+		    </div>	    
+
 	<% } %>
+
+<jsp:include page="../common/customAlert.jsp" />
 
 </body>
 </html>

@@ -28,7 +28,8 @@
 	
 	// 페이징
     // 전체 글 수
-    int totalCount = sDao.getTotalCount(status, categoryType);
+    int totalCount = sDao.getTotalCount(status, categoryType)
+    				+ sDao.getAnsweredCount(status, categoryType);
 
     int perPage = 5;      // ⭐ 한 페이지 5개
     int perBlock = 5;     // ⭐ 페이지 번호 5개씩
@@ -264,6 +265,12 @@ a {
     margin: 0 auto;
 }
 
+/* 답변글 왼쪽 정렬 */
+.answer-content {
+  text-align: left !important;
+  padding-left: 30px;   
+}
+
 </style>
 
 
@@ -329,19 +336,17 @@ a {
 	                    </thead>
 	
 						<tbody>
-						
 						<%
-						int rowCount = 0;   // 실제 화면에 찍히는 행 수
-						int maxRow = 5;
+						int maxRow = 10;      // 한 페이지에 보여줄 줄 수
+						int rowCount = 0;   // 실제 화면에 출력된 줄 수)
 						%>
 						
 						<% for(SupportDto dto : list){ %>
 						
-							<%-- 문의글 5개까지만 출력 --%>
-						    <% if(rowCount >= maxRow) break; %>
-						
-						    <%-- 삭제된 문의글 클릭 시 alert만 상세페이지 이동X --%>
+						    <%-- 1. 삭제된 문의글 --%>
 						    <% if("1".equals(dto.getDeleteType())){ %>
+						
+						        <% if(rowCount < maxRow){ %>
 						        <tr class="deleted-row"
 						            onclick="event.stopPropagation(); alert('삭제된 글입니다');">
 						            <td><%=dto.getSupportIdx()%></td>
@@ -349,74 +354,82 @@ a {
 						                삭제된 문의글입니다
 						            </td>
 						        </tr>
-						
-						    <% } else { %>
-						    <%-- 정상 문의글 --%>
-						    <tr style="cursor:pointer;"
-						        onclick="location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>'">
-						
-						        <td><%=dto.getSupportIdx()%></td>
-						
-						        <td>
-						            <%= "0".equals(dto.getCategoryType()) ? "회원정보" :
-						                "1".equals(dto.getCategoryType()) ? "신고" : "기타" %>
-						        </td>
-						
-						        <td class="title">
-						            [<%= "0".equals(dto.getStatusType()) ? "답변대기" : "답변완료" %>]
-						            <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
-						            <span><%=dto.getTitle()%></span>
-						        </td>
-						
-						        <td><%= dto.getId().split("@")[0] %></td>
-						        <td><%=sdf.format(dto.getCreateDay())%></td>
-						        <td><%=dto.getReadcount()%></td>
-						
-						        <% if(isAdmin){ %>
-						        <td>
-						            <span class="badge <%= "1".equals(dto.getStatusType()) ? "bg-success" : "bg-secondary" %>">
-						                <%= "1".equals(dto.getStatusType()) ? "답변완료" : "답변대기" %>
-						            </span>
-						        </td>
-						        <% } %>
-						    </tr>
-						    
-						    <% rowCount++; %>
-						
-						    <% } %>
-						
-						    <%-- 관리자 답변 표시(답변완료 상태일 때만) --%>
-						    <% if("0".equals(dto.getDeleteType()) && "1".equals(dto.getStatusType()) ){ %>
-								
-								<% if(rowCount >= maxRow) break; %>
-								
-						        <tr class="bg-light"
-						            style="cursor:pointer;"
-						            onclick=" 
-						            
-						            
-						            
-						                event.stopPropagation();
-						                handleAnswerClick(
-						                    '<%=dto.getSecretType()%>',
-						                    '<%=dto.getId()%>',
-						                    '<%=dto.getSupportIdx()%>'
-						                );
-						            ">
-						
-						            <td></td>
-						            <td colspan="<%= isAdmin ? 6 : 5 %>" style="padding-left:30px;">
-						                ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
-						            </td>
-						        </tr>
-						        
 						        <% rowCount++; %>
+						        <% } %>
+										
+						    <% } else { %>
+						
+						        <%-- 2. 정상 문의글 --%>
+						        <% if(rowCount < maxRow){ %>
+						        <tr style="cursor:pointer;" onclick="
+						            if('<%=dto.getSecretType()%>' === '1'
+						                && '<%=dto.getId()%>' !== '<%=id%>'
+						                && <%=!isAdmin%>){
+						                alert('비밀글입니다');
+						                return;
+						            }
+						            location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>';
+						        ">
+						            <td><%=dto.getSupportIdx()%></td>
+						            <td>
+						                <%= "0".equals(dto.getCategoryType()) ? "회원정보" :
+						                    "1".equals(dto.getCategoryType()) ? "신고" : "기타" %>
+						            </td>
+						            <td class="title">
+						                [<%= "0".equals(dto.getStatusType()) ? "답변대기" : "답변완료" %>]
+						                <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
+						                <span><%=dto.getTitle()%></span>
+						            </td>
+						            <td><%= dto.getId().split("@")[0] %></td>
+						            <td><%=sdf.format(dto.getCreateDay())%></td>
+						            <td><%=dto.getReadcount()%></td>
+						
+						            <% if(isAdmin){ %>
+						            <td>
+						                <span class="badge <%= "1".equals(dto.getStatusType()) ? "bg-success" : "bg-secondary" %>">
+						                    <%= "1".equals(dto.getStatusType()) ? "답변완료" : "답변대기" %>
+						                </span>
+						            </td>
+						            <% } %>
+						        </tr>
+						        <% rowCount++; %>
+						        <% } %>
+						
+						
+						        <%-- 3. 관리자 답변글 --%>
+						        <% if("1".equals(dto.getStatusType())){ %>
+						
+						            <% if(rowCount < maxRow){ %>
+						            <tr class="bg-light"
+						                style="cursor:pointer;"
+						                onclick="
+						                    event.stopPropagation();
+						                    handleAnswerClick(
+						                        '<%=dto.getSecretType()%>',
+						                        '<%=dto.getId()%>',
+						                        '<%=dto.getSupportIdx()%>'
+						                    );
+						                ">
+						                <td></td>
+						                <td></td>
+						                <td colspan="3" class="answer-content">
+						                    ㄴ <b>[답변완료] <%=dto.getTitle()%></b>
+						                </td>
+						                <td></td>
+						                <% if(isAdmin){ %><td></td><% } %>
+						            </tr>
+						            <% rowCount++; %>
+						            <% } %>
+
+						
+						        <% } %>
 						
 						    <% } %>
 						
 						<% } %>
 						
 						</tbody>
+
 						
 	                </table>
 	                
@@ -465,34 +478,29 @@ a {
 	
 	    </ul>
 	</div>
-            
-            
-            
-            
-            
-            
-            
-
         </section>
 
     </main>
     
-    <script>
-function handleAnswerClick(secretType, writerId, supportIdx){
-    const isAdmin = <%= isAdmin %>;
-    const isLogin = <%= isLogin %>;
-    const loginId = "<%= isLogin ? id : "" %>";
-
-    if(secretType === "1" && !(isAdmin || (isLogin && loginId === writerId))){
-        alert("비밀글입니다");
-        return;
-    }
-
-    location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
-}
-</script>
+    <script type="text/javascript">
+		function handleAnswerClick(secretType, writerId, supportIdx){
+		    const isAdmin = <%= isAdmin %>;
+		    const isLogin = <%= isLogin %>;
+		    const loginId = "<%= isLogin ? id : "" %>";
+		
+		    if(secretType === "1" && !(isAdmin || (isLogin && loginId === writerId))){
+		        alert("비밀글입니다");
+		        return;
+		    }
+		
+		    location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
+		}
+	</script>
     
 </div>
+
+<jsp:include page="../main/footer.jsp" />
+<jsp:include page="../common/customAlert.jsp" />
 
 </body>
 
