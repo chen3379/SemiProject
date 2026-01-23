@@ -44,11 +44,11 @@
 	font-size: 13px;
 }
 
-.post-content img {
-    max-width: 100%;     /* ⭐ 핵심 */
-    height: auto;        /* 비율 유지 */
-    display: block;
-    margin: 16px auto;   /* 가운데 정렬 */
+.post-content p img {
+    max-width: 100%;    
+    height: auto;        
+    display: inline-block; 
+    margin: 16px;  
 }
 
 .post-content * {

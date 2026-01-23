@@ -185,6 +185,16 @@
             alertCallback = null; // 실행 후 초기화
         }
     }
+    
+    /**
+     * 확인 누르면 지정한 URL로 이동하는 전용 helper
+     * 사용: alertMove("메시지", "이동할URL");
+     */
+    function alertMove(message, url) {
+        alert(message, function () {
+            location.href = url;
+        });
+    }
 
     // 엔터키/ESC키 처리
     document.addEventListener("keydown", function(e) {

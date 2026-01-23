@@ -54,100 +54,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 %>
 
 <body>
-	<script>
-	$(function () {
-	
-	    /* 댓글 등록 */
-	    $('#commentSubmitBtn').on('click', function () {
-	
-	        const content = $('textarea[name="content"]').val().trim();
-	
-	        if (!content) {
-	            alert('내용을 입력하세요');
-	            return;
-	        }
-	
-	        $.post(
-	            'commentInsert.jsp',
-	            {
-	                board_idx: '<%= board_idx %>',
-	                content: content
-	            },
-	            function (res) {
-	
-	                if (res.status === 'LOGIN_REQUIRED') {
-	                    alert('로그인이 필요합니다');
-	                    return;
-	                }
-	
-	                if (res.status === 'SUCCESS') {
-	                    location.reload(); 
-	                } else {
-	                    alert('댓글 등록 실패');
-	                }
-	            },
-	            'json'
-	        );
-	    });
-	
-	});
-	
-	$(document).on('click', '.reply-submit-btn', function () {
-
-	    const parentIdx = $(this).data('parent');
-
-	    const content = $(this)
-	        .closest('.reply-form')   
-	        .find('textarea')
-	        .val()
-	        .trim();
-
-	    if (!content) {
-	        alert('답글 내용을 입력하세요');
-	        return;
-	    }
-
-	    $.post(
-	        'commentInsert.jsp',
-	        {
-	            board_idx: '<%= board_idx %>',
-	            parent_comment_idx: parentIdx,
-	            content: content
-	        },
-	        function (res) {
-	            if (res.status === 'SUCCESS') {
-	                location.reload();
-	            }
-	        },
-	        'json'
-	    );
-	});
-
-	
-	$(document).on('click', '.comment-delete-btn', function () {
-
-	    if (!confirm('댓글을 삭제하시겠습니까?')) return;
-
-	    const commentIdx = $(this).data('id');
-
-	    $.post(
-	        'commentDelete.jsp',
-	        { comment_idx: commentIdx },
-	        function (res) {
-
-	            if (res.status === 'LOGIN_REQUIRED') {
-	                alert('로그인이 필요합니다.');
-	                return;
-	            }
-
-	            if (res.status === 'SUCCESS') {
-	                location.reload();
-	            }
-	        },
-	        'json'
-	    );
-	});
-	</script>
+	<jsp:include page="/common/customAlert.jsp" />
 	<div class="post-container">
 
 		<!-- 작성자 영역 -->
@@ -182,12 +89,9 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 				if (canEdit) {
 				%>
 				<div class="post-menu" id="postMenu">
-					<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> 
-					<a href="javascript:void(0);"
-					   id="deletePostBtn"
-					   data-board="<%=board_idx%>">
-					   삭제
-					</a>
+					<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> <a
+						href="javascript:void(0);" id="deletePostBtn"
+						data-board="<%=board_idx%>"> 삭제 </a>
 				</div>
 				<%
 				}
@@ -208,7 +112,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 		<!-- 제목 -->
 		<h2 class="post-title"><%= dto.getTitle() %></h2>
 
-	
+
 
 		<!-- 본문 -->
 		<div class="post-content">
@@ -384,8 +288,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 			<!-- ===== 하단 글 목록 ===== -->
 			<div class="related-posts">
 				<h3 class="related-title">
-				    <i class="bi bi-list-ul"></i>
-				    다른 글 더보기
+					<i class="bi bi-list-ul"></i> 다른 글 더보기
 				</h3>
 				<ul class="related-list">
 					<% for (FreeBoardDto b : bottomList) { %>
@@ -404,72 +307,194 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 				</ul>
 			</div>
 		</div>
+	
 		<script>
-	document.addEventListener('DOMContentLoaded', function () {
-	
-	    /* URL 복사 */
-	    const copyBtn = document.getElementById('copyUrlBtn');
-	    if (copyBtn) {
-	        const originalText = copyBtn.innerHTML;
-	        let timer = null;
-	
-	        copyBtn.addEventListener('click', function () {
-	            navigator.clipboard.writeText(location.href).then(() => {
-	                if (timer) return;
-	                copyBtn.innerHTML = '🔗 URL 복사됨';
-	                timer = setTimeout(() => {
-	                    copyBtn.innerHTML = originalText;
-	                    timer = null;
-	                }, 2000);
-	            });
-	        });
-	    }
-	
-	    /* 답글 토글 */
-	    document.querySelectorAll('.reply-btn').forEach(btn => {
-	        btn.addEventListener('click', () => {
-	            const form = document.getElementById('reply-form-' + btn.dataset.id);
-	            if (!form) return;
-	            form.style.display = form.style.display === 'block' ? 'none' : 'block';
-	        });
-	    });
-	
-	    /* 게시글 메뉴 */
-	    const menuBtn = document.getElementById('postMenuBtn');
-	    const menu = document.getElementById('postMenu');
-	    if (menuBtn && menu) {
-	        menuBtn.addEventListener('click', e => {
-	            e.stopPropagation();
-	            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-	        });
-	        document.addEventListener('click', () => menu.style.display = 'none');
-	    }
-	
-	    /* 좋아요 */
-	    document.getElementById('likeBtn')?.addEventListener('click', function () {
-	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
-	            if (res.status === 'LOGIN_REQUIRED') {
-	                alert('로그인이 필요합니다.');
-	                return;
-	            }
-	            $('#likeCount').text(res.count);
-	            $('#likeBtn').toggleClass('active', res.liked);
-	        }, 'json');
-	    });
-	    
-	    document.getElementById('deletePostBtn')?.addEventListener('click', function () {
-	        const boardIdx = this.dataset.board;
+$(function () {
 
-	        confirmCustomAlert('정말 삭제하시겠습니까?', function () {
-	            location.href = 'delete.jsp?board_idx=' + boardIdx;
-	        });
-	    });
-	
-	});
-	</script>
-	<footer>
-    	<jsp:include page="/main/footer.jsp"/>
-	</footer>
-	
+    /* =========================
+       댓글 등록
+    ========================= */
+    $('#commentSubmitBtn').on('click', function () {
+
+        const content = $('textarea[name="content"]').val().trim();
+
+        if (!content) {
+            alert('내용을 입력하세요');
+            return;
+        }
+
+        $.post(
+            'commentInsert.jsp',
+            {
+                board_idx: '<%= board_idx %>',
+                content: content
+            },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+
+                if (res.status === 'SUCCESS') {
+                    location.reload();
+                } else {
+                    alert('댓글 등록 실패');
+                }
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       답글 등록
+    ========================= */
+    $(document).on('click', '.reply-submit-btn', function () {
+
+        const parentIdx = $(this).data('parent');
+        const content = $(this)
+            .closest('.reply-form')
+            .find('textarea')
+            .val()
+            .trim();
+
+        if (!content) {
+            alert('답글 내용을 입력하세요');
+            return;
+        }
+
+        $.post(
+            'commentInsert.jsp',
+            {
+                board_idx: '<%= board_idx %>',
+                parent_comment_idx: parentIdx,
+                content: content
+            },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+
+                if (res.status === 'SUCCESS') {
+                    location.reload();
+                } else {
+                    alert('답글 등록 실패');
+                }
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       댓글 삭제
+    ========================= */
+    $(document).on('click', '.comment-delete-btn', function () {
+
+        const commentIdx = $(this).data('id');
+
+        if (!alert('댓글을 삭제하시겠습니까?')) return;
+
+        $.post(
+            'commentDelete.jsp',
+            { comment_idx: commentIdx },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+
+                if (res.status === 'SUCCESS') {
+                    location.reload();
+                } else {
+                    alert('댓글 삭제 실패');
+                }
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       답글 폼 토글
+    ========================= */
+    $(document).on('click', '.reply-btn', function () {
+        const targetId = '#reply-form-' + $(this).data('id');
+        $(targetId).toggle();
+    });
+
+
+    /* =========================
+       게시글 메뉴 토글
+    ========================= */
+    $('#postMenuBtn').on('click', function (e) {
+        e.stopPropagation();
+        $('#postMenu').toggle();
+    });
+
+    $(document).on('click', function () {
+        $('#postMenu').hide();
+    });
+
+
+    /* =========================
+       좋아요
+    ========================= */
+    $('#likeBtn').on('click', function () {
+
+        const boardIdx = $(this).data('board');
+
+        $.post(
+            'likeAction.jsp',
+            { board_idx: boardIdx },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+
+                $('#likeCount').text(res.count);
+                $('#likeBtn').toggleClass('active', res.liked);
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       게시글 삭제
+    ========================= */
+    $('#deletePostBtn').on('click', function () {
+
+        const boardIdx = $(this).data('board');
+
+        if (!alert('정말 삭제하시겠습니까?')) return;
+
+        location.href = 'delete.jsp?board_idx=' + boardIdx;
+    });
+
+
+    /* =========================
+       URL 복사
+    ========================= */
+    $('#copyUrlBtn').on('click', function () {
+
+        const $btn = $(this);
+        const originalText = $btn.text();
+
+        navigator.clipboard.writeText(location.href).then(() => {
+            $btn.text('🔗 URL 복사됨');
+            setTimeout(() => {
+                $btn.text(originalText);
+            }, 2000);
+        });
+    });
+
+});
+</script>
+<footer>
+	<jsp:include page="/main/footer.jsp" />
+</footer>
 </body>
 </html>

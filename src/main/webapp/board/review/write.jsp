@@ -37,11 +37,18 @@ if (loginId == null) {
         <h2>🎬 영화 리뷰</h2>
         <span class="text-muted">보고 느낀 그대로, 당신의 한 줄 평</span>
     </div>
-
     <form method="post"
           action="writeAction.jsp"
           enctype="multipart/form-data">
 		<input type="hidden" name="genre" value="DRAMA">
+		
+		<!-- 스포 여부 -->
+		<div class="mb-3">
+		    <select name="is_spoiler" class="form-select" id="spoilerSelect">
+		        <option value="0">스포 없음</option>
+		        <option value="1">🚨 스포 있음</option>
+		    </select>
+		</div>
         <!-- 제목 -->
         <input type="text"
                name="title"
