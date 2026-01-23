@@ -273,6 +273,7 @@ td.title a {
 <body>
 <jsp:include page="/main/nav.jsp" />
 <jsp:include page="/login/loginModal.jsp" />
+<jsp:include page="/common/customAlert.jsp" />
 
 <div class="container" style="padding-top: 80px; ">
      <div class="review-header">
@@ -295,19 +296,33 @@ td.title a {
         </thead>
 
         <tbody>
-        <% for (ReviewBoardDto dto : list) { %>
-            <tr>
-                <td class="title">
-                    <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
-                        <%= dto.getTitle() %>
-                    </a>
-                </td>
-                <td class="writer"><%= dto.getId() %></td>
-                <td class="date"><%= dto.getCreate_day() %></td>
-                <td class="count"><%= dto.getReadcount() %></td>
-            </tr>
-        <% } %>
-        </tbody>
+		<% for (ReviewBoardDto dto : list) { 
+		       boolean isSpoiler = dto.isIs_spoiler_type();
+		%>
+		    <tr>
+		        <td class="title">
+		            <% if (isSpoiler) { %>
+		                <span class="badge bg-danger me-1">스포</span>
+		            <% } %>
+		
+		            <a href="javascript:void(0);"
+		               class="review-link"
+		               data-url="detail.jsp?board_idx=<%=dto.getBoard_idx()%>"
+		               data-spoiler="<%= isSpoiler ? 1 : 0 %>">
+		                <%= dto.getTitle() %>
+		            </a>
+		        </td>
+		
+		        <td class="writer"><%= dto.getId() %></td>
+		
+		        <td class="date">
+		            <%= sdf.format(dto.getCreate_day()) %>
+		        </td>
+		
+		        <td class="count"><%= dto.getReadcount() %></td>
+		    </tr>
+		<% } %>
+		</tbody>
     </table>
     </div>
    	<% if (!isAdmin) { %>
@@ -354,5 +369,31 @@ function needLoginAlert() {
     $('#loginModal').modal('show');
 }
 </script>
+<script>
+document.querySelectorAll('.review-link').forEach(link => {
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const isSpoiler = this.dataset.spoiler === '1';
+        const url = this.dataset.url;
+
+        <% if (isAdmin) { %>
+            location.href = url;
+            return;
+        <% } %>
+
+        if (!isSpoiler) {
+            location.href = url;
+            return;
+        }
+
+        alertMove(
+            '스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?',
+            url
+        );
+    });
+});
+</script>
+
 </body>
 </html>
