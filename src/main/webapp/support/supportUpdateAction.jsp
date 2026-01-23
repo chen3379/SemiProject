@@ -29,6 +29,6 @@ if(secret == null){
 
 // DAO 호출
 SupportDao dao = new SupportDao();
-dao.updateSupport(supportIdx, title, content);
+dao.updateSupport(supportIdx, categoryType, title, content, secretType);
 
 %>
