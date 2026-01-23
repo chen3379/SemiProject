@@ -85,137 +85,292 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<title>Insert title here</title>
+<title>WHATFLIX - 고객지원 상세</title>
+
+<style>
+  body{
+    padding-top: 80px;
+    background:#fff;
+    color:#111;
+  }
+  .support-container{
+    max-width: 820px;
+    margin: 70px auto 120px;
+    padding: 0 18px;
+  }
+
+  /* 상단 */
+  .meta{
+    color:#8a8a8a;
+    font-size: 13px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top: 4px;
+  }
+
+  /* 카테고리(보라톤) */
+  .category{
+    display:inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    color:#6f42c1;
+    margin-top: 14px;
+  }
+
+  /* 제목 */
+  .title{
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin: 6px 0 0;
+    line-height: 1.12;
+  }
+
+  /* 본문 */
+  .post-body{
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.8;
+    color:#222;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* 답변 카드 */
+  .answer-wrap{
+    margin-top: 40px;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 18px 18px;
+    background: #fafafa;
+  }
+  .answer-label{
+    display:inline-block;
+    font-size: 13px;
+    font-weight: 800;
+    color:#6f42c1;
+    margin-bottom: 10px;
+  }
+  .answer-content{
+    margin:0;
+    white-space: pre-wrap;
+    line-height: 1.8;
+    color:#222;
+    font-size: 15px;
+  }
+
+  /* 하단 버튼 */
+  .footer-actions{
+    margin-top: 24px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  /* ⋮ 메뉴 (detail.jsp 느낌) */
+  .more{
+    cursor:pointer;
+    font-size: 26px;
+    line-height: 1;
+    color:#666;
+    padding: 6px 10px;
+    border-radius: 10px;
+    user-select:none;
+  }
+  .more:hover{
+    background: rgba(0,0,0,0.05);
+    color:#111;
+  }
+  .post-menu{
+    position: absolute;
+    top: 44px;
+    right: 0;
+    width: 140px;
+    display:none;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow:hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    z-index: 50;
+  }
+  .post-menu a{
+    display:block;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #111;
+  }
+  .post-menu a:hover{
+    background: rgba(0,0,0,0.04);
+  }
+  .post-menu a.danger{
+    color:#e03131;
+    font-weight:700;
+  }
+
+  /* 관리자 답변 입력 폼(화이트 톤) */
+  .admin-form textarea.form-control{
+    border-radius: 14px;
+    border: 1px solid #eee;
+    padding: 14px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .admin-form textarea.form-control:focus{
+    box-shadow: none;
+    border-color:#d0c5ff;
+  }
+</style>
+
 </head>
-<body class="container mt-4">
+<body>
 
-    <!-- 제목 + 유형 + 상태 -->
-    <h3>
-        <span class="badge bg-secondary"><%=categoryText%></span>
-        <span class="badge <%= "답변완료".equals(statusText) ? "bg-success" : "bg-warning" %>">
-            <%=statusText%>
-        </span>
-        <br class="d-md-none">
-        <% if("1".equals(dto.getSecretType())){ %> 🔒 <% } %>
-        <strong><%=dto.getTitle()%></strong>
-    </h3>
+<jsp:include page="../main/nav.jsp" />
+    <jsp:include page="../login/loginModal.jsp" />
+    <jsp:include page="../profile/profileModal.jsp"/>
 
-    <!-- 작성자 / 작성일 / 조회수 -->
-    <div class="text-muted mb-3">
-        작성자 : <%=writerId%> |
-        작성일 : <%=sdf.format(dto.getCreateDay())%> |
-        조회수 : <%=dto.getReadcount()%>
+<div class="support-container">
+
+  <!-- 상단 (id/작성시간/조회 + ⋮ 메뉴) -->
+  <div class="d-flex justify-content-between align-items-start position-relative">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <strong><%= writerId %></strong>
+        <% if("1".equals(dto.getSecretType())){ %>
+          <span style="color:#6f42c1;">🔒</span>
+        <% } %>
+      </div>
+      <div class="meta">
+        <span><%= sdf.format(dto.getCreateDay()) %></span>
+        <span>조회 <%= dto.getReadcount() %></span>
+      </div>
     </div>
 
-    <hr>
+    <% if (canEdit) { %>
+      <span class="more" id="postMenuBtn">⋮</span>
+      <div class="post-menu" id="postMenu">
+        <a href="supportForm.jsp?supportIdx=<%=supportIdx%>">수정</a>
+        <a href="javascript:void(0);" class="danger" id="deletePostBtn">삭제</a>
+      </div>
+    <% } %>
+  </div>
 
-    <!-- 내용 -->
-    <div class="mb-4">
-        <pre style="white-space:pre-wrap;"><%=dto.getContent()%></pre>
-    </div>
+  <!-- 카테고리(보라색 텍스트) -->
+  <div class="category"><%= categoryText %> · <%= statusText %></div>
 
-    <!-- 작성자 버튼 -->
-    <% if (isAdmin||(isLogin && id.equals(dto.getId()))) { %>
-        <div class="mb-3">
-        	<% if(canEdit){ %>
-            <a href="supportForm.jsp?supportIdx=<%=supportIdx%>" class="btn btn-outline-primary btn-sm">
-                수정
-            </a>
-            <% } %>
-            <a href="supportDeleteAction.jsp?supportIdx=<%=supportIdx%>"
+  <!-- 제목 -->
+  <h2 class="title"><%= dto.getTitle() %></h2>
+
+  <!-- 본문 -->
+  <div class="post-body"><%= dto.getContent() %></div>
+
+  <!-- 답변 -->
+  <%
+      SupportAdminDao aDao = new SupportAdminDao();
+      SupportAdminDto answer = aDao.getAdminAnswer(supportIdx);
+
+      boolean canSeeAnswer = false;
+      if ("0".equals(dto.getSecretType())) canSeeAnswer = true;
+      else if (isAdmin || (isLogin && id.equals(dto.getId()))) canSeeAnswer = true;
+  %>
+
+  <%-- 관리자면: 답변 입력/수정 UI 노출 --%>
+  <% if (isAdmin) { %>
+
+    <div class="answer-wrap admin-form">
+      <span class="answer-label">관리자 답변</span>
+
+      <% if (answer == null) { %>
+        <form action="supportAdminInsertAction.jsp" method="post">
+          <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
+
+          <div class="mb-2">
+            <textarea name="content" class="form-control" rows="5"
+                      placeholder="답변 내용을 입력하세요" required></textarea>
+          </div>
+
+          <div class="footer-actions">
+            <button type="submit" class="btn btn-dark btn-sm">등록</button>
+            <a href="supportList.jsp" class="btn btn-outline-secondary btn-sm">목록</a>
+          </div>
+        </form>
+
+      <% } else { %>
+        <pre class="answer-content"><%= answer.getContent() %></pre>
+
+        <div style="height:12px;"></div>
+
+        <form action="supportAdminUpdateAction.jsp" method="post">
+          <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
+
+          <div class="mb-2">
+            <textarea name="content" class="form-control" rows="5" required><%= answer.getContent() %></textarea>
+          </div>
+
+          <div class="footer-actions">
+            <button class="btn btn-dark btn-sm" type="submit">수정</button>
+
+            <a href="supportAdminDeleteAction.jsp?supportIdx=<%=supportIdx%>"
                class="btn btn-outline-danger btn-sm"
-               onclick="return confirm('정말 삭제하시겠습니까?');">
-                삭제
+               onclick="return confirm('답변을 삭제하시겠습니까?');">
+              답변 삭제
             </a>
-        </div>
+
+            <a href="supportList.jsp" class="btn btn-outline-secondary btn-sm">목록</a>
+          </div>
+        </form>
+      <% } %>
+    </div>
+
+  <%-- 일반 사용자: 답변 있으면 보여주기(권한 체크 포함) --%>
+  <% } else { %>
+
+    <% if (answer != null && canSeeAnswer) { %>
+      <div class="answer-wrap">
+        <span class="answer-label">관리자 답변</span>
+        <pre class="answer-content"><%= answer.getContent() %></pre>
+      </div>
     <% } %>
 
-    <hr>
+    <div class="footer-actions">
+      <a href="supportList.jsp" class="btn btn-outline-secondary btn-sm">목록</a>
+    </div>
 
-    <!-- 관리자 답변 -->
-    <%
-        SupportAdminDao aDao = new SupportAdminDao();
-        SupportAdminDto answer = aDao.getAdminAnswer(supportIdx);
-        
-        // 답변 열람 권한 (원글 기준)
-        boolean canSeeAnswer = false;
+  <% } %>
 
-        // 비밀글 아님 → 누구나
-        if ("0".equals(dto.getSecretType())) {
-            canSeeAnswer = true;
-        }
-        // 비밀글 → 관리자 or 작성자
-        else if (isAdmin || (isLogin && id.equals(dto.getId()))) {
-            canSeeAnswer = true;
-        }         
-	%>
-	
-	<%-- ================== 관리자 전용 영역 ================== --%>
-	<% if (isAdmin) { %>
-	
-	    <h5 class="mt-4">관리자 답변</h5>
-	
-	    <% if (answer == null) { %>
-	        <!-- 답변 등록 -->
-	        <form action="supportAdminInsertAction.jsp" method="post">
-	            <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
-	
-	            <div class="mb-2">
-	                <textarea name="content"
-	                          class="form-control"
-	                          rows="4"
-	                          placeholder="답변 내용을 입력하세요"></textarea>
-	            </div>
-	
-	            <button type="submit" class="btn btn-success btn-sm">
-	                답변 등록
-	            </button>
-	
-	            <a href="supportList.jsp"
-	               class="btn btn-outline-secondary btn-sm ms-2">
-	                목록
-	            </a>
-	        </form>
-	
-	    <% } else { %>
-	        <!-- 답변 수정/삭제 -->
-	        <div class="border p-3 bg-light mb-2">
-	            <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
-	        </div>
-	
-	        <form action="supportAdminUpdateAction.jsp" method="post" class="d-inline">
-	            <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
-	            <textarea name="content"
-	                      class="form-control mb-2"
-	                      rows="4"><%= answer.getContent() %></textarea>
-	
-	            <button class="btn btn-primary btn-sm">답변 수정</button>
-	        
-	
-		        <a href="supportAdminDeleteAction.jsp?supportIdx=<%=supportIdx%>"
-		           class="btn btn-outline-danger btn-sm ms-2"
-		           onclick="return confirm('답변을 삭제하시겠습니까?');">
-		            답변 삭제
-		        </a>
-		
-		        <a href="supportList.jsp"
-		           class="btn btn-outline-secondary btn-sm ms-2">
-		            목록
-		        </a>
-	        </form>
-	    <% } %>
-	    
-		<% } else if (answer != null && canSeeAnswer) { %>
-		
-		<%-- ================== 일반 사용자 열람 영역 ================== --%>
-		    <h5 class="mt-4">관리자 답변</h5>
-		    <div class="border p-3 bg-light">
-		        <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
-		    </div>	    
+</div>
 
-	<% } %>
+<script>
+  // ⋮ 메뉴 토글 + 외부 클릭 닫기
+  $(function(){
+    const $btn = $("#postMenuBtn");
+    const $menu = $("#postMenu");
+
+    $btn.on("click", function(e){
+      e.stopPropagation();
+      $menu.toggle();
+    });
+
+    $(document).on("click", function(){
+      $menu.hide();
+    });
+
+    $menu.on("click", function(e){
+      e.stopPropagation();
+    });
+
+    // 문의글 삭제
+    $("#deletePostBtn").on("click", function(){
+      if(confirm("정말 삭제하시겠습니까?\\n삭제 후에는 복구할 수 없습니다.")){
+        location.href = "supportDeleteAction.jsp?supportIdx=<%=supportIdx%>";
+      }
+    });
+  });
+</script>
 
 <jsp:include page="../common/customAlert.jsp" />
 
 </body>
+
 </html>
