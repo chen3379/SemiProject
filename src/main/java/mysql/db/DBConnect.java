@@ -51,7 +51,9 @@ public class DBConnect {
         try {
             // ★ "aws비밀번호" 대신 위에서 읽어온 this.dbPassword 변수를 넣습니다.
             conn = DriverManager.getConnection(MYSQL_URL, "adminhee", this.dbPassword);
-
+            Statement stmt = conn.createStatement();
+            stmt.execute("SET time_zone = '+09:00'");
+            stmt.close();            
             System.out.println("#MYSQL 서버연결 성공");
         } catch (SQLException e) {
             System.out.println("#MYSQL 서버연결 실패");

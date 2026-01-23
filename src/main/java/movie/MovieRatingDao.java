@@ -103,27 +103,26 @@ public class MovieRatingDao {
     }
     
     // 별점 update
-    public void updateRating(int movieIdx, String id, BigDecimal score) {
-    	
-    	if (score == null) 
-    		return;
+    public boolean updateRating(int movieIdx, String id, BigDecimal score) {
 
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
-
-        String sql = "update movie_rating set score=?, update_day=now() "
-                   + "where movie_idx=? and id=?";
+        
+        String sql = "update movie_rating set score=?, update_day=now() where movie_idx=? and id=?";
 
         try {
             pstmt = conn.prepareStatement(sql);
-            // DB 컬럼(DECIMAL(2,1)) 규격에 맞춰 소수점 첫째 자리까지 값을 고정하여 저장
-            pstmt.setBigDecimal(1, score.setScale(1, RoundingMode.HALF_UP));
+            pstmt.setBigDecimal(1, score);
             pstmt.setInt(2, movieIdx);
             pstmt.setString(3, id);
-            pstmt.executeUpdate();
+
+            int n = pstmt.executeUpdate();
+            return n > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
+
         } finally {
             db.dbClose(null, pstmt, conn);
         }
