@@ -52,7 +52,7 @@ if (dto.getIs_deleted() == 1 && !isAdmin) {
 
 List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 %>
-
+<jsp:include page="/main/nav.jsp" />
 <body>
 	<jsp:include page="/common/customAlert.jsp" />
 	<div class="post-container">

@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+body{
+	margin-top: 200px;
+}
 .post-container {
     max-width: 720px;
     margin: 40px auto;  /* 위 / 좌우 / 아래 */

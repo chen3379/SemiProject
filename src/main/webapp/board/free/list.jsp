@@ -462,8 +462,9 @@ String msg = request.getParameter("msg");
 		</div>
 		<script>
 	function needLoginAlert() {
-	    alert("로그인이 필요합니다.");
-	    $('#loginModal').modal('show');
+	    alert("로그인이 필요합니다.", function() {
+	    $('#loginModal').modal('show');			
+		});
 	}
 	</script>
 		<script>
@@ -476,4 +477,7 @@ String msg = request.getParameter("msg");
 	</script>
 	</div>
 </body>
+<footer>
+<jsp:include page="/main/footer.jsp"/>
+</footer>
 </html>
