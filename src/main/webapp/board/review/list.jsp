@@ -22,6 +22,10 @@ int pageSize = 5;
 int currentPage = (pageParam == null) ? 1 : Integer.parseInt(pageParam);
 int start = (currentPage - 1) * pageSize;
 
+String loginId = (String) session.getAttribute("loginid");
+boolean isLogin = (loginId != null);
+String roleType=(String)session.getAttribute("roleType");
+boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 List<ReviewBoardDto> list = dao.getReviewList(start, pageSize);
 int totalCount = dao.getTotalCount();
 int totalPage = (int)Math.ceil((double)totalCount / pageSize);
@@ -99,6 +103,7 @@ body {
     border-radius: 12px;
     padding: 16px 16px 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    min-height: 420px;
 }
 
 /* 테이블 */
@@ -110,7 +115,7 @@ table {
 
 th, td {
     padding: 12px 10px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
     text-align: center;
     font-size: 14px;
 }
@@ -144,6 +149,7 @@ td.title a {
 .write-btn {
     margin-top: 24px;
     text-align: right;
+    text-decoration: none;
 }
 
 /* 기본 상태 */
@@ -154,6 +160,7 @@ td.title a {
     border-radius: 6px;
     font-weight: 600;
     transition: background-color 0.2s ease;
+    text-decoration: none;
 }
 
 /* 마우스 오버 */
@@ -266,6 +273,7 @@ td.title a {
 <body>
 <jsp:include page="/main/nav.jsp" />
 <jsp:include page="/login/loginModal.jsp" />
+<jsp:include page="/common/customAlert.jsp" />
 
 <div class="container" style="padding-top: 80px; ">
      <div class="review-header">
@@ -288,24 +296,50 @@ td.title a {
         </thead>
 
         <tbody>
-        <% for (ReviewBoardDto dto : list) { %>
-            <tr>
-                <td class="title">
-                    <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
-                        <%= dto.getTitle() %>
-                    </a>
-                </td>
-                <td class="writer"><%= dto.getId() %></td>
-                <td class="date"><%= dto.getCreate_day() %></td>
-                <td class="count"><%= dto.getReadcount() %></td>
-            </tr>
-        <% } %>
-        </tbody>
+		<% for (ReviewBoardDto dto : list) { 
+		       boolean isSpoiler = dto.isIs_spoiler_type();
+		%>
+		    <tr>
+		        <td class="title">
+		            <% if (isSpoiler) { %>
+		                <span class="badge bg-danger me-1">스포</span>
+		            <% } %>
+		
+		            <a href="javascript:void(0);"
+		               class="review-link"
+		               data-url="detail.jsp?board_idx=<%=dto.getBoard_idx()%>"
+		               data-spoiler="<%= isSpoiler ? 1 : 0 %>">
+		                <%= dto.getTitle() %>
+		            </a>
+		        </td>
+		
+		        <td class="writer"><%= dto.getId() %></td>
+		
+		        <td class="date">
+		            <%= sdf.format(dto.getCreate_day()) %>
+		        </td>
+		
+		        <td class="count"><%= dto.getReadcount() %></td>
+		    </tr>
+		<% } %>
+		</tbody>
     </table>
     </div>
-    <div class="write-btn">
-        <a href="write.jsp"><i class="bi bi-pen"></i>&nbsp;리뷰 작성</a>
-    </div>
+   	<% if (!isAdmin) { %>
+	    <div class="write-btn">
+	        <% if (!isLogin) { %>
+	            <a href="javascript:void(0);" onclick="needLoginAlert()">
+	                <i class="bi bi-pen"></i>&nbsp;리뷰 작성
+	            </a>
+	        <% } else { %>
+	            <a href="write.jsp">
+	                <i class="bi bi-pen"></i>&nbsp;리뷰 작성
+	            </a>
+	        <% } %>
+	    </div>
+	<% } %>
+	   	
+
     <div class="page-wrap">
     <ul class="page-list">
 
@@ -326,9 +360,40 @@ td.title a {
         <% } %>
 
     </ul>
-</div>
+	</div>
     
 </div>
+<script>
+function needLoginAlert() {
+    alert("로그인이 필요합니다.");
+    $('#loginModal').modal('show');
+}
+</script>
+<script>
+document.querySelectorAll('.review-link').forEach(link => {
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const isSpoiler = this.dataset.spoiler === '1';
+        const url = this.dataset.url;
+
+        <% if (isAdmin) { %>
+            location.href = url;
+            return;
+        <% } %>
+
+        if (!isSpoiler) {
+            location.href = url;
+            return;
+        }
+
+        alertMove(
+            '스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?',
+            url
+        );
+    });
+});
+</script>
 
 </body>
 </html>

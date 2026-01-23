@@ -139,16 +139,30 @@
 			<button class="btn-alert-ok" onclick="closeCustomAlert()">확인</button>
 		</div>
 	</div>
-</div>
-<script>
-    // 기존 자바스크립트 로직과 동일합니다.
-    window.alert = function(message) {
-        openCustomAlert(message);
+</div><script>
+    /**
+     * [핵심 변경 사항]
+     * alert 함수가 이제 두 번째 인자로 'callback 함수'를 받습니다.
+     * 사용법: alert("메시지", function() { 이동할 코드 });
+     */
+    
+    // 콜백 함수를 저장할 변수
+    let alertCallback = null;
+
+    // window.alert 오버라이딩 (기존 호환성 유지 + 콜백 기능 추가)
+    window.alert = function(message, callback) {
+        openCustomAlert(message, callback);
     };
 
-    function openCustomAlert(msg) {
+    function openCustomAlert(msg, callback) {
+        // 콜백 함수가 있으면 저장해둠
+        if (callback && typeof callback === 'function') {
+            alertCallback = callback;
+        } else {
+            alertCallback = null;
+        }
+
         if(msg) {
-            // 줄바꿈 처리 및 HTML 태그 허용 (강조가 필요할 때 <b> 태그 등 사용 가능)
             msg = msg.replace(/\n/g, "<br>");
         }
         document.getElementById("custom-alert-msg").innerHTML = msg;
@@ -164,8 +178,25 @@
     function closeCustomAlert() {
         const overlay = document.getElementById("custom-alert-overlay");
         overlay.classList.remove("active");
+
+        // [핵심] 창이 닫힐 때 저장해둔 콜백 함수가 있다면 실행!
+        if (alertCallback) {
+            alertCallback();
+            alertCallback = null; // 실행 후 초기화
+        }
+    }
+    
+    /**
+     * 확인 누르면 지정한 URL로 이동하는 전용 helper
+     * 사용: alertMove("메시지", "이동할URL");
+     */
+    function alertMove(message, url) {
+        alert(message, function () {
+            location.href = url;
+        });
     }
 
+    // 엔터키/ESC키 처리
     document.addEventListener("keydown", function(e) {
         const overlay = document.getElementById("custom-alert-overlay");
         if (overlay.classList.contains("active")) {

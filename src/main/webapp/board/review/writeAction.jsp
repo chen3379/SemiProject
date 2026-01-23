@@ -32,10 +32,11 @@ MultipartRequest multi = new MultipartRequest(
 );
 
 /* ===== 파라미터 ===== */
-String genre = multi.getParameter("genre");   // 영화 장르
+String genre = multi.getParameter("genre");
 String title = multi.getParameter("title");
 String content = multi.getParameter("content");
 String filename = multi.getFilesystemName("uploadFile");
+boolean isSpoiler = "1".equals(multi.getParameter("is_spoiler"));
 
 /* ===== DTO ===== */
 ReviewBoardDto dto = new ReviewBoardDto();
@@ -44,6 +45,8 @@ dto.setTitle(title);
 dto.setContent(content);
 dto.setId(loginId);
 dto.setFilename(filename);
+dto.setIs_spoiler_type(isSpoiler);
+
 
 /* ===== DB 저장 ===== */
 ReviewBoardDao dao = new ReviewBoardDao();

@@ -18,8 +18,12 @@
 
     // 3. 로그아웃 완료 알림 및 메인 페이지로 이동
 %>
+<jsp:include page="../common/customAlert.jsp"/>
 <script>
-    alert("로그아웃 되었습니다.");
+    alert("로그아웃 되었습니다.", function() {
     // location.replace() : 브라우저 히스토리에 남지 않아 보안에 더 좋습니다.
-    location.replace("../main/mainPage.jsp");
+
+	location.replace("../main/mainPage.jsp");
+
+	});
 </script>

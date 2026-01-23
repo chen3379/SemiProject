@@ -1,7 +1,7 @@
+<%@ page contentType="application/json; charset=UTF-8" %>
 <%@ page import="com.oreilly.servlet.MultipartRequest" %>
 <%@ page import="com.oreilly.servlet.multipart.DefaultFileRenamePolicy" %>
 <%@ page import="java.io.File" %>
-<%@ page contentType="application/json; charset=UTF-8" %>
 
 <%
 String uploadPath = application.getRealPath("/save");
@@ -17,7 +17,14 @@ MultipartRequest multi = new MultipartRequest(
 );
 
 String fileName = multi.getFilesystemName("image");
+
+if (fileName == null) {
+    out.print("{\"error\":\"NO_FILE\"}");
+    return;
+}
+
 String imageUrl = request.getContextPath() + "/save/" + fileName;
+
 
 out.print("{\"url\":\"" + imageUrl + "\"}");
 %>

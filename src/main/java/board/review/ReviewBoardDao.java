@@ -18,9 +18,9 @@ public class ReviewBoardDao {
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	        "SELECT board_idx, genre_type, title, id, readcount, create_day " +
-	        "FROM review_board " +
-	        "ORDER BY board_idx DESC LIMIT ?, ?";
+	    	    "SELECT board_idx, genre_type, title, id, readcount, create_day, is_spoiler " +
+	    	    "FROM review_board " +
+	    	    "ORDER BY board_idx DESC LIMIT ?, ?";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -38,6 +38,7 @@ public class ReviewBoardDao {
 	            dto.setId(rs.getString("id"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
 	            list.add(dto);
 	        }
 
@@ -78,9 +79,7 @@ public class ReviewBoardDao {
 
 
 	    String sql =
-	        "SELECT board_idx, genre_type, title, readcount " +
-	        "FROM review_board " +
-	        "ORDER BY readcount DESC LIMIT 10";
+	    		"SELECT board_idx, genre_type, title, readcount, is_spoiler FROM review_board ORDER BY readcount DESC LIMIT 10";
 	    
 	    try {
 	        conn = db.getDBConnect();
@@ -93,6 +92,7 @@ public class ReviewBoardDao {
 	            dto.setGenre_type(rs.getString("genre_type"));
 	            dto.setTitle(rs.getString("title"));
 	            dto.setReadcount(rs.getInt("readcount"));
+	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
 
 	            list.add(dto);
 	        }
@@ -147,6 +147,7 @@ public class ReviewBoardDao {
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            //dto.setUpdate_day(rs.getTimestamp("update_day"));
+	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
 	        }
 
 	    } catch (Exception e) {
@@ -160,10 +161,7 @@ public class ReviewBoardDao {
 	public void insertBoard(ReviewBoardDto dto) {
 
 	    String sql =
-	        "INSERT INTO review_board " +
-	        "(genre_type, title, content, id, filename, readcount, create_day) " +
-	        "VALUES (?, ?, ?, ?, ?, 0, NOW())";
-
+	    		"INSERT INTO review_board (genre_type, title, content, id, is_spoiler, filename, create_day) VALUES (?, ?, ?, ?, ?, ?, NOW())";
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -171,7 +169,8 @@ public class ReviewBoardDao {
 	        pstmt.setString(2, dto.getTitle());
 	        pstmt.setString(3, dto.getContent());
 	        pstmt.setString(4, dto.getId());
-	        pstmt.setString(5, dto.getFilename());
+	        pstmt.setBoolean(5, dto.isIs_spoiler_type());
+	        pstmt.setString(6, dto.getFilename());
 
 	        pstmt.executeUpdate();
 
@@ -223,5 +222,30 @@ public class ReviewBoardDao {
 	    }
 	}
 
+	// ReviewBoardDao.java
+	public List<ReviewBoardDto> getOtherBoards(int boardIdx, int limit) {
+	    List<ReviewBoardDto> list = new ArrayList<>();
 
+	    String sql = "SELECT board_idx, title, id, create_day  FROM review_board   WHERE board_idx != ?   ORDER BY create_day DESC LIMIT ?";
+
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+	        ps.setInt(1, boardIdx);
+	        ps.setInt(2, limit);
+
+	        ResultSet rs = ps.executeQuery();
+	        while (rs.next()) {
+	            ReviewBoardDto dto = new ReviewBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setId(rs.getString("id"));
+	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            list.add(dto);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return list;
+	}
 }

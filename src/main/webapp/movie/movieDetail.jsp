@@ -79,6 +79,7 @@ SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <style>
 /* [1] 전역 테마 및 배경 설정 */
 :root {
@@ -325,6 +326,7 @@ h1.fw-bold small {
 
 	<input type="hidden" id="movieIdx" value="<%=movie_idx%>">
 	<jsp:include page="../main/nav.jsp" />
+	<jsp:include page="../login/loginModal.jsp" />
 
 	<div class="container">
 		<div class="mb-4 border-bottom pb-3">
@@ -547,7 +549,7 @@ h1.fw-bold small {
 		</div>
 	</div>
 	<jsp:include page="chatWidget.jsp" />
-	
+
 	<script type="text/javascript">
 	// 영화 삭제
 	function delMovie(idx) {
@@ -808,15 +810,16 @@ h1.fw-bold small {
 	}
 	
 	/* ===== 위시 추가/삭제 ===== */
-	$("#wishBtn").on("click", function(e){	
-	e.preventDefault();
-	e.stopPropagation();
-
-	if(!isLogin){
-	    alert("로그인이 필요합니다.");
-	    location.href = "../login/loginModal.jsp";
-	    return;
-	}
+$("#wishBtn").on("click", function(e){    
+    // ... 기존 코드 ...
+    if(!isLogin){
+        alert("로그인이 필요합니다.", function(){
+            // [수정]
+            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
+        });
+        return; 
+    }
 
 	var movieIdx = $("#movieIdx").val();
     var wished = $(this).data("wished");
@@ -853,11 +856,9 @@ h1.fw-bold small {
     
     
 	});
-	 <%MemberDao memberDao = new MemberDao();
+	 <%if (id != null) {
 
-if (id != null) {
-
-	String roleType = memberDao.getRoleType(id);
+	String roleType = (String) session.getAttribute("roleType");
 	//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
 	//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
 	if ("3".equals(roleType) || "9".equals(roleType)) {%>
