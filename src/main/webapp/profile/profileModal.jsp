@@ -95,7 +95,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 
                 <!-- 프로필 이미지 및 정보 (세션 데이터 바인딩) -->
-                <img src="${pageContext.request.contextPath}${empty sessionScope.memberInfo.photo ? '/profile_photo/default_photo.jpg' : sessionScope.memberInfo.photo}" class="profile-img" alt="프로필 이미지">
+                <img src="${pageContext.request.contextPath}${sessionScope.memberInfo.photo}" class="profile-img" alt="프로필 이미지" onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'"   >
                 <div id="nickname">${sessionScope.memberInfo.nickname}님</div>
                 <div class="user-email">${sessionScope.memberInfo.id}</div>
 

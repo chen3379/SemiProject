@@ -178,7 +178,7 @@
                 </dd>
 
                 <dt>나이</dt>
-                <dd><input type="number" id="memberAge" name="age" class="edit-input" placeholder="나이"></dd>
+                <dd><input type="number" id="memberAge" name="age" class="edit-input" placeholder="나이" min="0" max="120"></dd>
 
                 <dt>전화번호</dt>
                 <dd><input type="text" id="memberHp" name="hp" class="edit-input" placeholder="010-0000-0000"></dd>
