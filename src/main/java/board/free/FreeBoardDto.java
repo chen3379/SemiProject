@@ -15,11 +15,19 @@ public class FreeBoardDto {
     private Timestamp update_day;
     private String create_id;
     private String update_id;
+    private String nickname;
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     // ⭐ 관리자용 (숨김/삭제 여부)
     private int is_deleted; // 0: 정상, 1: 숨김(삭제)
 
-  
     private String filename;
 
     public int getBoard_idx() {
