@@ -54,100 +54,7 @@ List<ReviewBoardDto> otherList = dao.getOtherBoards(board_idx, 5);
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 %>
 <body>
-	<script>
-	$(function () {
-	
-	    /* 댓글 등록 */
-	    $('#commentSubmitBtn').on('click', function () {
-	
-	        const content = $('textarea[name="content"]').val().trim();
-	
-	        if (!content) {
-	            alert('내용을 입력하세요');
-	            return;
-	        }
-	
-	        $.post(
-	            'commentInsert.jsp',
-	            {
-	                board_idx: '<%= board_idx %>',
-	                content: content
-	            },
-	            function (res) {
-	
-	                if (res.status === 'LOGIN_REQUIRED') {
-	                    alert('로그인이 필요합니다');
-	                    return;
-	                }
-	
-	                if (res.status === 'SUCCESS') {
-	                    location.reload(); 
-	                } else {
-	                    alert('댓글 등록 실패');
-	                }
-	            },
-	            'json'
-	        );
-	    });
-	
-	});
-	
-	$(document).on('click', '.reply-submit-btn', function () {
-
-	    const parentIdx = $(this).data('parent');
-
-	    const content = $(this)
-	        .closest('.reply-form')   // ⭐ 이 답글 폼 기준
-	        .find('textarea')
-	        .val()
-	        .trim();
-
-	    if (!content) {
-	        alert('답글 내용을 입력하세요');
-	        return;
-	    }
-
-	    $.post(
-	        'commentInsert.jsp',
-	        {
-	            board_idx: '<%= board_idx %>',
-	            parent_comment_idx: parentIdx,
-	            content: content
-	        },
-	        function (res) {
-	            if (res.status === 'SUCCESS') {
-	                location.reload();
-	            }
-	        },
-	        'json'
-	    );
-	});
-
-	
-	$(document).on('click', '.comment-delete-btn', function () {
-
-	    if (!confirm('댓글을 삭제하시겠습니까?')) return;
-
-	    const commentIdx = $(this).data('id');
-
-	    $.post(
-	        'commentDelete.jsp',
-	        { comment_idx: commentIdx },
-	        function (res) {
-
-	            if (res.status === 'LOGIN_REQUIRED') {
-	                alert('로그인이 필요합니다.');
-	                return;
-	            }
-
-	            if (res.status === 'SUCCESS') {
-	                location.reload();
-	            }
-	        },
-	        'json'
-	    );
-	});
-	</script>
+<jsp:include page="/common/customAlert.jsp" />
 	<div class="container">
 
 		<!-- 상단 -->
@@ -377,88 +284,182 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 				</ul>
 			</div>
 		</div>
-		
 		<script>
-	document.addEventListener('DOMContentLoaded', function () {
-	
-	    /* URL 복사 */
-	    const copyBtn = document.getElementById('copyUrlBtn');
-	    if (copyBtn) {
-	        const originalText = copyBtn.innerHTML;
-	        let timer = null;
-	
-	        copyBtn.addEventListener('click', function () {
-	            navigator.clipboard.writeText(location.href).then(() => {
-	                if (timer) return;
-	                copyBtn.innerHTML = '🔗 URL 복사됨';
-	                timer = setTimeout(() => {
-	                    copyBtn.innerHTML = originalText;
-	                    timer = null;
-	                }, 2000);
-	            });
-	        });
-	    }
-	
-	    /* 답글 토글 */
-	    document.querySelectorAll('.reply-btn').forEach(btn => {
-	        btn.addEventListener('click', () => {
-	            const form = document.getElementById('reply-form-' + btn.dataset.id);
-	            if (!form) return;
-	            form.style.display = form.style.display === 'block' ? 'none' : 'block';
-	        });
-	    });
-	
-	    /* 게시글 메뉴 */
-	    const menuBtn = document.getElementById('postMenuBtn');
-	    const menu = document.getElementById('postMenu');
-	    if (menuBtn && menu) {
-	        menuBtn.addEventListener('click', e => {
-	            e.stopPropagation();
-	            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-	        });
-	        document.addEventListener('click', () => menu.style.display = 'none');
-	    }
-	
-	    /* 좋아요 */
-	    document.getElementById('likeBtn')?.addEventListener('click', function () {
-	        console.log('LIKE CLICKED');
-	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
-	        	   console.log('RESPONSE = ', res);
-	            if (res.status === 'LOGIN_REQUIRED') {
-	                alert('로그인이 필요합니다.');
-	                return;
-	            }
-	            $('#likeCount').text(res.count);
-	            $('#likeBtn').toggleClass('active', res.liked);
-	        }, 'json');
-	    });
-	    
-	    /* 좋아요 */
-	    document.getElementById('likeBtn')?.addEventListener('click', function () {
-	        $.post('likeAction.jsp', { board_idx: this.dataset.board }, function (res) {
-	            if (res.status === 'LOGIN_REQUIRED') {
-	                alert('로그인이 필요합니다.');
-	                return;
-	            }
-	            $('#likeCount').text(res.count);
-	            $('#likeBtn').toggleClass('active', res.liked);
-	        }, 'json');
-	    });
+$(function () {
 
-	    document.getElementById('deletePostBtn')?.addEventListener('click', function () {
-	        const boardIdx = this.dataset.board;
+    /* =========================
+       댓글 등록
+    ========================= */
+    $('#commentSubmitBtn').on('click', function () {
+        const content = $('textarea[name="content"]').val()?.trim();
 
-	        confirmCustomAlert('정말 삭제하시겠습니까?', function () {
-	            location.href = 'delete.jsp?board_idx=' + boardIdx;
-	        });
-	    });
+        if (!content) {
+            alert('내용을 입력하세요');
+            return;
+        }
 
-	
-	});
+        $.post(
+            'commentInsert.jsp',
+            {
+                board_idx: '<%= board_idx %>',
+                content
+            },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다');
+                    return;
+                }
+
+                if (res.status === 'SUCCESS') {
+                    location.reload();
+                } else {
+                    alert('댓글 등록 실패');
+                }
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       답글 등록
+    ========================= */
+    $(document).on('click', '.reply-submit-btn', function () {
+        const parentIdx = $(this).data('parent');
+        const content = $(this)
+            .closest('.reply-form')
+            .find('textarea')
+            .val()
+            .trim();
+
+        if (!content) {
+            alert('답글 내용을 입력하세요');
+            return;
+        }
+
+        $.post(
+            'commentInsert.jsp',
+            {
+                board_idx: '<%= board_idx %>',
+                parent_comment_idx: parentIdx,
+                content
+            },
+            function (res) {
+                if (res.status === 'SUCCESS') {
+                    location.reload();
+                }
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       댓글 삭제
+    ========================= */
+    $(document).on('click', '.comment-delete-btn', function () {
+        if (!alert('댓글을 삭제하시겠습니까?')) return;
+
+        const commentIdx = $(this).data('id');
+
+        $.post(
+            'commentDelete.jsp',
+            { comment_idx: commentIdx },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+                if (res.status === 'SUCCESS') {
+                    location.reload();
+                }
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       답글 폼 토글
+    ========================= */
+    $(document).on('click', '.reply-btn', function () {
+        const form = $('#reply-form-' + $(this).data('id'));
+        if (!form.length) return;
+        form.toggle();
+    });
+
+
+    /* =========================
+       URL 복사
+    ========================= */
+    const $copyBtn = $('#copyUrlBtn');
+    if ($copyBtn.length) {
+        const originalText = $copyBtn.text();
+        let timer = null;
+
+        $copyBtn.on('click', function () {
+            navigator.clipboard.writeText(location.href).then(() => {
+                if (timer) return;
+                $copyBtn.text('🔗 URL 복사됨');
+                timer = setTimeout(() => {
+                    $copyBtn.text(originalText);
+                    timer = null;
+                }, 2000);
+            });
+        });
+    }
+
+
+    /* =========================
+       게시글 메뉴 토글
+    ========================= */
+    $('#postMenuBtn').on('click', function (e) {
+        e.stopPropagation();
+        $('#postMenu').toggle();
+    });
+
+    $(document).on('click', function () {
+        $('#postMenu').hide();
+    });
+
+
+    /* =========================
+       좋아요
+    ========================= */
+    $('#likeBtn').on('click', function () {
+        const boardIdx = $(this).data('board');
+
+        $.post(
+            'likeAction.jsp',
+            { board_idx: boardIdx },
+            function (res) {
+                if (res.status === 'LOGIN_REQUIRED') {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+                $('#likeCount').text(res.count);
+                $('#likeBtn').toggleClass('active', res.liked);
+            },
+            'json'
+        );
+    });
+
+
+    /* =========================
+       게시글 삭제 (custom alert)
+    ========================= */
+    $('#deletePostBtn').on('click', function () {
+        const boardIdx = $(this).data('board');
+
+        alert('정말 삭제하시겠습니까?', function () {
+            location.href = 'delete.jsp?board_idx=' + boardIdx;
+        });
+    });
+
+});
 </script>
-
- <footer>
-        <jsp:include page="/main/footer.jsp"/>
- </footer>
+<footer>
+    <jsp:include page="/main/footer.jsp" />
+</footer>
 </body>
 </html>
