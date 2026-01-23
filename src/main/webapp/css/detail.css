@@ -1,15 +1,22 @@
 @charset "UTF-8";
 
-body{
-	margin-top: 200px;
-}
-.post-container {
-    max-width: 720px;
-    margin: 40px auto;  /* 위 / 좌우 / 아래 */
-    padding: 20px;
-    box-sizing: border-box;
+.post-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
+.post-container {
+  max-width: 720px;
+  width: 100%;
+  padding: 100px 16px 0;
+}
+
+
+.global-footer{
+	 width: 100%;
+	 max-width: none;
+	 margin: 0;	
+}
 .toastui-editor-contents p img {
     max-width: 50%;   /* 예: 50%로 축소 */
     height: auto;

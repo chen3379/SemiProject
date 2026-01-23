@@ -198,34 +198,33 @@ public class FreeBoardDao {
 
     // 조회수 증가
     public void updateReadCount(int board_idx) {
-        Connection conn = db.getDBConnect();
+        Connection conn = null;
         PreparedStatement pstmt = null;
 
-        String sql = "UPDATE free_board\r\n" + "SET readcount = readcount + 1"
-                + "WHERE board_idx = ? AND is_deleted = 0";
+        String sql = "UPDATE free_board "
+                   + "SET readcount = readcount + 1 "
+                   + "WHERE board_idx = ?";
 
-        conn = db.getDBConnect();
         try {
+            conn = db.getDBConnect();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, board_idx);
             pstmt.executeUpdate();
-
-        } catch (SQLException e) {
-            // TODO Auto-generated catch block
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             db.dbClose(null, pstmt, conn);
         }
     }
 
-    // 게시글 1건 조회
+    // 게시글 1건 조회 (숨김 포함)
     public FreeBoardDto getBoard(int board_idx) {
         FreeBoardDto dto = null;
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT * FROM free_board WHERE board_idx = ? AND is_deleted = 0";
+        String sql = "SELECT * FROM free_board WHERE board_idx = ?";
 
         try {
             conn = db.getDBConnect();
@@ -243,6 +242,7 @@ public class FreeBoardDao {
                 dto.setId(rs.getString("id"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
+                dto.setIs_deleted(rs.getInt("is_deleted")); // ⭐ 필수
             }
 
         } catch (Exception e) {
@@ -253,6 +253,7 @@ public class FreeBoardDao {
 
         return dto;
     }
+
 
     public void updateBoard(int board_idx, String category, String title, String content) {
 
