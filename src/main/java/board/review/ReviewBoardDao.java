@@ -244,11 +244,12 @@ public class ReviewBoardDao {
 		    String title,
 		    String content,
 		    String genre,
+		    boolean is_spoiler,
 		    String filename
 		) {
 		    String sql =
 		        "UPDATE review_board " +
-		        "SET title=?, content=?, genre_type=?, filename=?, update_day=NOW() " +
+		        "SET title=?, content=?, genre_type=?, is_spoiler=?, filename=?, update_day=NOW() " +
 		        "WHERE board_idx=?";
 
 		    try (Connection conn = db.getDBConnect();
@@ -257,8 +258,9 @@ public class ReviewBoardDao {
 		        pstmt.setString(1, title);
 		        pstmt.setString(2, content);
 		        pstmt.setString(3, genre);
-		        pstmt.setString(4, filename);
-		        pstmt.setInt(5, board_idx);
+		        pstmt.setBoolean(4, is_spoiler);
+		        pstmt.setString(5, filename);
+		        pstmt.setInt(6, board_idx);
 
 		        pstmt.executeUpdate();
 
