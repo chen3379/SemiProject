@@ -142,31 +142,33 @@ public class SupportDao {
 	    }
 
 	    // 문의글 등록
-	    public void insertSupport(String categoryType,String title,String content,String id,String secret) {
+	    public boolean insertSupport(String categoryType,String title,String content,String id,int secretType
+	    	){
+	    	    Connection conn = db.getDBConnect();
+	    	    PreparedStatement pstmt = null;
 
-			Connection conn = db.getDBConnect();
-			PreparedStatement pstmt = null;
-			
-			String sql ="insert into support (category_type, title, content, id, secret_type, " +
-			"delete_type, status_type, readcount, create_day) values (?, ?, ?, ?, ?, '0', '0', 0, now())";
-			
-			try {
-				pstmt = conn.prepareStatement(sql);
-				
-				pstmt.setString(1, categoryType); // 0,1,2
-				pstmt.setString(2, title);
-				pstmt.setString(3, content);
-				pstmt.setString(4, id);
-				pstmt.setString(5, secret);       // 0 or 1
-				
-				pstmt.executeUpdate();
-			
-			} catch (SQLException e) {
-				
-			} finally {
-				db.dbClose(null, pstmt, conn);
-			}
-		}
+	    	    String sql =
+	    	        "insert into support_board " +
+	    	        "(category_type, title, content, id, secret, create_day) " +
+	    	        "values (?,?,?,?,?,now())";
+
+	    	    try {
+	    	        pstmt = conn.prepareStatement(sql);
+	    	        pstmt.setString(1, categoryType);
+	    	        pstmt.setString(2, title);
+	    	        pstmt.setString(3, content);
+	    	        pstmt.setString(4, id);
+	    	        pstmt.setInt(5, secretType);
+
+	    	        return pstmt.executeUpdate() > 0;
+
+	    	    } catch (Exception e) {
+	    	        e.printStackTrace();
+	    	        return false;
+	    	    } finally {
+	    	        db.dbClose(null, pstmt, conn);
+	    	    }
+	    	}
 
 	    // 문의글 삭제
 	    public void deleteSupport(int supportIdx){
@@ -190,27 +192,34 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public void updateSupport(int supportIdx, String title, String content, String secretType){
+	    public boolean updateSupport(int supportIdx,String categoryType,String title,String content,int secretType
+	    	){
+	    	    Connection conn = db.getDBConnect();
+	    	    PreparedStatement pstmt = null;
 
-	        Connection conn = db.getDBConnect();
-	        PreparedStatement pstmt = null;
+	    	    String sql =
+	    	        "update support set " +
+	    	        "category_type=?, title=?, content=?, secret_type=?, update_day=now() " +
+	    	        "where support_idx=?";
 
-	        String sql =
-	          "update support set title=?, content=?, secret_type=? update_day=now() where support_idx=?";
+	    	    try {
+	    	        pstmt = conn.prepareStatement(sql);
+	    	        pstmt.setString(1, categoryType);
+	    	        pstmt.setString(2, title);
+	    	        pstmt.setString(3, content);
+	    	        pstmt.setInt(4, secretType);
+	    	        pstmt.setInt(5, supportIdx);
 
-	        try{
-	            pstmt = conn.prepareStatement(sql);
-	            pstmt.setString(1, title);
-	            pstmt.setString(2, content);
-	            pstmt.setString(3, secretType);
-	            pstmt.setInt(4, supportIdx);
-	            pstmt.executeUpdate();
-	        }catch(Exception e){
-	            e.printStackTrace();
-	        }finally{
-	            db.dbClose(null, pstmt, conn);
-	        }
-	    }
+	    	        return pstmt.executeUpdate() > 0;
+
+	    	    } catch (Exception e) {
+	    	        e.printStackTrace();
+	    	        return false;
+	    	    } finally {
+	    	        db.dbClose(null, pstmt, conn);
+	    	    }
+	    	}
+
 
 
 	    // 답변상태 변경
@@ -339,6 +348,26 @@ public class SupportDao {
 	        }
 
 	        return list;
+	    }
+	    
+	    public int getAnsweredCount(String status, String categoryType){
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
+	        int count = 0;
+
+	        String sql = "select count(*) from support where status_type='1' and delete_type='0'";
+
+	        try{
+	            pstmt = conn.prepareStatement(sql);
+	            rs = pstmt.executeQuery();
+	            if(rs.next()) count = rs.getInt(1);
+	        }catch(Exception e){
+	            e.printStackTrace();
+	        }finally{
+	            db.dbClose(rs, pstmt, conn);
+	        }
+	        return count;
 	    }
 
 	    
