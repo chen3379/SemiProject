@@ -466,12 +466,11 @@ $(function () {
        게시글 삭제
     ========================= */
     $('#deletePostBtn').on('click', function () {
-
         const boardIdx = $(this).data('board');
 
-        if (!alert('정말 삭제하시겠습니까?')) return;
-
-        location.href = 'delete.jsp?board_idx=' + boardIdx;
+        alert('정말 삭제하시겠습니까?', function () {
+            location.href = 'delete.jsp?board_idx=' + boardIdx;
+        });
     });
 
 
