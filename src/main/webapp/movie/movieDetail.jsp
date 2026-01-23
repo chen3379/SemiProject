@@ -500,7 +500,7 @@ h1.fw-bold small {
 					<div class="list-group-item">
 						<div class="d-flex justify-content-between align-items-center">
 							<div>
-								<b><%=r.getId()%></b>
+								<b><%=r.getNickname()%></b>
 
 								<%
 								double score = (r.getScore() == null) ? 0.0 : r.getScore().doubleValue();
