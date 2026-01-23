@@ -9,6 +9,7 @@ import java.util.List;
 import mysql.db.DBConnect;
 import board.free.FreeBoardDto;
 import board.review.ReviewBoardDto;
+import support.SupportDto;
 
 public class AdminDao {
 
@@ -178,6 +179,7 @@ public boolean updateMemberByAdminFull(MemberDto dto) {
                 dto.setCategory_type(rs.getString("category_type"));
                 dto.setTitle(rs.getString("title"));
                 dto.setId(rs.getString("id"));
+                dto.setContent(rs.getString("content"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
                 list.add(dto);
@@ -217,6 +219,7 @@ public boolean updateMemberByAdminFull(MemberDto dto) {
                 dto.setGenre_type(rs.getString("genre_type"));
                 dto.setTitle(rs.getString("title"));
                 dto.setId(rs.getString("id"));
+                dto.setContent(rs.getString("content"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
                 list.add(dto);
@@ -259,6 +262,49 @@ public boolean updateMemberByAdminFull(MemberDto dto) {
         } finally {
             db.dbClose(null, pstmt, conn);
         }
+    }
+
+    // 8. 어드민용 고객지원 전체 조회 (검색 포함)
+    public List<SupportDto> getAllSupportListAdmin(String search) {
+        List<SupportDto> list = new ArrayList<>();
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM support WHERE delete_type='0' ";
+        if (search != null && !search.trim().isEmpty()) {
+            sql += "AND (title LIKE ? OR content LIKE ?) ";
+        }
+        sql += "ORDER BY support_idx DESC";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            if (search != null && !search.trim().isEmpty()) {
+                pstmt.setString(1, "%" + search + "%");
+                pstmt.setString(2, "%" + search + "%");
+            }
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                SupportDto dto = new SupportDto();
+                dto.setSupportIdx(rs.getInt("support_idx"));
+                dto.setCategoryType(rs.getString("category_type"));
+                dto.setTitle(rs.getString("title"));
+                dto.setId(rs.getString("id"));
+                dto.setSecretType(rs.getString("secret_type"));
+                dto.setDeleteType(rs.getString("delete_type"));
+                dto.setStatusType(rs.getString("status_type"));
+                dto.setContent(rs.getString("content"));
+                dto.setReadcount(rs.getInt("readcount"));
+                dto.setCreateDay(rs.getTimestamp("create_day"));
+                list.add(dto);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return list;
     }
 
 }

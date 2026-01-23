@@ -148,6 +148,30 @@ public class MemberDao {
         }
     }
 
+    // checkPassword 비밀번호 확인
+    public boolean checkPassword(String id, String password) {
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = "select count(*) from member where id = ? and password = ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return false;
+    }
+
     // deleteMember 회원삭제
     public int deleteMember(String id) {
         Connection conn = db.getDBConnect();

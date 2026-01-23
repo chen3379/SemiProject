@@ -19,6 +19,7 @@ if (id == null || id.trim().isEmpty()) {
             session.setAttribute("id", id);
             session.setMaxInactiveInterval(5 * 60);
             json.put("status", "SUCCESS");
+            json.put("otp", otp);
         } else {
             json.put("status", "NOT_FOUND");
         }

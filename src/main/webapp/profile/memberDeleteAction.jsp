@@ -4,6 +4,7 @@
 <% request.setCharacterEncoding("UTF-8"); %>
 <%
     String requestedId = request.getParameter("id");
+    String password = request.getParameter("password");
 
     Object obj = session.getAttribute("memberInfo");
     MemberDto dto = (MemberDto) obj;
@@ -17,6 +18,17 @@
             history.back();
         </script>
 <%  return; }
+
+    // 비밀번호 확인 추가
+    if (!dao.checkPassword(sessionId, password)) {
+%>
+        <script>
+            alert("비밀번호가 일치하지 않습니다.");
+            history.back();
+        </script>
+<%
+        return;
+    }
 
     int result = dao.deleteMember(requestedId);
 
