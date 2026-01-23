@@ -1,3 +1,4 @@
+<%@page import="support.SupportAdminDao"%>
 <%@ page import="support.SupportDto" %>
 <%@ page import="support.SupportDao" %>
 <%@ page import="java.util.List" %>
@@ -12,7 +13,7 @@
     }
     String id = member.getId();
 
-    SupportDao dao = new SupportDao();
+    SupportAdminDao dao = new SupportAdminDao();
     List<SupportDto> qnaList = dao.getListById(id);
 
     request.setAttribute("userQnaList", qnaList);
