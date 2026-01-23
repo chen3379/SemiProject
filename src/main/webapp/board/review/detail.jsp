@@ -360,23 +360,28 @@ $(function () {
     $(document).on('click', '.comment-delete-btn', function () {
         if (!alert('댓글을 삭제하시겠습니까?')) return;
 
-        const commentIdx = $(this).data('id');
+        $(document).on('click', '.comment-delete-btn', function () {
 
-        $.post(
-            'commentDelete.jsp',
-            { comment_idx: commentIdx },
-            function (res) {
-                if (res.status === 'LOGIN_REQUIRED') {
-                    alert('로그인이 필요합니다.');
-                    return;
-                }
-                if (res.status === 'SUCCESS') {
-                    location.reload();
-                }
-            },
-            'json'
-        );
-    });
+            const commentIdx = $(this).data('id');
+
+            alert('댓글을 삭제하시겠습니까?', function () {
+
+                const commentIdx = $(this).data('id');
+                console.log('삭제 요청 comment_idx:', commentIdx);
+
+                $.post(
+                    'commentDelete.jsp',
+                    { comment_idx: commentIdx },
+                    function (res) {
+                        console.log(res);
+                        if (res.status === 'SUCCESS') {
+                            location.reload();
+                        }
+                    },
+                    'json'
+                );
+            });
+
 
 
     /* =========================

@@ -51,6 +51,12 @@ if (isAdmin) {
 }
 
 int totalCount = dao.getTotalCount(category);
+if (isAdmin) {
+    totalCount = dao.getAdminTotalCount(category);
+} else {
+    totalCount = dao.getTotalCount(category);
+}
+
 int totalPage = (int)Math.ceil((double)totalCount / pageSize);
 
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");

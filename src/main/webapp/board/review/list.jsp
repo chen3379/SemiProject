@@ -28,6 +28,16 @@ String roleType=(String)session.getAttribute("roleType");
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 List<ReviewBoardDto> list = dao.getReviewList(start, pageSize);
 int totalCount = dao.getTotalCount();
+
+if (isAdmin) {
+    // 관리자: 숨김 포함
+    list = dao.getAdminReviewList(start, pageSize);
+    totalCount = dao.getAdminTotalCount();
+} else {
+    // 일반 유저: 숨김 제외
+    list = dao.getReviewList(start, pageSize);
+    totalCount = dao.getTotalCount();
+}
 int totalPage = (int)Math.ceil((double)totalCount / pageSize);
 
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
