@@ -52,7 +52,7 @@ if (dto.getIs_deleted() == 1 && !isAdmin) {
 
 List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 %>
-
+<jsp:include page="/main/nav.jsp" />
 <body>
 	<jsp:include page="/common/customAlert.jsp" />
 	<div class="post-container">
@@ -62,7 +62,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 			<div class="profile">
 				<div class="profile-img">👤</div>
 				<div>
-					<div class="writer"><%= dto.getId() %></div>
+					<div class="writer"><%= dto.getNickname() %></div>
 					<div class="time">8분 전</div>
 				</div>
 			</div>
@@ -298,7 +298,7 @@ List<FreeBoardDto> bottomList =dao.getBottomBoardList(board_idx, 5);
 					</a>
 
 						<div class="post-meta">
-							<span class="writer"><%= b.getId() %></span> <span class="date">
+							<span class="writer"><%= b.getNickname() %></span> <span class="date">
 								<%= new java.text.SimpleDateFormat("yyyy.MM.dd")
 		                              .format(b.getCreate_day()) %>
 							</span>
