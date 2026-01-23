@@ -15,6 +15,7 @@ String categoryType = request.getParameter("categoryType");
 String title = request.getParameter("title");
 String content = request.getParameter("content");
 String secret = request.getParameter("secret");
+String secretType = request.getParameter("secret") == null ? "0" : "1";
 
 SupportDao dao = new SupportDao();
 
@@ -24,7 +25,7 @@ if(supportIdxStr == null || supportIdxStr.trim().equals("")){
 } else {
     // ===== 수정 =====
     int supportIdx = Integer.parseInt(supportIdxStr);
-    dao.updateSupport(supportIdx, title, content);
+    dao.updateSupport(supportIdx, title, content, secretType);
 }
 
 out.print("{\"result\":\"OK\"}");

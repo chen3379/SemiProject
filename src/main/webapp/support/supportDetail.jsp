@@ -12,7 +12,13 @@
     String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
     boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
-    int supportIdx = Integer.parseInt(request.getParameter("supportIdx"));
+    String supportIdxStr = request.getParameter("supportIdx");
+	//수정 오류 보완
+    if(supportIdxStr == null || supportIdxStr.equals("undefined")){
+        response.sendRedirect("supportList.jsp");
+        return;
+    }
+    int supportIdx = Integer.parseInt(supportIdxStr);
 
     SupportDao dao = new SupportDao();
     SupportDto dto = dao.getOneData(supportIdx);
@@ -65,6 +71,8 @@
     
     // 작성자, 관리자만 수정버튼 노출
     boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
+    
+    String secretType = request.getParameter("secret") == null ? "0" : "1";
 %>
 <!DOCTYPE html>
 <html>
@@ -104,7 +112,7 @@
     </div>
 
     <!-- 작성자 버튼 -->
-    <% if (isLogin && id.equals(dto.getId())) { %>
+    <% if (isAdmin||(isLogin && id.equals(dto.getId()))) { %>
         <div class="mb-3">
         	<% if(canEdit){ %>
             <a href="supportForm.jsp?supportIdx=<%=supportIdx%>" class="btn btn-outline-primary btn-sm">
@@ -132,7 +140,7 @@
 	    <h5 class="mt-4">관리자 답변</h5>
 	
 	    <% if (answer == null) { %>
-	        <!-- ✅ 답변 등록 -->
+	        <!-- 답변 등록 -->
 	        <form action="supportAdminInsertAction.jsp" method="post">
 	            <input type="hidden" name="supportIdx" value="<%= supportIdx %>">
 	
@@ -154,7 +162,7 @@
 	        </form>
 	
 	    <% } else { %>
-	        <!-- ✅ 답변 존재 → 출력 + 수정/삭제 -->
+	        <!-- 답변 존재 → 출력 + 수정/삭제 -->
 	        <div class="border p-3 bg-light mb-2">
 	            <pre style="white-space:pre-wrap;"><%= answer.getContent() %></pre>
 	        </div>

@@ -1,17 +1,13 @@
 @charset "UTF-8";
 
-a,
-a:hover,
-a:focus,
-a:active {
-    text-decoration: none;
-    color: inherit;
-}
 .post-container {
-	max-width: 720px;
-	margin: 40px auto;
-	padding: 20px;
+    max-width: 720px;
+    margin: 40px auto;  /* 위 / 좌우 / 아래 */
+    padding: 20px;
+    box-sizing: border-box;
 }
+
+
 
 .post-header {
 	display: flex;
@@ -48,6 +44,18 @@ a:active {
 	font-size: 13px;
 }
 
+.post-content img {
+    max-width: 100%;     /* ⭐ 핵심 */
+    height: auto;        /* 비율 유지 */
+    display: block;
+    margin: 16px auto;   /* 가운데 정렬 */
+}
+
+.post-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 .readcount {
 	white-space: nowrap;
 }
@@ -63,18 +71,32 @@ a:active {
 }
 
 .post-title {
-	margin-top: 20px;
 	font-weight: bold;
+	padding-bottom: 20px;
 }
 
+.post-title-more {
+	color: #222;
+    font-size: 14px;
+    text-decoration: none;
+
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-title-more:hover {
+    text-decoration: underline;
+}
 .post-category {
-	margin-top: 8px;
+	padding-top:20px;
 	color: #4a6cf7;
-	font-size: 14px;
+	font-size: 13px;
+	font-weight: 800;
 }
 
 .post-content {
-	margin-top: 20px;
 	line-height: 1.7;
 }
 
@@ -102,6 +124,8 @@ a:active {
 .post-menu a:hover {
     background: #f5f5f5;
 }
+
+
 
 @media (max-width: 576px) {
 
@@ -370,7 +394,6 @@ a:active {
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     padding: 14px;
-    margin-bottom: 24px;
     background: #fff;
 }
 
@@ -385,7 +408,7 @@ a:active {
 /* textarea */
 .comment-input-box textarea {
     width: 100%;
-    height: 90px;
+    min-height: 60px; 
     border: none;
     resize: none;
     font-size: 14px;
@@ -445,21 +468,103 @@ textarea:disabled {
     cursor: not-allowed;
 }
 
+.related-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.related-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid #eee;
+}
+
+.related-item {
+    border-bottom: 1px solid #eee;
+}
+
+.related-item a.post-title-more {
+    display: block;
+    padding: 14px 6px 6px;
+    font-size: 15px;
+    color: #222;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.related-item:hover {
+    background-color: #f7f7f7;
+}
+
+.related-item:hover a.post-title-more {
+    text-decoration: underline;
+}
+
+.related-item .post-meta {
+    padding: 0 6px 12px;
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+}
+
+.related-item a.post-title-more {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 오른쪽 메타 */
+.post-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #777;
+    white-space: nowrap;
+}
+
+/* ===== 첨부파일 영역 (화이트 테마) ===== */
 .post-attachment {
-    padding: 12px 16px;
-    background: #1f1f1f;
-    border-radius: 8px;
-    font-size: 14px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+
+    padding: 10px 14px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+}
+
+.post-attachment i {
+    color: #6b7280 !important;   /* 아이콘: 중간 회색 */
+    font-size: 16px !important;
 }
 
 .post-attachment a {
-    color: #9ad0ff;
-    text-decoration: none;
+    color: #333333 !important;   /* 파일명: 진회색 */
+    text-decoration: none !important;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.post-attachment:hover {
+    background-color: #f5f5f5 !important; /* hover: 연한 회색 */
+}
+
+.post-attachment a:hover {
+    color: #111111 !important;   /* hover 시 텍스트 더 진하게 */
+    text-decoration: underline !important;
+}
 
 /*Review detail*/
-.container { max-width: 720px; margin: 40px auto; }
+.container { max-width: 720px; margin: 40px auto; position: relative;}
 .title { font-weight: bold; margin-top: 20px; }
 .meta { color:#888; font-size:13px; display:flex; gap:12px; }
 .like-btn {
