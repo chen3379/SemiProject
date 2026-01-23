@@ -302,6 +302,10 @@ td.title a {
                 <th>작성자</th>
                 <th>작성일</th>
                 <th>조회수</th>
+                <% if (isAdmin) { %>
+			        <th>관리</th>
+			    <% } %>
+			                
             </tr>
         </thead>
 
@@ -330,6 +334,33 @@ td.title a {
 		        </td>
 		
 		        <td class="count"><%= dto.getReadcount() %></td>
+	           <%-- ⭐ 관리자 전용 관리 컬럼 --%>
+			    <% if (isAdmin) { %>
+			    <td>
+			        <% if (dto.getIs_deleted() == 0) { %>
+			            <!-- 숨김 -->
+			            <form action="adminHideAction.jsp" method="post" style="display:inline;">
+			                <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+			                <button type="submit" class="btn btn-sm btn-danger">숨김</button>
+			            </form>
+			        <% } else { %>
+			            <!-- 복구 -->
+			            <form action="adminRestoreAction.jsp" method="post" style="display:inline;">
+			                <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+			                <button type="submit" class="btn btn-sm btn-secondary">복구</button>
+			            </form>
+			        <% } %>
+			
+			        <!-- 🔥 완전 삭제 -->
+			       <form action="<%=request.getContextPath()%>/board/review/adminDeleteForeverAction.jsp"
+					      method="post"
+					      style="display:inline;"
+					      onsubmit="return confirm('⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n정말 삭제하시겠습니까?');">
+			            <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
+			            <button type="submit" class="btn btn-sm btn-dark">완전삭제</button>
+			        </form>
+			    </td>
+			    <% } %>
 		    </tr>
 		<% } %>
 		</tbody>
