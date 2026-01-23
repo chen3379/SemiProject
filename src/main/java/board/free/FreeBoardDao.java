@@ -212,9 +212,10 @@ public class FreeBoardDao {
 		Connection conn=db.getDBConnect();
 		PreparedStatement pstmt =null;
 		
-	    String sql = "UPDATE free_board\r\n"
-	    		+ "SET readcount = readcount + 1"
-	    		+ "WHERE board_idx = ? AND is_deleted = 0";
+		String sql =
+			    "UPDATE free_board " +
+			    "SET readcount = readcount + 1 " +
+			    "WHERE board_idx = ? AND is_deleted = 0";
 	    
 	    conn= db.getDBConnect();
 	    try {
@@ -273,9 +274,9 @@ public class FreeBoardDao {
 	    PreparedStatement pstmt = null;
 
 	    String sql =
-	        "UPDATE free_board " +
-	        "SET category_type=?, title=?, content=?, update_day=NOW() " +
-	        "WHERE board_idx=?";
+	            "UPDATE free_board " +
+	            "SET category_type=?, title=?, content=? " +
+	            "WHERE board_idx=?";
 
 	    try {
 	        conn = db.getDBConnect();
