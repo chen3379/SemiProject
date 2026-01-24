@@ -12,6 +12,16 @@ public class ReviewBoardDto {
     private int readcount;
     private Timestamp create_day;
     private Timestamp update_day;
+    private String nickname;
+    private String filename;
+    
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
 
     public Timestamp getUpdate_day() {
         return update_day;
@@ -19,7 +29,7 @@ public class ReviewBoardDto {
     public void setUpdate_day(Timestamp update_day) {
         this.update_day = update_day;
     }
-    private String filename;
+    
     // ⭐ 관리자용 (숨김/삭제 여부)
     private int is_deleted; // 0: 정상, 1: 숨김(삭제)
 

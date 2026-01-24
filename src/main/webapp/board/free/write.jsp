@@ -9,8 +9,8 @@ boolean isLogin = (loginId != null);
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
 if (!isLogin || isAdmin) {
-    response.sendRedirect("list.jsp");
-    return;
+	response.sendRedirect("list.jsp");
+	return;
 }
 %>
 <!DOCTYPE html>
@@ -37,45 +37,33 @@ if (!isLogin || isAdmin) {
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
 <body>
-
-
-
 	<div style="padding: 50px;">
-
 		<form method="post" action="writeAction.jsp"
 			enctype="multipart/form-data">
-
-
 			<!-- 분류 -->
 			<select name="category" class="form-select mb-3" required>
 				<option value="">카테고리 선택</option>
 				<option value="FREE">자유수다</option>
 				<option value="QNA">질문 / 추천</option>
 			</select>
-
 			<!-- 제목 -->
 			<input type="text" name="title" class="form-control mb-3"
 				placeholder="제목">
-
 			<!-- 에디터 -->
 			<div id="editor"></div>
-
 			<!-- 에디터 값 저장용 -->
 			<input type="hidden" name="content" id="content">
 			<!-- 파일 업로드 -->
 			<input type="file" name="uploadFile" class="form-control mt-3">
-
 			<!-- 태그 -->
 			<input type="text" name="tags" class="form-control mt-3"
 				placeholder="태그 입력 후 Enter">
-
 			<div class="mt-4 text-end">
 				<button type="submit" class="btn btn-primary">등록</button>
 			</div>
 
 		</form>
 	</div>
-
 	<!-- 카테고리 미선택 모달 -->
 	<div class="modal fade" id="categoryModal" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
@@ -95,7 +83,7 @@ if (!isLogin || isAdmin) {
 	<script
 		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
-const editor = new toastui.Editor({
+	const editor = new toastui.Editor({
 	  el: document.querySelector('#editor'),
 	  height: '500px',
 	  initialEditType: 'wysiwyg',
@@ -143,7 +131,5 @@ const editor = new toastui.Editor({
     document.getElementById('content').value = editor.getHTML();
   });
 </script>
-
-
 </body>
 </html>

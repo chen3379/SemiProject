@@ -369,8 +369,14 @@ public class FreeBoardDao {
 
         List<FreeBoardDto> list = new ArrayList<>();
 
-        String sql = "SELECT board_idx, title, id, create_day " + "FROM free_board " + "WHERE is_deleted = 0 "
-                + "AND board_idx <> ? " + "ORDER BY board_idx DESC " + "LIMIT ?";
+        String sql =
+        	    "SELECT b.board_idx, b.title, b.create_day, m.nickname " +
+        	    "FROM free_board b " +
+        	    "JOIN member m ON b.id = m.id " +
+        	    "WHERE b.is_deleted = 0 " +
+        	    "AND b.board_idx <> ? " +
+        	    "ORDER BY b.board_idx DESC " +
+        	    "LIMIT ?";
 
         try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -383,7 +389,7 @@ public class FreeBoardDao {
                 FreeBoardDto dto = new FreeBoardDto();
                 dto.setBoard_idx(rs.getInt("board_idx"));
                 dto.setTitle(rs.getString("title"));
-                dto.setId(rs.getString("id"));
+                dto.setNickname(rs.getString("nickname")); 
                 dto.setCreate_day(rs.getTimestamp("create_day"));
                 list.add(dto);
             }
@@ -391,7 +397,6 @@ public class FreeBoardDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return list;
     }
 

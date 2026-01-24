@@ -23,10 +23,11 @@ public class ReviewBoardDao {
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	    		"SELECT board_idx, genre_type, title, id, readcount, create_day, is_spoiler " +
-	    		        "FROM review_board " +
-	    		        "WHERE is_deleted = 0 " +
-	    		        "ORDER BY board_idx DESC LIMIT ?, ?";
+	        "SELECT r.board_idx, r.genre_type, r.title, r.readcount, r.create_day, r.is_spoiler, m.nickname " +
+	        "FROM review_board r " +
+	        "JOIN member m ON r.id = m.id " +
+	        "WHERE r.is_deleted = 0 " +
+	        "ORDER BY r.board_idx DESC LIMIT ?, ?";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -37,21 +38,19 @@ public class ReviewBoardDao {
 	        ResultSet rs = pstmt.executeQuery();
 
 	        while (rs.next()) {
-	        	 ReviewBoardDto dto = new ReviewBoardDto();
-	             dto.setBoard_idx(rs.getInt("board_idx"));
-	             dto.setGenre_type(rs.getString("genre_type"));
-	             dto.setTitle(rs.getString("title"));
-	             dto.setId(rs.getString("id"));
-	             dto.setReadcount(rs.getInt("readcount"));
-	             dto.setCreate_day(rs.getTimestamp("create_day"));
-	             dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
-	             list.add(dto);
+	            ReviewBoardDto dto = new ReviewBoardDto();
+	            dto.setBoard_idx(rs.getInt("board_idx"));
+	            dto.setGenre_type(rs.getString("genre_type"));
+	            dto.setTitle(rs.getString("title"));
+	            dto.setNickname(rs.getString("nickname"));
+	            dto.setReadcount(rs.getInt("readcount"));
+	            dto.setCreate_day(rs.getTimestamp("create_day"));
+	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
+	            list.add(dto);
 	        }
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-
 	    return list;
 	}
 
@@ -172,10 +171,10 @@ public class ReviewBoardDao {
 	// 조회수 증가
 	public void updateReadCount(int board_idx) {
 
-	    String sql =
-	        "UPDATE free_board " +
-	        "SET readcount = readcount + 1 " +
-	        "WHERE board_idx = ? AND is_deleted = 0";
+		String sql =
+	    "UPDATE review_board " +
+	    "SET readcount = readcount + 1 " +
+	    "WHERE board_idx = ? AND is_deleted = 0";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -193,7 +192,11 @@ public class ReviewBoardDao {
 
 	    ReviewBoardDto dto = null;
 
-	    String sql = "SELECT * FROM review_board WHERE board_idx = ? AND is_deleted = 0";
+	    String sql =
+	        "SELECT r.*, m.nickname " +
+	        "FROM review_board r " +
+	        "JOIN member m ON r.id = m.id " +
+	        "WHERE r.board_idx = ? AND r.is_deleted = 0";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -209,15 +212,14 @@ public class ReviewBoardDao {
 	            dto.setContent(rs.getString("content"));
 	            dto.setFilename(rs.getString("filename"));
 	            dto.setId(rs.getString("id"));
+	            dto.setNickname(rs.getString("nickname")); 
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
 	        }
-
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
-
 	    return dto;
 	}
 
@@ -304,32 +306,44 @@ public class ReviewBoardDao {
 	    }
 	}
 
-	// ReviewBoardDao.java
-	public List<ReviewBoardDto> getOtherBoards(int boardIdx, int limit) {
+	//다른글 더보
+	public List<ReviewBoardDto> getOtherBoards(int currentBoardIdx, int limit) {
+
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
-	    String sql = "SELECT board_idx, title, id, create_day  FROM review_board   WHERE board_idx != ?   ORDER BY create_day DESC LIMIT ?";
+	    String sql =
+	        "SELECT r.board_idx, r.title, r.create_day, m.nickname " +
+	        "FROM review_board r " +
+	        "JOIN member m ON r.id = m.id " +
+	        "WHERE r.is_deleted = 0 " +
+	        "AND r.board_idx <> ? " +
+	        "ORDER BY r.board_idx DESC " +
+	        "LIMIT ?";
 
 	    try (Connection conn = db.getDBConnect();
-	         PreparedStatement ps = conn.prepareStatement(sql)) {
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-	        ps.setInt(1, boardIdx);
-	        ps.setInt(2, limit);
+	        pstmt.setInt(1, currentBoardIdx);
+	        pstmt.setInt(2, limit);
 
-	        ResultSet rs = ps.executeQuery();
+	        ResultSet rs = pstmt.executeQuery();
+
 	        while (rs.next()) {
 	            ReviewBoardDto dto = new ReviewBoardDto();
 	            dto.setBoard_idx(rs.getInt("board_idx"));
 	            dto.setTitle(rs.getString("title"));
-	            dto.setId(rs.getString("id"));
+	            dto.setNickname(rs.getString("nickname")); // ⭐ 핵심
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            list.add(dto);
 	        }
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+
 	    return list;
 	}
+
 	
 	// 관리자용 상세 조회 (숨김 포함)
 	public ReviewBoardDto getAdminBoard(int board_idx) {

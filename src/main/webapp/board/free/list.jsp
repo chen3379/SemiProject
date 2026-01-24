@@ -378,7 +378,9 @@ String msg = request.getParameter("msg");
 							href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>"> <%= dto.getTitle() %>
 						</a> <% } %>
 						</td>
-						<td class="writer"><%= dto.getId() %></td>
+						<td class="writer">
+						    <%= isAdmin ? dto.getId() : dto.getNickname() %>
+						</td>
 						<td class="date"><%= sdf.format(dto.getCreate_day()) %></td>
 						<td class="count"><%= dto.getReadcount() %></td>
 						<% if (isAdmin) { %>

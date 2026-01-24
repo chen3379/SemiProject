@@ -7,7 +7,7 @@
 String category = request.getParameter("category");
 String title = request.getParameter("title");
 String content = request.getParameter("content");
-out.println("------<"+category);
+
 // 스포일러 체크 여부 (체크 안 하면 null)
 boolean spoiler = request.getParameter("is_spoiler") != null;
 

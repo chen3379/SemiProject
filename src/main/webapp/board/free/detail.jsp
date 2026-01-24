@@ -66,7 +66,6 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 <body>
 	<main class="post-wrapper">
 		<div class="post-container">
-
 			<!-- 작성자 영역 -->
 			<div class="post-header">
 				<div class="profile user-profile" data-user-id="<%=dto.getId()%>"
@@ -74,7 +73,7 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 
 					<div class="profile-img">👤</div>
 					<div>
-						<div class="writer"><%=dto.getNickname()%></div>
+						<div class="writer"><%= isAdmin ? dto.getId() : dto.getNickname() %></div>
 						<div class="time">8분 전</div>
 					</div>
 				</div>
@@ -297,15 +296,9 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 						%>
 					</div>
 				</div>
-				<%
-				}
-				%>
-				<%
-				}
-				%>
-				<%
-				}
-				%>
+				<% } %>
+				<% } %>
+				<% } %>
 				<!-- ===== 하단 글 목록 ===== -->
 				<div class="related-posts">
 					<h3 class="related-title">
@@ -564,6 +557,5 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 			</div>
 		</div>
 	</div>
-
 </body>
 </html>

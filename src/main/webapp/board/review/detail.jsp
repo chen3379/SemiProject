@@ -26,70 +26,82 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <title>영화 리뷰 상세</title>
 </head>
-
 <%
-int board_idx = Integer.parseInt(request.getParameter("board_idx"));
+
+String boardIdxParam = request.getParameter("board_idx");
+if (boardIdxParam == null || boardIdxParam.isEmpty()) {
+    out.println("<script>alert('잘못된 접근입니다.'); location.href='list.jsp';</script>");
+    return;
+}
+int board_idx = Integer.parseInt(boardIdxParam);
 
 ReviewBoardDao dao = new ReviewBoardDao();
-dao.updateReadCount(board_idx);
 ReviewBoardDto dto = dao.getBoard(board_idx);
 
-/* ===== 좋아요 ===== */
+if (dto == null) {
+    out.println("<script>alert('존재하지 않는 게시글입니다.'); location.href='list.jsp';</script>");
+    return;
+}
+
+String loginId = (String) session.getAttribute("loginid");
+String roleType = (String) session.getAttribute("roleType");
+
+boolean isOwner = loginId != null && loginId.equals(dto.getId());
+boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+boolean canEdit = isOwner || isAdmin;
+
+if (dto.getIs_deleted() == 1 && !canEdit) {
+    out.println("<script>alert('삭제되었거나 숨김 처리된 글입니다.'); history.back();</script>");
+    return;
+}
+dao.updateReadCount(board_idx);
+dto = dao.getBoard(board_idx);
+
 ReviewLikeDao likeDao = new ReviewLikeDao();
 int likeCount = likeDao.getLikeCount(board_idx);
+boolean isLiked = loginId != null && likeDao.isLiked(board_idx, loginId);
 
-/* ===== 댓글 ===== */
 ReviewCommentDao cdao = new ReviewCommentDao();
 List<ReviewCommentDto> clist = cdao.getCommentList(board_idx);
 int commentCount = cdao.getCommentCount(board_idx);
 
-/* 로그인 */
-String loginId = (String)session.getAttribute("loginid");
-boolean isOwner = loginId != null && loginId.equals(dto.getId());
-String roleType = (String) session.getAttribute("roleType");
-boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
-boolean canEdit = isOwner;
-
 List<ReviewBoardDto> otherList = dao.getOtherBoards(board_idx, 5);
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 %>
+
+<jsp:include page="/main/nav.jsp" />
 <body>
-<jsp:include page="/common/customAlert.jsp" />
-	<div class="container">
-		<!-- 상단 -->
-		<div class="d-flex justify-content-between">
-			<div>
-				<div>
-					<strong><%= dto.getId() %></strong>
-				</div>
-				<div class="meta">
-					<span><%= dto.getCreate_day() %></span> <span>조회 <%= dto.getReadcount() %></span>
-				</div>
-			</div>
-			<%
-		if (canEdit) {
-		%>
-			<span class="more" id="postMenuBtn">⋮</span>
-			<%
-		}
-		%>
-			<%
-		if (canEdit) {
-		%>
-			<div class="post-menu" id="postMenu">
-			    <a href="update.jsp?board_idx=<%=board_idx%>">수정</a>
-			    <a href="javascript:void(0);"
-				   id="deletePostBtn"
-				   data-board="<%=board_idx%>">
-				   삭제
-				</a>
-
-			</div>
-			<%
-		}
-		%>
+    <main class="post-wrapper">
+        <div class="post-container">
+		<!-- 작성자 영역 -->
+		<div class="post-header">
+		    <div class="profile user-profile"
+		         data-user-id="<%=dto.getId()%>"
+		         data-nickname="<%=dto.getNickname()%>">
+		
+		        <div class="profile-img">👤</div>
+		        <div>
+		            <div class="writer"><%= isAdmin ? dto.getId() : dto.getNickname() %></div>
+		            <div class="time">
+		                <%= new SimpleDateFormat("yyyy.MM.dd").format(dto.getCreate_day()) %>
+		            </div>
+		        </div>
+		    </div>
+		
+		    <div class="post-meta">
+		        <span class="readcount">조회 <%=dto.getReadcount()%></span>
+		
+		       <%boolean isTestMode = false; %>
+		        <% if (canEdit) { %>
+		            <span class="more" id="postMenuBtn">⋮</span>
+		            <div class="post-menu" id="postMenu">
+		                <a href="update.jsp?board_idx=<%=board_idx%>">수정</a>
+		                <a href="javascript:void(0);" id="deletePostBtn"
+		                   data-board="<%=board_idx%>">삭제</a>
+		            </div>
+		        <% } %>
+		    </div>
 		</div>
-
 		<!-- 제목 -->
 		<h2 class="title"><%= dto.getTitle() %></h2>
 
@@ -112,9 +124,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		
 		// 좋아요 개수
 		int frLikeCount = likeDao.getLikeCount(board_idx);
-		
-		// 내가 좋아요 눌렀는지
-		boolean isLiked = false;
 		if (loginId != null) {
 		    isLiked = likeDao.isLiked(board_idx, loginId);
 		}
@@ -273,7 +282,8 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 					</a>
 
 						<div class="post-meta">
-							<span class="writer"><%= b.getId() %></span> <span class="date">
+							<span class="writer"><%= b.getNickname() %></span>
+							<span class="date">
 								<%= new java.text.SimpleDateFormat("yyyy.MM.dd")
 		                              .format(b.getCreate_day()) %>
 							</span>
@@ -282,6 +292,8 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 				</ul>
 			</div>
 		</div>
+		</div>
+		</main>
 		<script>
 $(function () {
 
@@ -445,11 +457,69 @@ $(function () {
             location.href = 'delete.jsp?board_idx=' + boardIdx;
         });
     });
+    
+    /* ===== 유저 정보 모달 ===== */
+    $('#userInfoOverlay, #userInfoModal').hide();
 
+    $(document).on('click', '.user-profile', function () {
+        const userId = $(this).data('user-id');
+        if (!userId) return;
+
+        $.get(
+            '<%=request.getContextPath()%>/profile/memberInfoAction.jsp',
+            { id: userId },
+            function (res) {
+                if (res.status !== 'SUCCESS') {
+                    alert('유저 정보를 불러올 수 없습니다.');
+                    return;
+                }
+
+                $('#uiNickname').text(res.nickname);
+                $('#uiEmail').text(res.id);
+                $('#uiJoinDate').text(res.createDay);
+
+                $('#userInfoOverlay').fadeIn(150);
+                $('#userInfoModal').fadeIn(150);
+            },
+            'json'
+        );
+    });
+
+    $('#userInfoOverlay').on('click', closeUserModal);
+
+    $(document).on('keydown', function (e) {
+        if (e.key === 'Escape') closeUserModal();
+    });
+
+    function closeUserModal() {
+        $('#userInfoModal').fadeOut(150);
+        $('#userInfoOverlay').fadeOut(150);
+    }
 });
-</script>
-<footer>
-    <jsp:include page="/main/footer.jsp" />
-</footer>
+
+	</script>
+	<footer class="global-footer">
+		<jsp:include page="/main/footer.jsp" />
+	</footer>
+	<!-- 유저 정보 모달 -->
+	<div class="user-info-overlay" id="userInfoOverlay"></div>
+
+	<div class="user-info-modal" id="userInfoModal">
+		<div class="user-info-left">
+			<div class="avatar">👤</div>
+		</div>
+
+		<div class="user-info-right">
+			<div class="info-row">
+				<span class="label">닉네임</span> <span class="value" id="uiNickname"></span>
+			</div>
+			<div class="info-row">
+				<span class="label">아이디</span> <span class="value" id="uiEmail"></span>
+			</div>
+			<div class="info-row">
+				<span class="label">가입일</span> <span class="value" id="uiJoinDate"></span>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
