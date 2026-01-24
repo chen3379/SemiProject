@@ -220,17 +220,18 @@ public class FreeBoardDao {
     // 게시글 1건 조회 (숨김 포함)
     public FreeBoardDto getBoard(int board_idx) {
         FreeBoardDto dto = null;
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
 
-        String sql = "SELECT * FROM free_board WHERE board_idx = ?";
+        String sql =
+            "SELECT b.*, m.nickname " +
+            "FROM free_board b " +
+            "JOIN member m ON b.id = m.id " +
+            "WHERE b.board_idx = ?";
 
-        try {
-            conn = db.getDBConnect();
-            pstmt = conn.prepareStatement(sql);
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
             pstmt.setInt(1, board_idx);
-            rs = pstmt.executeQuery();
+            ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
                 dto = new FreeBoardDto();
@@ -240,19 +241,17 @@ public class FreeBoardDao {
                 dto.setContent(rs.getString("content"));
                 dto.setFilename(rs.getString("filename"));
                 dto.setId(rs.getString("id"));
+                dto.setNickname(rs.getString("nickname")); // ⭐ 핵심
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
-                dto.setIs_deleted(rs.getInt("is_deleted")); // ⭐ 필수
+                dto.setIs_deleted(rs.getInt("is_deleted"));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            db.dbClose(rs, pstmt, conn);
         }
-
         return dto;
     }
+
 
 
     public void updateBoard(int board_idx, String category, String title, String content) {
