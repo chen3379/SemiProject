@@ -623,6 +623,7 @@ h1.fw-bold small {
 	/* ===== 작성하기 버튼 ===== */
 	$(document).on("click", "#btnReviewWrite", function(){
 	  if(!isLogin){
+		alert("로그인이 필요합니다.");
 	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
         modal.show();
         return;	

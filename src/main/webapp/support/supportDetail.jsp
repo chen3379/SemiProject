@@ -69,8 +69,8 @@
     String statusText = "답변대기";
     if ("1".equals(dto.getStatusType())) statusText = "답변완료";
     
-    // 작성자, 관리자만 수정버튼 노출
-    boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
+    // 작성자(답변대기), 관리자만 수정버튼 노출
+    boolean canEdit = isLogin && (isAdmin || (id.equals(dto.getId()) && !"1".equals(dto.getStatusType())));
     
     // 목록 클릭 > 현재페이지
     String currentPage = request.getParameter("currentPage");

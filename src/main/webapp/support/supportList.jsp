@@ -87,11 +87,11 @@ a {
 /* 레이아웃 */
 .app-container {
     min-height: 100vh;
-    padding-top: 70px;
+    padding-top: 0px;
 }
 
 .main-content {
-    padding: 40px 50px;
+    padding: 0px 50px;
 }
 
 /* 섹션 헤더 */
@@ -273,6 +273,70 @@ a {
   padding-left: 30px;   
 }
 
+/* faq 스타일 */
+.faq-main {
+    margin-top: 100px;
+    margin-bottom: 10px;
+    max-width: 900px;
+    min-width: 550px;
+}
+
+.notice-area {
+	margin-top: 50px;
+}
+
+.notice-list {
+	border-top: 2px solid #333;
+}
+
+.notice-item {
+	border-bottom: 1px solid #222;
+}
+
+/* 클릭하는 헤더 부분 */
+.notice-header {
+	background-color: #141414; /* 배경색 */
+	padding: 20px 15px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	transition: background-color 0.2s;
+	color: #e5e5e5;
+}
+
+.notice-header:hover {
+	background-color: #1f1f1f; /* 호버 시 약간 밝게 */
+}
+
+.notice-title-text {
+	flex-grow: 1; /* 제목이 공간 차지 */
+	font-size: 1.1rem;
+	font-weight: 500;
+}
+
+/* 화살표 아이콘 */
+.toggle-icon {
+	color: #888;
+	transition: transform 0.3s ease;
+}
+
+/* 활성화(열림) 상태일 때 화살표 회전 */
+.notice-header.active .toggle-icon {
+	transform: rotate(180deg);
+	color: #E50914; /* 넷플릭스 레드 포인트 */
+}
+
+/* 숨겨진 내용 부분 */
+.notice-body {
+	display: none; /* 기본 숨김 */
+	background-color: #1f1f1f; /* 헤더보다 약간 밝은 배경 */
+	padding: 25px 20px;
+	color: #cccccc;
+	font-size: 1rem;
+	line-height: 1.6;
+	border-top: 1px solid #333;
+}
+
 </style>
 
 
@@ -280,8 +344,65 @@ a {
 <body>
 
 <jsp:include page="../main/nav.jsp" />
-    <jsp:include page="../login/loginModal.jsp" />
-    <jsp:include page="../profile/profileModal.jsp"/>
+<jsp:include page="../login/loginModal.jsp" />
+<jsp:include page="../profile/profileModal.jsp"/>
+
+<!-- ===== 자주 묻는 질문 ===== -->
+<div class="container faq-main">
+	<div class="notice-area mt-5 mb-5">
+		<h4 class="mb-3 fw-bold">
+			<i class="bi bi-megaphone-fill text-danger"></i> 자주 묻는 질문 TOP 3
+		</h4>
+	
+		<div class="notice-list">
+			<div class="notice-item">
+				<div class="notice-header">
+					<span class="notice-title-text">Q1. 비밀글은 누가 볼 수 있나요?</span>
+					 <i	class="bi bi-chevron-down toggle-icon"></i>
+				</div>
+				<div class="notice-body">
+					<p>
+					A.
+					비밀글은 작성자 본인과 관리자만 확인할 수 있습니다.<br>
+					다른 사용자는 목록에서는 제목만 확인 가능하며,
+					내용을 클릭할 경우 접근 제한 안내가 표시됩니다.
+					</p>
+				</div>
+			</div>
+	
+			<div class="notice-item">
+				<div class="notice-header">
+					<span class="notice-title-text"> Q2. 문의글에 답변은 언제 달리나요?</span>
+					 <i	class="bi bi-chevron-down toggle-icon"></i>
+				</div>
+				<div class="notice-body">
+					<p>
+					A.
+					문의글은 접수 순서대로 확인되며,
+					보통 영업일 기준 1~2일 이내에 답변이 등록됩니다.<br>
+					답변이 등록되면 상태가 **‘답변완료’**로 변경됩니다.
+					</p>
+				</div>
+			</div>
+	
+			<div class="notice-item">
+				<div class="notice-header">
+					<span class="notice-title-text">Q3. 문의글 수정이나 삭제는 어떻게 하나요?</span>
+					<i class="bi bi-chevron-down toggle-icon"></i>
+				</div>
+				<div class="notice-body">
+					<p>
+					A.
+					문의글은 답변이 등록되기 전까지 수정 및 삭제가 가능합니다.<br>
+					답변이 등록된 이후에는 내용 변경이 제한되며,
+					추가 문의가 필요할 경우 새 문의글을 작성해 주세요.
+					</p>
+				</div>
+			</div>
+	
+		</div>
+	</div>
+</div>
 
 <div class="app-container full">
 
@@ -452,6 +573,24 @@ a {
     </main>
     
 </div>
+
+	<script>
+		$(document).ready(function() {
+			// 공지사항 토글 기능
+			$(".notice-header").click(function() {
+				// 1. 클릭한 헤더의 바로 다음 요소(.notice-body)를 슬라이드 토글
+				$(this).next(".notice-body").stop().slideToggle(300);
+
+				// 2. 화살표 회전을 위해 active 클래스 토글
+				$(this).toggleClass("active");
+
+				// (선택사항) 다른 공지사항은 자동으로 닫고 싶다면 아래 주석 해제
+				//$(".notice-header").not(this).removeClass("active");
+				//$(".notice-header").not(this).next(".notice-body").slideUp(300);
+				
+			});
+		});
+	</script>
 
 <jsp:include page="../main/footer.jsp" />
 <jsp:include page="../common/customAlert.jsp" />
