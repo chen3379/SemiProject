@@ -330,7 +330,9 @@ td.title a {
 						</a>
 						</td>
 						<td class="writer">
-						    <%= isAdmin ? dto.getId() : dto.getNickname() %>
+						    <%= (isAdmin || dto.getNickname() == null)
+						        ? dto.getId()
+						        : dto.getNickname() %>
 						</td>
 						<td class="date"><%= sdf.format(dto.getCreate_day()) %></td>
 

@@ -6,8 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import board.free.FreeBoardDto;
 import mysql.db.DBConnect;
 
 public class ReviewBoardDao {
@@ -23,11 +21,13 @@ public class ReviewBoardDao {
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	        "SELECT r.board_idx, r.genre_type, r.title, r.readcount, r.create_day, r.is_spoiler, m.nickname " +
+	        "SELECT r.board_idx, r.genre_type, r.title, r.id, r.readcount, " +
+	        "       r.create_day, r.is_spoiler, m.nickname " +
 	        "FROM review_board r " +
 	        "JOIN member m ON r.id = m.id " +
 	        "WHERE r.is_deleted = 0 " +
-	        "ORDER BY r.board_idx DESC LIMIT ?, ?";
+	        "ORDER BY r.board_idx DESC " +
+	        "LIMIT ?, ?";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -42,15 +42,18 @@ public class ReviewBoardDao {
 	            dto.setBoard_idx(rs.getInt("board_idx"));
 	            dto.setGenre_type(rs.getString("genre_type"));
 	            dto.setTitle(rs.getString("title"));
+	            dto.setId(rs.getString("id"));
 	            dto.setNickname(rs.getString("nickname"));
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
 	            list.add(dto);
 	        }
+
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+
 	    return list;
 	}
 
@@ -132,15 +135,17 @@ public class ReviewBoardDao {
 	
 	public List<ReviewBoardDto> getTop10ByReadcount() {
 	    List<ReviewBoardDto> list = new ArrayList<>();
-	    
 
 	    Connection conn = null;
 	    PreparedStatement pstmt = null;
 	    ResultSet rs = null;
-
-
+	    
 	    String sql =
-	    		"SELECT board_idx, genre_type, title, readcount, is_spoiler FROM review_board ORDER BY readcount DESC LIMIT 10";
+	    	    "SELECT board_idx, genre_type, title, readcount, is_spoiler " +
+	    	    "FROM review_board " +
+	    	    "WHERE is_deleted = 0 " +
+	    	    "ORDER BY readcount DESC " +
+	    	    "LIMIT 10";	   
 	    
 	    try {
 	        conn = db.getDBConnect();

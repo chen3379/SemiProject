@@ -73,7 +73,11 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 
 					<div class="profile-img">👤</div>
 					<div>
-						<div class="writer"><%= isAdmin ? dto.getId() : dto.getNickname() %></div>
+						<div class="writer">
+						    <%= ( "3".equals(roleType) || "9".equals(roleType) || dto.getNickname() == null )
+						        ? dto.getId()
+						        : dto.getNickname() %>
+						</div>
 						<div class="time">8분 전</div>
 					</div>
 				</div>

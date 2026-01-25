@@ -80,7 +80,11 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		         data-nickname="<%=dto.getNickname()%>">
 		        <div class="profile-img">👤</div>
 		        <div>
-		            <div class="writer"><%= isAdmin ? dto.getId() : dto.getNickname() %></div>
+		            <div class="writer">
+					    <%= ( "3".equals(roleType) || "9".equals(roleType) || dto.getNickname() == null )
+					        ? dto.getId()
+					        : dto.getNickname() %>
+					</div>
 		            <div class="time">
 		                <%= new SimpleDateFormat("yyyy.MM.dd").format(dto.getCreate_day()) %>
 		            </div>

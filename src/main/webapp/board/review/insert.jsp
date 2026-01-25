@@ -1,16 +1,43 @@
+<%@page import="board.review.ReviewBoardDao"%>
+<%@page import="board.review.ReviewBoardDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-</head>
-<body>
 
-</body>
-</html>
+<%
+request.setCharacterEncoding("UTF-8");
+
+// 파라미터
+String genre = request.getParameter("genre_type");
+String title = request.getParameter("title");
+String content = request.getParameter("content");
+
+// 스포일러 체크 (체크 안 하면 null)
+boolean isSpoiler = request.getParameter("is_spoiler") != null;
+
+// 파일명 (첨부 안 하면 null)
+String filename = request.getParameter("filename");
+
+// 로그인 세션 (관리자/유저 공통)
+String loginId = (String) session.getAttribute("loginid");
+
+if (loginId == null) {
+    response.sendRedirect("/login/login.jsp");
+    return;
+}
+
+// DTO 조립
+ReviewBoardDto dto = new ReviewBoardDto();
+dto.setGenre_type(genre);
+dto.setTitle(title);
+dto.setContent(content);
+dto.setId(loginId);               // 이메일(id)
+dto.setIs_spoiler_type(isSpoiler);
+dto.setFilename(filename);
+
+// DAO
+ReviewBoardDao dao = new ReviewBoardDao();
+dao.insertBoard(dto);
+
+// 목록으로 이동
+response.sendRedirect("list.jsp");
+%>

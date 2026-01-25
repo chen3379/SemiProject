@@ -175,8 +175,12 @@ public class FreeBoardDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT board_idx, title, readcount " + "FROM free_board " + "WHERE is_deleted = 0 "
-                + "ORDER BY readcount DESC LIMIT 10";
+        String sql =
+        	    "SELECT board_idx, title, readcount " +
+        	    "FROM free_board " +
+        	    "WHERE is_deleted = 0 " +
+        	    "ORDER BY readcount DESC " +
+        	    "LIMIT 10";
 
         try {
             conn = db.getDBConnect();
