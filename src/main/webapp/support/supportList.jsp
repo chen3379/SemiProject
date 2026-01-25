@@ -73,7 +73,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<title>WHATFLIX - 고객지원</title>
+<title>WHATFLIX - 고객센터</title>
 
 <style>
 /* 기본 */
@@ -296,7 +296,7 @@ a {
 
             <!-- 섹션 헤더 -->
             <div class="section-header">
-                <h2 class="section-title">고객지원</h2>
+                <h2 class="section-title">고객센터</h2>
             </div>
 
             <!-- 필터 -->
@@ -409,9 +409,9 @@ a {
 	                
 	                <!-- 글쓰기 -->
 		            <div class="mt-4 text-end">
-		            <% if(isLogin){ %>
+		            <% if(isLogin && !isAdmin){ %>
 		                <a href="supportForm.jsp" class="btn btn-danger">문의하기</a>
-		            <% } else { %>
+		            <% } else if (!isLogin) { %>
 		                <button class="btn btn-secondary"
 		                        onclick="alert('로그인 후 이용해주세요')">
 		                    문의하기
