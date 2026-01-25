@@ -1,7 +1,6 @@
 <%@page import="member.MemberDao"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="support.SupportDto"%>
-<%@page import="support.FaqDto"%>
 <%@page import="java.util.List"%>
 <%@page import="support.FaqDao"%>
 <%@page import="support.SupportDao"%>
@@ -14,7 +13,6 @@
 	SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	
 	String status = request.getParameter("status"); // 관리자만 사용
-	String order = request.getParameter("order");   // 최신/오래된순
 	String categoryType = request.getParameter("categoryType");
 	
 	//로그인 확인
@@ -22,9 +20,6 @@
     boolean isLogin = (id != null);
     String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
     boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
-    
-	// 문의유형 필터 변수
-	String categoryParam = request.getParameter("categoryType");
 	
 	// status 필터는 관리자만 가능
 	if(!isAdmin){
@@ -367,7 +362,7 @@ a {
 						                alert('비밀글입니다');
 						                return;
 						            }
-						            location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>';
+						            location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>&currentPage=<%=currentPage%>';
 						        ">
 						            <td><%=dto.getSupportIdx()%></td>
 						            <td>
@@ -455,21 +450,6 @@ a {
         </section>
 
     </main>
-    
-    <script type="text/javascript">
-		function handleAnswerClick(secretType, writerId, supportIdx){
-		    const isAdmin = <%= isAdmin %>;
-		    const isLogin = <%= isLogin %>;
-		    const loginId = "<%= isLogin ? id : "" %>";
-		
-		    if(secretType === "1" && !(isAdmin || (isLogin && loginId === writerId))){
-		        alert("비밀글입니다");
-		        return;
-		    }
-		
-		    location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
-		}
-	</script>
     
 </div>
 

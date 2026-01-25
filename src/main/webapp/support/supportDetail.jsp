@@ -71,7 +71,10 @@
     
     // 작성자, 관리자만 수정버튼 노출
     boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
-  
+    
+    // 목록 클릭 > 현재페이지
+    String currentPage = request.getParameter("currentPage");
+    if(currentPage == null) currentPage = "1";
 %>
 <!DOCTYPE html>
 <html>
@@ -336,7 +339,7 @@
               답변 삭제
             </a>
 
-            <a href="supportList.jsp" class="btn btn-outline-secondary btn-sm">목록</a>
+            <a href="supportList.jsp?currentPage=<%=currentPage%>" class="btn btn-outline-secondary btn-sm">목록</a>
           </div>
         </form>
       <% } %>
