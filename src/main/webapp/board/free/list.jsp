@@ -310,19 +310,6 @@ td.title a {
 </style>
 </head>
 <body>
-
-<%
-String msg = request.getParameter("msg");
-%>
-
-	<script>
-<% if ("hidden".equals(msg)) { %>
-    alert("숨김 처리되었습니다.");
-<% } else if ("restored".equals(msg)) { %>
-    alert("복구되었습니다.");
-<% } %>
-</script>
-
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
 
@@ -344,7 +331,6 @@ String msg = request.getParameter("msg");
 				</a>
 			</div>
 		</div>
-
 		<!-- 게시글 목록 -->
 		<div class="review-table-wrap">
 			<table>
@@ -385,30 +371,32 @@ String msg = request.getParameter("msg");
 						<td class="count"><%= dto.getReadcount() %></td>
 						<% if (isAdmin) { %>
 						<td>
-							<% if (dto.getIs_deleted() == 0) { %>
-							<form action="adminHideAction.jsp" method="post"
-								style="display: inline;">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-danger">숨김</button>
-							</form> <% } else { %>
-							<form action="adminRestoreAction.jsp" method="post"
-								style="display: inline;">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-secondary">복구</button>
-							</form> <% } %>
-							
-							<form action="adminDeleteForeverAction.jsp" method="post"
-					          style="display:inline;"
-					          onsubmit="return confirm('⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n정말 삭제하시겠습니까?');">
-					        <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
-					        <button type="submit" class="btn btn-sm btn-dark">완전삭제</button>
-					    </form>
+						  <% if (dto.getIs_deleted() == 0) { %>
+						    <!-- 숨김 -->
+						    <button
+						      type="button"
+						      class="btn btn-sm btn-danger"
+						      onclick="hideBoard(<%= dto.getBoard_idx() %>)">
+						      숨김
+						    </button>
+						  <% } else { %>
+						    <!-- 복구 -->
+						    <button
+						      type="button"
+						      class="btn btn-sm btn-secondary"
+						      onclick="restoreBoard(<%= dto.getBoard_idx() %>)">
+						      복구
+						    </button>
+						  <% } %>
+						  <!-- 완전삭제 -->
+						  <button
+						    type="button"
+						    class="btn btn-sm btn-dark"
+						    onclick="deleteBoardForever(<%= dto.getBoard_idx() %>)">
+						    완전삭제
+						  </button>
 						</td>
-						
 						<% } %>
-						
 					</tr>
 					<%
 			    }
@@ -432,7 +420,6 @@ String msg = request.getParameter("msg");
 		<% } %>
 		<div class="page-wrap">
 		  <ul class="page-list">
-		
 		    <%-- ◀ 이전 5페이지 --%>
 		    <% if (startPage > 1) { %>
 		    <li class="arrow">
@@ -441,7 +428,6 @@ String msg = request.getParameter("msg");
 		      </a>
 		    </li>
 		    <% } %>
-		
 		    <%-- 페이지 번호 5개씩 --%>
 		    <% for (int i = startPage; i <= endPage; i++) { %>
 		    <li class="<%= (i == currentPage) ? "active" : "" %>">
@@ -459,27 +445,94 @@ String msg = request.getParameter("msg");
 		      </a>
 		    </li>
 		    <% } %>
-		
 		  </ul>
 		</div>
-		<script>
+<script>
+/* ===== 공통 ===== */
+function reloadBoardList() {
+  location.reload();
+}
+/* ===== 관리자 액션 ===== */
+function restoreBoard(boardIdx) {
+  $.ajax({
+    url: "adminRestoreAction.jsp",
+    type: "POST",
+    dataType: "json",
+    data: { board_idx: boardIdx },
+
+    success(res) {
+      res.success
+        ? alert("복구되었습니다.", reloadBoardList)
+        : alert("복구에 실패했습니다.");
+    },
+
+    error() {
+      alert("서버 오류가 발생했습니다.");
+    }
+  });
+}
+
+function hideBoard(boardIdx) {
+  $.ajax({
+    url: "adminHideAction.jsp",
+    type: "POST",
+    dataType: "json",
+    data: { board_idx: boardIdx },
+
+    success(res) {
+      res.success
+        ? alert("숨김 처리되었습니다.", reloadBoardList)
+        : alert("숨김 처리에 실패했습니다.");
+    },
+
+    error() {
+      alert("서버 오류가 발생했습니다.");
+    }
+  });
+}
+/* ===== 완전삭제 ===== */
+function deleteBoardForever(boardIdx) {
+  alert(
+    "⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n계속하시겠습니까?",
+    function () {
+      $.ajax({
+        url: "adminDeleteForeverAction.jsp",
+        type: "POST",
+        dataType: "json",
+        data: { board_idx: boardIdx },
+
+        success(res) {
+          res.success
+            ? alert("완전히 삭제되었습니다.", reloadBoardList)
+            : alert("삭제에 실패했습니다.");
+        },
+
+        error() {
+          alert("서버 오류가 발생했습니다.");
+        }
+      });
+    }
+  );
+}
+</script>
+<script>
 	function needLoginAlert() {
 	    alert("로그인이 필요합니다.", function() {
 	    $('#loginModal').modal('show');			
 		});
 	}
-	</script>
-		<script>
+</script>
+<script>
 	window.addEventListener("pageshow", function (event) {
 	    if (event.persisted) {
 	        // 뒤로가기(bfcache)로 복원된 경우
 	        location.reload();
 	    }
 	});
-	</script>
+</script>
 	</div>
 </body>
 <footer>
-<jsp:include page="/main/footer.jsp"/>
+	<jsp:include page="/main/footer.jsp"/>
 </footer>
 </html>

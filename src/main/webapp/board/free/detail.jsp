@@ -79,30 +79,22 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 				</div>
 				<div class="post-meta">
 					<span class="readcount">조회 <%=dto.getReadcount()%></span>
-					<%-- 작성자 관리자만 보이게 수정 삭제  --%>
+					<%-- 작성자 / 관리자만 수정·삭제 가능 --%>
 					<%
-					boolean isTestMode = false; // 테스트 끝나면 false
-					boolean canEdit = isTestMode || isOwner;
+					    boolean isTestMode = false; // 테스트 끝나면 false
+					    boolean canEdit = isTestMode || isOwner;
 					%>
-					<%
-					if (canEdit) {
-					%>
-					<span class="more" id="postMenuBtn">⋮</span>
-					<%
-					}
-					%>
-
-					<%
-					if (canEdit) {
-					%>
-					<div class="post-menu" id="postMenu">
-						<a href="update.jsp?board_idx=<%=board_idx%>">수정</a> <a
-							href="javascript:void(0);" id="deletePostBtn"
-							data-board="<%=board_idx%>"> 삭제 </a>
-					</div>
-					<%
-					}
-					%>
+					<% if (canEdit) { %>
+					    <span class="more" id="postMenuBtn">⋮</span>
+					    <div class="post-menu" id="postMenu">
+					        <a href="update.jsp?board_idx=<%= board_idx %>">수정</a>
+					        <a href="javascript:void(0);"
+					           id="deletePostBtn"
+					           data-board="<%= board_idx %>">
+					            삭제
+					        </a>
+					    </div>
+					<% } %>	
 				</div>
 			</div>
 			<!-- 카테고리 -->
@@ -122,7 +114,6 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 			<div class="post-content">
 				<%=dto.getContent()%>
 			</div>
-
 			<%
 			if (dto.getFilename() != null && !dto.getFilename().isEmpty()) {
 			%>
@@ -132,10 +123,7 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 					download> <%=dto.getFilename()%>
 				</a>
 			</div>
-			<%
-			}
-			%>
-
+			<% } %>
 			<%
 			FreeLikeDao frLikeDao = new FreeLikeDao();
 			String frLoginId = (String) session.getAttribute("loginid");
@@ -161,6 +149,7 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 					style="cursor: pointer;">🔗 URL</span> <span>🔗 공유</span>
 			</div>
 			<!-- 댓글 작성 박스 -->
+			<% if (loginId != null && !isAdmin) { %>
 			<div class="comment-input-box">
 				<!-- 입력 영역 -->
 				<form id="commentForm">
@@ -173,13 +162,9 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 					if (loginId == null) {
 					%>
 					<textarea disabled placeholder="로그인 후 댓글을 작성할 수 있습니다"></textarea>
-					<%
-					} else {
-					%>
+					<% } else { %>
 					<textarea name="content" placeholder="댓글을 남겨보세요" required></textarea>
-					<%
-					}
-					%>
+					<% } %>
 					<div class="comment-input-footer">
 						<div class="comment-tools">
 							<i class="bi bi-camera"></i> <i class="bi bi-emoji-smile"></i>
@@ -188,12 +173,11 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 						if (loginId != null) {
 						%>
 						<button type="button" id="commentSubmitBtn">등록</button>
-						<%
-						}
-						%>
+						<% } %>
 					</div>
 				</form>
 			</div>
+			<% } %>
 			<!-- 댓글 영역 -->
 			<div class="comment-list mt-5">
 				<%
@@ -207,15 +191,13 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 				<div class="comment-item">
 					<div class="comment-avatar">👤</div>
 					<div class="comment-body">
-						<%-- 🔹 삭제된 원댓글 --%>
+						<%-- 삭제된 원댓글 --%>
 						<%
 						if (parent.getIs_deleted() == 1) {
 						%>
 						<div class="comment-content text-muted fst-italic">삭제된
 							댓글입니다.</div>
-						<%
-						} else {
-						%>
+						<% } else { %>
 						<div class="comment-top">
 							<span class="comment-writer"><%=parent.getWriter_id()%></span> <span
 								class="comment-date"><%=parent.getCreate_day()%></span>
@@ -226,30 +208,24 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 						<div class="comment-actions">
 							<span class="reply-btn" data-id="<%=parent.getComment_idx()%>">답글</span>
 							<span class="action-divider">·</span>
-
 							<%
 							if (loginId != null && loginId.equals(parent.getWriter_id())) {
 							%>
 							<span class="comment-delete-btn"
 								data-id="<%=parent.getComment_idx()%>">삭제</span>
-							<%
-							} else {
-							%>
+							<% } else { %>
 							<span>신고</span>
-							<%
-							}
-							%>
+							<% } %>
 						</div>
 						<!-- 답글 입력 -->
+						
 						<div class="reply-form"
 							id="reply-form-<%=parent.getComment_idx()%>">
 							<textarea placeholder="답글을 입력하세요"></textarea>
 							<button type="button" class="reply-submit-btn"
 								data-parent="<%=parent.getComment_idx()%>">등록</button>
 						</div>
-						<%
-						}
-						%>
+						<% } %>
 					</div>
 				</div>
 				<!-- ================= 대댓글 ================= -->
@@ -267,9 +243,7 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 						%>
 						<div class="comment-content text-muted fst-italic">삭제된
 							댓글입니다.</div>
-						<%
-						} else {
-						%>
+						<% } else { %>
 						<div class="comment-top">
 							<span class="comment-writer"><%=reply.getWriter_id()%></span> <span
 								class="comment-date"><%=reply.getCreate_day()%></span>
@@ -283,17 +257,11 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 							%>
 							<span class="comment-delete-btn"
 								data-id="<%=reply.getComment_idx()%>">삭제</span>
-							<%
-							} else {
-							%>
+							<% } else { %>
 							<span>신고</span>
-							<%
-							}
-							%>
+							<% } %>
 						</div>
-						<%
-						}
-						%>
+						<% } %>
 					</div>
 				</div>
 				<% } %>
@@ -317,9 +285,7 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 									class="date"> <%=new java.text.SimpleDateFormat("yyyy.MM.dd").format(b.getCreate_day())%>
 								</span>
 							</div></li>
-						<%
-						}
-						%>
+						<% } %>
 					</ul>
 				</div>
 			</div>

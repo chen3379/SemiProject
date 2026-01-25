@@ -48,7 +48,7 @@ String roleType = (String) session.getAttribute("roleType");
 
 boolean isOwner = loginId != null && loginId.equals(dto.getId());
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
-boolean canEdit = isOwner || isAdmin;
+boolean canEdit = isOwner;
 
 if (dto.getIs_deleted() == 1 && !canEdit) {
     out.println("<script>alert('삭제되었거나 숨김 처리된 글입니다.'); history.back();</script>");
@@ -78,7 +78,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		    <div class="profile user-profile"
 		         data-user-id="<%=dto.getId()%>"
 		         data-nickname="<%=dto.getNickname()%>">
-		
 		        <div class="profile-img">👤</div>
 		        <div>
 		            <div class="writer"><%= isAdmin ? dto.getId() : dto.getNickname() %></div>
@@ -87,19 +86,23 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		            </div>
 		        </div>
 		    </div>
-		
 		    <div class="post-meta">
 		        <span class="readcount">조회 <%=dto.getReadcount()%></span>
-		
-		       <%boolean isTestMode = false; %>
-		        <% if (canEdit) { %>
-		            <span class="more" id="postMenuBtn">⋮</span>
-		            <div class="post-menu" id="postMenu">
-		                <a href="update.jsp?board_idx=<%=board_idx%>">수정</a>
-		                <a href="javascript:void(0);" id="deletePostBtn"
-		                   data-board="<%=board_idx%>">삭제</a>
-		            </div>
-		        <% } %>
+		       		<%
+					    boolean isTestMode = false; // 테스트 끝나면 false
+					%>
+					<% if (canEdit) { %>
+					    <span class="more" id="postMenuBtn">⋮</span>
+					
+					    <div class="post-menu" id="postMenu">
+					        <a href="update.jsp?board_idx=<%= board_idx %>">수정</a>
+					        <a href="javascript:void(0);"
+					           id="deletePostBtn"
+					           data-board="<%= board_idx %>">
+					            삭제
+					        </a>
+					    </div>
+					<% } %>	
 		    </div>
 		</div>
 		<!-- 제목 -->
@@ -147,6 +150,7 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 
 
 		<!-- 댓글 작성 박스 -->
+		<% if (loginId != null && !isAdmin) { %>
 		<div class="comment-input-box">
 			<!-- 입력 영역 -->
 			<form id="commentForm">
@@ -173,7 +177,7 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 				</div>
 			</form>
 		</div>
-
+		<% } %>
 		<!-- 댓글 영역 -->
 		<div class="comment-list mt-5">
 
@@ -215,7 +219,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 						<span>신고</span>
 						<% } %>
 					</div>
-
 					<!-- 답글 입력 -->
 					<div class="reply-form"
 						id="reply-form-<%= parent.getComment_idx() %>">
@@ -223,36 +226,26 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 						<button type="button" class="reply-submit-btn"
 							data-parent="<%= parent.getComment_idx() %>">등록</button>
 					</div>
-
 					<% } %>
 				</div>
 			</div>
-
 			<!-- ================= 대댓글 ================= -->
 			<% for (ReviewCommentDto reply : clist) { %>
 			<% if (reply.getParent_comment_idx() == parent.getComment_idx()) { %>
-
 			<div class="comment-item reply">
 				<div class="comment-avatar">👤</div>
-
 				<div class="comment-body">
-
 					<% if (reply.getIs_deleted() == 1) { %>
-
 					<div class="comment-content text-muted fst-italic">삭제된 댓글입니다.
 					</div>
-
 					<% } else { %>
-
 					<div class="comment-top">
 						<span class="comment-writer"><%= reply.getWriter_id() %></span> <span
 							class="comment-date"><%= reply.getCreate_day() %></span>
 					</div>
-
 					<div class="comment-content">
 						<%= reply.getContent() %>
 					</div>
-
 					<div class="comment-actions">
 						<% if (loginId != null && loginId.equals(reply.getWriter_id())) { %>
 						<span class="comment-delete-btn"
@@ -261,7 +254,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 						<span>신고</span>
 						<% } %>
 					</div>
-
 					<% } %>
 				</div>
 			</div>
@@ -280,7 +272,6 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 						href="detail.jsp?board_idx=<%=b.getBoard_idx()%>"
 						class="post-title-more"> <%= b.getTitle() %>
 					</a>
-
 						<div class="post-meta">
 							<span class="writer"><%= b.getNickname() %></span>
 							<span class="date">
@@ -295,220 +286,216 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 		</div>
 		</main>
 		<script>
-$(function () {
-
-    /* =========================
-       댓글 등록
-    ========================= */
-    $('#commentSubmitBtn').on('click', function () {
-        const content = $('textarea[name="content"]').val()?.trim();
-
-        if (!content) {
-            alert('내용을 입력하세요');
-            return;
-        }
-
-        $.post(
-            'commentInsert.jsp',
-            {
-                board_idx: '<%= board_idx %>',
-                content
-            },
-            function (res) {
-                if (res.status === 'LOGIN_REQUIRED') {
-                    alert('로그인이 필요합니다');
-                    return;
-                }
-
-                if (res.status === 'SUCCESS') {
-                    location.reload();
-                } else {
-                    alert('댓글 등록 실패');
-                }
-            },
-            'json'
-        );
-    });
-
-
-    /* =========================
-       답글 등록
-    ========================= */
-    $(document).on('click', '.reply-submit-btn', function () {
-        const parentIdx = $(this).data('parent');
-        const content = $(this)
-            .closest('.reply-form')
-            .find('textarea')
-            .val()
-            .trim();
-
-        if (!content) {
-            alert('답글 내용을 입력하세요');
-            return;
-        }
-
-        $.post(
-            'commentInsert.jsp',
-            {
-                board_idx: '<%= board_idx %>',
-                parent_comment_idx: parentIdx,
-                content
-            },
-            function (res) {
-                if (res.status === 'SUCCESS') {
-                    location.reload();
-                }
-            },
-            'json'
-        );
-    });
-
-
-    /* =========================
-       댓글 삭제
-    ========================= */
-    $(document).on('click', '.comment-delete-btn', function () {
-        const commentIdx = $(this).data('id');
-
-        alert('댓글을 삭제하시겠습니까?', function () {
-            $.post(
-                'commentDelete.jsp',
-                { comment_idx: commentIdx },
-                function (res) {
-                    if (res.status === 'SUCCESS') {
-                        location.reload();
-                    }
-                },
-                'json'
-            );
-        });
-    });
-
-    /* =========================
-       답글 폼 토글
-    ========================= */
-    $(document).on('click', '.reply-btn', function () {
-        const form = $('#reply-form-' + $(this).data('id'));
-        if (!form.length) return;
-        form.toggle();
-    });
-
-
-    /* =========================
-       URL 복사
-    ========================= */
-    const $copyBtn = $('#copyUrlBtn');
-    if ($copyBtn.length) {
-        const originalText = $copyBtn.text();
-        let timer = null;
-
-        $copyBtn.on('click', function () {
-            navigator.clipboard.writeText(location.href).then(() => {
-                if (timer) return;
-                $copyBtn.text('🔗 URL 복사됨');
-                timer = setTimeout(() => {
-                    $copyBtn.text(originalText);
-                    timer = null;
-                }, 2000);
-            });
-        });
-    }
-
-
-    /* =========================
-       게시글 메뉴 토글
-    ========================= */
-    $('#postMenuBtn').on('click', function (e) {
-        e.stopPropagation();
-        $('#postMenu').toggle();
-    });
-
-
-
-    /* =========================
-       좋아요
-    ========================= */
-    $('#likeBtn').on('click', function () {
-        const boardIdx = $(this).data('board');
-
-        $.post(
-            'likeAction.jsp',
-            { board_idx: boardIdx },
-            function (res) {
-                if (res.status === 'LOGIN_REQUIRED') {
-                    alert('로그인이 필요합니다.');
-                    return;
-                }
-                $('#likeCount').text(res.count);
-                $('#likeBtn').toggleClass('active', res.liked);
-            },
-            'json'
-        );
-    });
-
-
-    /* =========================
-       게시글 삭제 (custom alert)
-    ========================= */
-    $('#deletePostBtn').on('click', function () {
-        const boardIdx = $(this).data('board');
-
-        alert('정말 삭제하시겠습니까?', function () {
-            location.href = 'delete.jsp?board_idx=' + boardIdx;
-        });
-    });
-    
-    /* ===== 유저 정보 모달 ===== */
-    $('#userInfoOverlay, #userInfoModal').hide();
-
-    $(document).on('click', '.user-profile', function () {
-        const userId = $(this).data('user-id');
-        if (!userId) return;
-
-        $.get(
-            '<%=request.getContextPath()%>/profile/memberInfoAction.jsp',
-            { id: userId },
-            function (res) {
-                if (res.status !== 'SUCCESS') {
-                    alert('유저 정보를 불러올 수 없습니다.');
-                    return;
-                }
-
-                $('#uiNickname').text(res.nickname);
-                $('#uiEmail').text(res.id);
-                $('#uiJoinDate').text(res.createDay);
-
-                $('#userInfoOverlay').fadeIn(150);
-                $('#userInfoModal').fadeIn(150);
-            },
-            'json'
-        );
-    });
-
-    $('#userInfoOverlay').on('click', closeUserModal);
-
-    $(document).on('keydown', function (e) {
-        if (e.key === 'Escape') closeUserModal();
-    });
-
-    function closeUserModal() {
-        $('#userInfoModal').fadeOut(150);
-        $('#userInfoOverlay').fadeOut(150);
-    }
-});
-
+		$(function () {
+	    /* =========================
+	       댓글 등록
+	    ========================= */
+	    $('#commentSubmitBtn').on('click', function () {
+	        const content = $('textarea[name="content"]').val()?.trim();
+	
+	        if (!content) {
+	            alert('내용을 입력하세요');
+	            return;
+	        }
+	
+	        $.post(
+	            'commentInsert.jsp',
+	            {
+	                board_idx: '<%= board_idx %>',
+	                content
+	            },
+	            function (res) {
+	                if (res.status === 'LOGIN_REQUIRED') {
+	                    alert('로그인이 필요합니다');
+	                    return;
+	                }
+	
+	                if (res.status === 'SUCCESS') {
+	                    location.reload();
+	                } else {
+	                    alert('댓글 등록 실패');
+	                }
+	            },
+	            'json'
+	        );
+	    });
+	
+	
+	    /* =========================
+	       답글 등록
+	    ========================= */
+	    $(document).on('click', '.reply-submit-btn', function () {
+	        const parentIdx = $(this).data('parent');
+	        const content = $(this)
+	            .closest('.reply-form')
+	            .find('textarea')
+	            .val()
+	            .trim();
+	
+	        if (!content) {
+	            alert('답글 내용을 입력하세요');
+	            return;
+	        }
+	
+	        $.post(
+	            'commentInsert.jsp',
+	            {
+	                board_idx: '<%= board_idx %>',
+	                parent_comment_idx: parentIdx,
+	                content
+	            },
+	            function (res) {
+	                if (res.status === 'SUCCESS') {
+	                    location.reload();
+	                }
+	            },
+	            'json'
+	        );
+	    });
+	
+	
+	    /* =========================
+	       댓글 삭제
+	    ========================= */
+	    $(document).on('click', '.comment-delete-btn', function () {
+	        const commentIdx = $(this).data('id');
+	
+	        alert('댓글을 삭제하시겠습니까?', function () {
+	            $.post(
+	                'commentDelete.jsp',
+	                { comment_idx: commentIdx },
+	                function (res) {
+	                    if (res.status === 'SUCCESS') {
+	                        location.reload();
+	                    }
+	                },
+	                'json'
+	            );
+	        });
+	    });
+	
+	    /* =========================
+	       답글 폼 토글
+	    ========================= */
+	    $(document).on('click', '.reply-btn', function () {
+	        const form = $('#reply-form-' + $(this).data('id'));
+	        if (!form.length) return;
+	        form.toggle();
+	    });
+	
+	
+	    /* =========================
+	       URL 복사
+	    ========================= */
+	    const $copyBtn = $('#copyUrlBtn');
+	    if ($copyBtn.length) {
+	        const originalText = $copyBtn.text();
+	        let timer = null;
+	
+	        $copyBtn.on('click', function () {
+	            navigator.clipboard.writeText(location.href).then(() => {
+	                if (timer) return;
+	                $copyBtn.text('🔗 URL 복사됨');
+	                timer = setTimeout(() => {
+	                    $copyBtn.text(originalText);
+	                    timer = null;
+	                }, 2000);
+	            });
+	        });
+	    }
+	
+	
+	    /* =========================
+	       게시글 메뉴 토글
+	    ========================= */
+	    $('#postMenuBtn').on('click', function (e) {
+	        e.stopPropagation();
+	        $('#postMenu').toggle();
+	    });
+	
+	
+	
+	    /* =========================
+	       좋아요
+	    ========================= */
+	    $('#likeBtn').on('click', function () {
+	        const boardIdx = $(this).data('board');
+	
+	        $.post(
+	            'likeAction.jsp',
+	            { board_idx: boardIdx },
+	            function (res) {
+	                if (res.status === 'LOGIN_REQUIRED') {
+	                    alert('로그인이 필요합니다.');
+	                    return;
+	                }
+	                $('#likeCount').text(res.count);
+	                $('#likeBtn').toggleClass('active', res.liked);
+	            },
+	            'json'
+	        );
+	    });
+	
+	
+	    /* =========================
+	       게시글 삭제 (custom alert)
+	    ========================= */
+	    $('#deletePostBtn').on('click', function () {
+	        const boardIdx = $(this).data('board');
+	
+	        alert('정말 삭제하시겠습니까?', function () {
+	            location.href = 'delete.jsp?board_idx=' + boardIdx;
+	        });
+	    });
+	    
+	    /* ===== 유저 정보 모달 ===== */
+	    $('#userInfoOverlay, #userInfoModal').hide();
+	
+	    $(document).on('click', '.user-profile', function () {
+	        const userId = $(this).data('user-id');
+	        if (!userId) return;
+	
+	        $.get(
+	            '<%=request.getContextPath()%>/profile/memberInfoAction.jsp',
+	            { id: userId },
+	            function (res) {
+	                if (res.status !== 'SUCCESS') {
+	                    alert('유저 정보를 불러올 수 없습니다.');
+	                    return;
+	                }
+	
+	                $('#uiNickname').text(res.nickname);
+	                $('#uiEmail').text(res.id);
+	                $('#uiJoinDate').text(res.createDay);
+	
+	                $('#userInfoOverlay').fadeIn(150);
+	                $('#userInfoModal').fadeIn(150);
+	            },
+	            'json'
+	        );
+	    });
+	
+	    $('#userInfoOverlay').on('click', closeUserModal);
+	
+	    $(document).on('keydown', function (e) {
+	        if (e.key === 'Escape') closeUserModal();
+	    });
+	
+	    function closeUserModal() {
+	        $('#userInfoModal').fadeOut(150);
+	        $('#userInfoOverlay').fadeOut(150);
+	    }
+	});
 	</script>
 	<footer class="global-footer">
 		<jsp:include page="/main/footer.jsp" />
 	</footer>
 	<!-- 유저 정보 모달 -->
 	<div class="user-info-overlay" id="userInfoOverlay"></div>
-
 	<div class="user-info-modal" id="userInfoModal">
 		<div class="user-info-left">
 			<div class="avatar">👤</div>
 		</div>
-
 		<div class="user-info-right">
 			<div class="info-row">
 				<span class="label">닉네임</span> <span class="value" id="uiNickname"></span>

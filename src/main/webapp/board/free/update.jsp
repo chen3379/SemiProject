@@ -68,13 +68,11 @@ FreeBoardDto dto = dao.getBoard(board_idx);
 	    placeholder: '이곳에 글을 작성하세요.'
 	  });
 	
-	  // ✅ 기존 글 내용 세팅
+	  // 기존 글 내용 세팅
 	  editor.setHTML(`<%= dto.getContent().replace("`", "\\`") %>`);
 	  editor.setMarkdown(`<%= dto.getContent().replace("`", "\\`") %>`);
 	
-	
 	  const form = document.querySelector('form');
-	
 	  form.addEventListener('submit', function () {
 	    document.getElementById('content').value = editor.getHTML();
 	  });

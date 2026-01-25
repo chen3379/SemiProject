@@ -335,32 +335,39 @@ public class FreeBoardDao {
     }
 
     // 게시글 숨김 처리
-    public void hideBoard(int board_idx) {
+    public boolean hideBoard(int board_idx) {
 
         String sql = "UPDATE free_board SET is_deleted = 1 WHERE board_idx = ?";
 
-        try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, board_idx);
-            pstmt.executeUpdate();
+
+            return pstmt.executeUpdate() > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
     // 게시글 복구 처리
-    public void restoreBoard(int board_idx) {
+    public boolean restoreBoard(int board_idx) {
 
         String sql = "UPDATE free_board SET is_deleted = 0 WHERE board_idx = ?";
 
-        try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, board_idx);
-            pstmt.executeUpdate();
+
+            int result = pstmt.executeUpdate();
+            return result > 0; //  성공 여부 반환
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 
@@ -401,17 +408,19 @@ public class FreeBoardDao {
     }
 
     // 관리자 전용 - 게시글 완전 삭제 (물리 삭제)
-    public void deleteBoardForever(int board_idx) {
+    public boolean deleteBoardForever(int board_idx) {
 
         String sql = "DELETE FROM free_board WHERE board_idx = ?";
 
-        try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, board_idx);
-            pstmt.executeUpdate();
+            return pstmt.executeUpdate() > 0;
 
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
     }
 

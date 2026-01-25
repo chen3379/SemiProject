@@ -53,7 +53,6 @@ int endPage = startPage + pageBlock - 1;
 if (endPage > totalPage) endPage = totalPage;
 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 %>
-
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
 /* ===== 전체 ===== */
@@ -295,7 +294,6 @@ td.title a {
 <body>
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
-	<jsp:include page="/common/customAlert.jsp" />
 
 	<div class="container" style="padding-top: 80px;">
 		<div class="review-header">
@@ -303,7 +301,6 @@ td.title a {
 				🎬 영화 리뷰 <span>왓플릭스 유저들의 솔직한 감상</span>
 			</h2>
 		</div>
-
 		<!-- 게시글 목록 -->
 		<div class="review-table-wrap">
 			<table>
@@ -321,9 +318,9 @@ td.title a {
 				</thead>
 
 				<tbody>
-					<% for (ReviewBoardDto dto : list) { 
+				<% for (ReviewBoardDto dto : list) { 
 		       boolean isSpoiler = dto.isIs_spoiler_type();
-		%>
+				%>
 					<tr>
 						<td class="title">
 							<% if (isSpoiler) { %> <span class="badge bg-danger me-1">스포</span>
@@ -338,30 +335,30 @@ td.title a {
 						<td class="date"><%= sdf.format(dto.getCreate_day()) %></td>
 
 						<td class="count"><%= dto.getReadcount() %></td>
-						<%-- ⭐ 관리자 전용 관리 컬럼 --%>
 						<% if (isAdmin) { %>
 						<td>
-							<% if (dto.getIs_deleted() == 0) { %> <!-- 숨김 -->
-							<form action="adminHideAction.jsp" method="post"
-								style="display: inline;">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-danger">숨김</button>
-							</form> <% } else { %> <!-- 복구 -->
-							<form action="adminRestoreAction.jsp" method="post"
-								style="display: inline;">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-secondary">복구</button>
-							</form> <% } %> <!-- 🔥 완전 삭제 -->
-							<form
-								action="<%=request.getContextPath()%>/board/review/adminDeleteForeverAction.jsp"
-								method="post" style="display: inline;"
-								onsubmit="return confirm('⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n정말 삭제하시겠습니까?');">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-dark">완전삭제</button>
-							</form>
+						  <% if (dto.getIs_deleted() == 0) { %>
+						    <button
+						      type="button"
+						      class="btn btn-sm btn-danger"
+						      onclick="hideReviewBoard(<%= dto.getBoard_idx() %>)">
+						      숨김
+						    </button>
+						  <% } else { %>
+						    <button
+						      type="button"
+						      class="btn btn-sm btn-secondary"
+						      onclick="restoreReviewBoard(<%= dto.getBoard_idx() %>)">
+						      복구
+						    </button>
+						  <% } %>
+						
+						  <button
+						    type="button"
+						    class="btn btn-sm btn-dark"
+						    onclick="deleteReviewBoardForever(<%= dto.getBoard_idx() %>)">
+						    완전삭제
+						  </button>
 						</td>
 						<% } %>
 					</tr>
@@ -383,61 +380,117 @@ td.title a {
 		<% } %>
 		<div class="page-wrap">
 		  <ul class="page-list">
-		
 		    <%-- ◀ 이전 5페이지 --%>
 		    <% if (startPage > 1) { %>
 		    <li class="arrow">
 		      <a href="list.jsp?page=<%=startPage - 1%>">&lt;</a>
 		    </li>
 		    <% } %>
-		
 		    <%-- 페이지 번호 5개씩 --%>
 		    <% for (int i = startPage; i <= endPage; i++) { %>
 		    <li class="<%= (i == currentPage) ? "active" : "" %>">
 		      <a href="list.jsp?page=<%=i%>"><%= i %></a>
 		    </li>
 		    <% } %>
-		
 		    <%-- ▶ 다음 5페이지 --%>
 		    <% if (endPage < totalPage) { %>
 		    <li class="arrow">
 		      <a href="list.jsp?page=<%=endPage + 1%>">&gt;</a>
 		    </li>
 		    <% } %>
-		
 		  </ul>
 		</div>
-	<script>
+<script>
+function reloadReviewList() {
+  location.reload();
+}
+
+function hideReviewBoard(boardIdx) {
+  $.ajax({
+    url: "adminHideAction.jsp",
+    type: "POST",
+    dataType: "json",
+    data: { board_idx: boardIdx },
+    success(res) {
+      res.success
+        ? alert("숨김 처리되었습니다.", reloadReviewList)
+        : alert("숨김 처리에 실패했습니다.");
+    },
+    error() {
+      alert("서버 오류가 발생했습니다.");
+    }
+  });
+}
+
+function restoreReviewBoard(boardIdx) {
+  $.ajax({
+    url: "adminRestoreAction.jsp",
+    type: "POST",
+    dataType: "json",
+    data: { board_idx: boardIdx },
+    success(res) {
+      res.success
+        ? alert("복구되었습니다.", reloadReviewList)
+        : alert("복구에 실패했습니다.");
+    },
+    error() {
+      alert("서버 오류가 발생했습니다.");
+    }
+  });
+}
+function deleteReviewBoardForever(boardIdx) {
+  alert(
+    "이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n계속하시겠습니까?",
+    function () {
+      $.ajax({
+        url: "adminDeleteForeverAction.jsp",
+        type: "POST",
+        dataType: "json",
+        data: { board_idx: boardIdx },
+        success(res) {
+          res.success
+            ? alert("완전히 삭제되었습니다.", reloadReviewList)
+            : alert("삭제에 실패했습니다.");
+        },
+        error() {
+          alert("서버 오류가 발생했습니다.");
+        }
+      });
+    }
+  );
+}
+</script>
+<script>
 function needLoginAlert() {
     alert("로그인이 필요합니다.");
     $('#loginModal').modal('show');
 }
 </script>
-	<script>
+<script>
 document.querySelectorAll('.review-link').forEach(link => {
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
+  link.addEventListener('click', function (e) {
+    e.preventDefault();
 
-        const isSpoiler = this.dataset.spoiler === '1';
-        const url = this.dataset.url;
+    const isSpoiler = this.dataset.spoiler === '1';
+    const url = this.dataset.url;
 
-        <% if (isAdmin) { %>
-            location.href = url;
-            return;
-        <% } %>
+    <% if (isAdmin) { %>
+      location.href = url;
+      return;
+    <% } %>
 
-        if (!isSpoiler) {
-            location.href = url;
-            return;
-        }
-
-        alertMove(
-            '스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?',
-            url
-        );
-    });
+    if (!isSpoiler) {
+      location.href = url;
+      return;
+    }
+    if (confirm('스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?')) {
+      location.href = url;
+    }
+  });
 });
 </script>
-
 </body>
+<footer>
+	<jsp:include page="/main/footer.jsp"/>
+</footer>
 </html>

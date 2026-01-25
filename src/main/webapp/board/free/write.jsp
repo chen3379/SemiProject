@@ -112,7 +112,6 @@ if (!isLogin || isAdmin) {
 	 	}
 	});
 
-
   const form = document.querySelector('form');
   const categorySelect = document.querySelector('select[name="category"]');
   const modal = new bootstrap.Modal(

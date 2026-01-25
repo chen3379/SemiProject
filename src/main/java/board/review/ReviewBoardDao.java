@@ -290,22 +290,6 @@ public class ReviewBoardDao {
 	    }
 	}
 
-	// 리뷰 글 복구
-	public void restoreBoard(int board_idx) {
-
-	    String sql = "UPDATE review_board SET is_deleted = 0 WHERE board_idx = ?";
-
-	    try (Connection conn = db.getDBConnect();
-	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-	        pstmt.setInt(1, board_idx);
-	        pstmt.executeUpdate();
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
-
 	//다른글 더보
 	public List<ReviewBoardDto> getOtherBoards(int currentBoardIdx, int limit) {
 
@@ -377,9 +361,9 @@ public class ReviewBoardDao {
 
 	    return dto;
 	}
-
+	
 	// 관리자 전용 - 리뷰 게시글 완전 삭제
-	public void deleteBoardForever(int board_idx) {
+	public boolean deleteBoardForever(int board_idx) {
 
 	    String sql = "DELETE FROM review_board WHERE board_idx = ?";
 
@@ -387,11 +371,42 @@ public class ReviewBoardDao {
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
 	        pstmt.setInt(1, board_idx);
-	        pstmt.executeUpdate();
+	        return pstmt.executeUpdate() > 0;
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
+
+	    return false;
+	}
+	
+	// 리뷰 글 숨김
+	public boolean hideBoard(int board_idx) {
+	    String sql = "UPDATE review_board SET is_deleted = 1 WHERE board_idx = ?";
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        return pstmt.executeUpdate() > 0;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
 	}
 
+	// 리뷰 글 복구
+	public boolean restoreBoard(int board_idx) {
+	    String sql = "UPDATE review_board SET is_deleted = 0 WHERE board_idx = ?";
+	    try (Connection conn = db.getDBConnect();
+	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+	        pstmt.setInt(1, board_idx);
+	        return pstmt.executeUpdate() > 0;
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
 }
