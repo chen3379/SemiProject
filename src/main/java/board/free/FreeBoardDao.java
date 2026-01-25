@@ -54,8 +54,12 @@ public class FreeBoardDao {
         try {
             conn = db.getDBConnect();
 
-            String sql = "SELECT board_idx, category_type, title, id, readcount, create_day " + "FROM free_board "
-                    + "WHERE is_deleted = 0 ";
+            String sql =
+            		  "SELECT b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
+            		  "b.readcount, b.create_day " +
+            		  "FROM free_board b " +
+            		  "LEFT JOIN member m ON b.id = m.id " +
+            		  "WHERE b.is_deleted = 0 ";
 
             if (!"all".equals(category)) {
                 sql += "AND category_type = ? ";
@@ -82,6 +86,7 @@ public class FreeBoardDao {
                 dto.setCategory_type(rs.getString("category_type"));
                 dto.setTitle(rs.getString("title"));
                 dto.setId(rs.getString("id"));
+                dto.setNickname(rs.getString("nickname"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
 
@@ -241,7 +246,7 @@ public class FreeBoardDao {
                 dto.setContent(rs.getString("content"));
                 dto.setFilename(rs.getString("filename"));
                 dto.setId(rs.getString("id"));
-                dto.setNickname(rs.getString("nickname")); // ⭐ 핵심
+                dto.setNickname(rs.getString("nickname")); 
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
                 dto.setIs_deleted(rs.getInt("is_deleted"));
@@ -323,7 +328,7 @@ public class FreeBoardDao {
                 dto.setId(rs.getString("id"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
-                dto.setIs_deleted(rs.getInt("is_deleted")); // ⭐ 관리자용
+                dto.setIs_deleted(rs.getInt("is_deleted")); // 관리자용
                 list.add(dto);
             }
 
