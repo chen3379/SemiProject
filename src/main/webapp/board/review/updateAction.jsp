@@ -43,7 +43,6 @@ if (spoilerParam != null) {
 boolean isSpoiler = (is_spoiler == 1);
 if (content == null) content = "";
 
-/* 새로 업로드된 파일 */
 String newFileName = multi.getFilesystemName("uploadFile");
 
 ReviewBoardDao dao = new ReviewBoardDao();

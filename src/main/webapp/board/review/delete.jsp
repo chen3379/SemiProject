@@ -8,6 +8,5 @@ int board_idx = Integer.parseInt(request.getParameter("board_idx"));
 ReviewBoardDao dao = new ReviewBoardDao();
 dao.deleteBoard(board_idx);
 
-// 삭제 후 목록 이동
 response.sendRedirect("list.jsp");
 %>
