@@ -6,7 +6,7 @@
 <%
 response.setHeader("Cache-Control", "no-store");
 
-String uploadPath = application.getRealPath("/save/editor");
+String uploadPath = application.getRealPath("/save");
 File dir = new File(uploadPath);
 if (!dir.exists()) dir.mkdirs();
 
@@ -41,6 +41,7 @@ if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg"
 String safeFileName = java.net.URLEncoder.encode(fileName, "UTF-8")
     .replaceAll("\\+", "%20");
 
-String imageUrl = request.getContextPath() + "/save/editor/" + safeFileName;
+String imageUrl = request.getContextPath() + "/save/" + fileName;
+
 out.print("{\"url\":\"" + imageUrl + "\"}");
 %>

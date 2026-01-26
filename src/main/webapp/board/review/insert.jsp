@@ -1,16 +1,36 @@
+<%@page import="board.review.ReviewBoardDao"%>
+<%@page import="board.review.ReviewBoardDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<title>Insert title here</title>
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-</head>
-<body>
 
-</body>
-</html>
+<%
+request.setCharacterEncoding("UTF-8");
+
+String genre = request.getParameter("genre_type");
+String title = request.getParameter("title");
+String content = request.getParameter("content");
+
+boolean isSpoiler = request.getParameter("is_spoiler") != null;
+
+String filename = request.getParameter("filename");
+
+String loginId = (String) session.getAttribute("loginid");
+
+if (loginId == null) {
+    response.sendRedirect("/login/login.jsp");
+    return;
+}
+
+ReviewBoardDto dto = new ReviewBoardDto();
+dto.setGenre_type(genre);
+dto.setTitle(title);
+dto.setContent(content);
+dto.setId(loginId);               
+dto.setIs_spoiler_type(isSpoiler);
+dto.setFilename(filename);
+
+ReviewBoardDao dao = new ReviewBoardDao();
+dao.insertBoard(dto);
+
+response.sendRedirect("list.jsp");
+%>
