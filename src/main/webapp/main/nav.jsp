@@ -182,7 +182,7 @@ if (!"true".equals(loginStatus)) {
 					class="nav-item">커뮤니티</a></li>
 				<li><a
 					href="<%=request.getContextPath()%>/support/supportList.jsp"
-					class="nav-item">지원</a></li>
+					class="nav-item">고객센터</a></li>
 				<%
 				String roleType = (String) session.getAttribute("roleType");
 				if ("3".equals(roleType) || "9".equals(roleType)) {
