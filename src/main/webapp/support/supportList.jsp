@@ -337,6 +337,12 @@ a {
 	border-top: 1px solid #333;
 }
 
+    /* 스크롤바 커스텀 (Webkit) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+
 </style>
 
 
