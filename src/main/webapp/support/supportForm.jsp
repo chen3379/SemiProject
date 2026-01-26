@@ -61,7 +61,7 @@ history.back();
 
     <!-- 헤더 -->
     <div class="support-header">
-        <h2>고객지원 문의</h2>
+        <h2 style="font-weight: bold;">1:1 문의하기</h2>
         <span>문의 내용을 자세히 작성해주세요</span>
     </div>
 
@@ -106,6 +106,7 @@ history.back();
             <div class="form-group">
                 <label>내용</label>
                 <textarea name="content"
+                		  rows="10"
                           id="content"
                           class="form-control content-area"
                           placeholder="문의 내용을 입력하세요"
