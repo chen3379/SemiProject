@@ -29,10 +29,12 @@
         return;
     }
 
-    // 삭제글
+    // 삭제글: 관리자만 열람 허용
     if ("1".equals(dto.getDeleteType())) {
-        out.print("<script>alert('삭제된 글입니다');history.back();</script>");
-        return;
+    	if(!isAdmin){
+	        out.print("<script>alert('삭제된 글입니다');history.back();</script>");
+	        return;
+    	}
     }
 
     // 비밀글: 관리자 or 작성자만
@@ -69,8 +71,8 @@
     String statusText = "답변대기";
     if ("1".equals(dto.getStatusType())) statusText = "답변완료";
     
-    // 작성자(답변대기), 관리자만 수정버튼 노출
-    boolean canEdit = isLogin && (isAdmin || (id.equals(dto.getId()) && !"1".equals(dto.getStatusType())));
+    // 작성자(답변대기), 관리자만 수정버튼 노출, 삭제된 글 미노출
+    boolean canEdit = isLogin && !"1".equals(dto.getDeleteType()) && (isAdmin || (id.equals(dto.getId()) && !"1".equals(dto.getStatusType())));
     
     // 목록 클릭 > 현재페이지
     String currentPage = request.getParameter("currentPage");
@@ -226,14 +228,20 @@
   }
   
   .profile-img {
-	width: 40px;
-	height: 40px;
-	background: #eee;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
+		width: 40px;
+		height: 40px;
+		background: #eee;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	/* 삭제글 제목 표시 */
+	.title.deleted{
+	  text-decoration: line-through;
+	  color:#9aa0a6;
+	}
 </style>
 
 </head>
@@ -281,7 +289,7 @@
   <% if("1".equals(dto.getSecretType())){ %>
 	<span style="color:#6f42c1;">🔒</span>
   <% } %>
-  <span class="title" style="color: black;"><%= dto.getTitle() %></span>
+  <span class="title <%= "1".equals(dto.getDeleteType()) ? "deleted" : "" %>"><%= dto.getTitle() %></span>
 
 
   <!-- 본문 -->
@@ -298,7 +306,7 @@
   %>
 
   <%-- 관리자면: 답변 입력/수정 UI 노출 --%>
-  <% if (isAdmin) { %>
+  <% if (isAdmin && !"1".equals(dto.getDeleteType())) { %>
 
     <div class="answer-wrap admin-form">
       <span class="answer-label">관리자 답변</span>

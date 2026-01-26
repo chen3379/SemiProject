@@ -86,7 +86,7 @@ a {
 
 /* 레이아웃 */
 .app-container {
-    min-height: 100vh;
+    min-height: 800px;
     padding-top: 0px;
 }
 
@@ -466,12 +466,21 @@ a {
 						
 						<% for(SupportDto dto : list){ %>
 						
-						    <%-- 1. 삭제된 문의글 --%>
+						    <%-- 1. 삭제된 문의글(관리자만 열람 가능) --%>
 						    <% if("1".equals(dto.getDeleteType())){ %>
-						        <tr class="deleted-row" onclick="event.stopPropagation(); alert('삭제된 글입니다');">
-						            <td><%=dto.getSupportIdx()%></td>
-						            <td colspan="<%= isAdmin ? 6 : 5 %>">삭제된 문의글입니다</td>
-						        </tr>
+						    	
+					            <% if(isAdmin){ %>
+							        <tr class="deleted-row" style="cursor:pointer;"
+							            onclick="location.href='supportDetail.jsp?supportIdx=<%=dto.getSupportIdx()%>&currentPage=<%=currentPage%>';">
+							            <td><%=dto.getSupportIdx()%></td>
+							            <td colspan="6">삭제된 문의글입니다 (관리자 열람 가능)</td>
+							        </tr>
+							    <% } else { %>
+							        <tr class="deleted-row" onclick="event.stopPropagation(); alert('삭제된 글입니다');">
+							            <td><%=dto.getSupportIdx()%></td>
+							            <td colspan="5">삭제된 문의글입니다</td>
+							        </tr>
+							    <% } %>
 										
 						    <% } else { %>
 						
@@ -585,8 +594,8 @@ a {
 				$(this).toggleClass("active");
 
 				// (선택사항) 다른 공지사항은 자동으로 닫고 싶다면 아래 주석 해제
-				//$(".notice-header").not(this).removeClass("active");
-				//$(".notice-header").not(this).next(".notice-body").slideUp(300);
+				$(".notice-header").not(this).removeClass("active");
+				$(".notice-header").not(this).next(".notice-body").slideUp(300);
 				
 			});
 		});
