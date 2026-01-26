@@ -254,7 +254,7 @@
 	<div>
       <div class="d-flex align-items-center gap-2" style="color: black;">
       	<div class="profile-img">👤</div>
-        <strong><%= writerId %></strong>
+        <strong><%= dto.getNickname() %></strong>
       </div>
       <div class="meta">
         <span><%= sdf.format(dto.getCreateDay()) %></span>

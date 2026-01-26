@@ -275,7 +275,7 @@ a {
 
 /* faq 스타일 */
 .faq-main {
-    margin-top: 100px;
+    margin-top: 120px;
     margin-bottom: 10px;
     max-width: 900px;
     min-width: 550px;
@@ -501,7 +501,7 @@ a {
 						                <% } %>
 						            </td>
 						
-						            <td><%= dto.getId().split("@")[0] %></td>
+						            <td><%= (dto.getNickname()!=null && !dto.getNickname().equals("") ? dto.getNickname() : dto.getId()) %></td>
 						            <td><%=sdf.format(dto.getCreateDay())%></td>
 						            <td><%=dto.getReadcount()%></td>
 									
