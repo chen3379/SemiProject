@@ -14,7 +14,16 @@ public class ReviewBoardDto {
     private Timestamp update_day;
     private String nickname;
     private String filename;
+    private int commentCount;
     
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
     public String getNickname() {
         return nickname;
     }

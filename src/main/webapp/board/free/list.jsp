@@ -162,20 +162,6 @@ th {
 	font-weight: 600;
 }
 
-td.title {
-	text-align: left;
-	word-break: break-word;
-}
-/* 제목 줄 너무 길면 말줄임 */
-td.title a {
-	display: inline-block;
-	max-width: 520px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	color: #fff;
-	text-decoration: none;
-}
 /* 스포일러 */
 .spoiler {
 	color: #d32f2f;
@@ -307,6 +293,29 @@ td.title a {
 .page-list li.arrow a:hover {
 	color: #fff;
 }
+.title-wrap {
+    display: inline-flex;
+    align-items: baseline; 
+    max-width: 520px;
+    gap: 6px;
+}
+td.title {
+    text-align: left;
+}
+.title-wrap a {
+    flex: 1;
+    min-width: 0;      
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    text-decoration: none;
+}
+.comment-count {
+    color: #ff5252;
+    font-size: 13px;
+    flex-shrink: 0;
+}
 </style>
 </head>
 <body>
@@ -355,14 +364,33 @@ td.title a {
 						<td class="category"><%="FREE".equals(dto.getCategory_type()) ? "자유수다" : "질문/추천"%>
 						</td>
 						<td class="title">
-							<% if (dto.isIs_spoiler_type()) { %> <span class="spoiler">[스포]</span>
-							<% } %> <%-- 관리자 + 숨김 표시 --%> <% if (isAdmin && dto.getIs_deleted() == 1) { %>
-							<span class="badge bg-danger">숨김</span> <% } %> <%-- 클릭 가능 여부 분기 --%>
-							<% if (dto.getIs_deleted() == 1 && !isAdmin) { %> <span
-							style="color: #777; cursor: not-allowed;"> <%= dto.getTitle() %>
-						</span> <% } else { %> <a
-							href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>"> <%= dto.getTitle() %>
-						</a> <% } %>
+						    <%-- 스포일러 표시 --%>
+						    <% if (dto.isIs_spoiler_type()) { %>
+						        <span class="spoiler">[스포]</span>
+						    <% } %>
+						    <%-- 관리자 + 숨김 표시 --%>
+						    <% if (isAdmin && dto.getIs_deleted() == 1) { %>
+						        <span class="badge bg-danger">숨김</span>
+						    <% } %>
+						
+						    <%-- 삭제된 글 (관리자 제외) --%>
+						    <% if (dto.getIs_deleted() == 1 && !isAdmin) { %>
+						        <span style="color:#777; cursor:not-allowed;">
+						            <%= dto.getTitle() %>
+						        </span>
+						    <% } else { %>
+						        <span class="title-wrap">
+						            <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
+						                <%= dto.getTitle() %>
+						            </a>
+						
+						            <% if (dto.getCommentCount() > 0) { %>
+						                <span class="comment-count">
+						                    [<%= dto.getCommentCount() %>]
+						                </span>
+						            <% } %>
+						        </span>
+						    <% } %>
 						</td>
 						<td class="writer">
 						    <%= (isAdmin || dto.getNickname() == null)

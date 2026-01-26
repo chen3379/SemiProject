@@ -675,4 +675,28 @@ textarea:disabled {
     font-weight: 700;
 }
 
+.info-row .value.email {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.modal-footer {
+    margin-top: auto;
+}
 
+.close-btn {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: #f3f4f6;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: #e5e7eb;
+}

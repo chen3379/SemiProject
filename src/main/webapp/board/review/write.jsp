@@ -98,7 +98,6 @@ const editor = new toastui.Editor({
     }
 });
 
-/* submit 시 에디터 내용 세팅 */
 const form = document.querySelector('form');
 form.addEventListener('submit', function () {
     document.getElementById('content').value = editor.getHTML();

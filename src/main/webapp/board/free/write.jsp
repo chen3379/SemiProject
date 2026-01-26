@@ -32,7 +32,6 @@ if (!isLogin || isAdmin) {
 	href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 <script
 	src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-
 <title>글쓰기-왓플릭스</title>
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
@@ -119,14 +118,11 @@ if (!isLogin || isAdmin) {
   );
 
   form.addEventListener('submit', function (e) {
-    // 카테고리 선택 안 했을 때
     if (!categorySelect.value) {
-      e.preventDefault();     // submit 중단
-      modal.show();           // 모달 표시
+      e.preventDefault();    
+      modal.show();          
       return;
     }
-
-    // 정상일 때만 에디터 내용 세팅
     document.getElementById('content').value = editor.getHTML();
   });
 </script>

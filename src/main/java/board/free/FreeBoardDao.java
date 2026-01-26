@@ -13,8 +13,8 @@ public class FreeBoardDao {
     DBConnect db = new DBConnect();
 
     // [숨김] → is_deleted = 1
-
     // [복구] → is_deleted = 0
+    
     public void insertBoard(FreeBoardDto dto) {
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -55,17 +55,24 @@ public class FreeBoardDao {
             conn = db.getDBConnect();
 
             String sql =
-            		  "SELECT b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
-            		  "b.readcount, b.create_day " +
-            		  "FROM free_board b " +
-            		  "LEFT JOIN member m ON b.id = m.id " +
-            		  "WHERE b.is_deleted = 0 ";
+                "SELECT " +
+                " b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
+                " b.readcount, b.create_day, IFNULL(c.cnt, 0) AS comment_count " +
+                "FROM free_board b " +
+                "LEFT JOIN member m ON b.id = m.id " +
+                "LEFT JOIN ( " +
+                "   SELECT board_idx, COUNT(*) AS cnt " +
+                "   FROM free_comment " +
+                "   WHERE is_deleted = 0 " +
+                "   GROUP BY board_idx " +
+                ") c ON b.board_idx = c.board_idx " +
+                "WHERE b.is_deleted = 0 ";
 
             if (!"all".equals(category)) {
-                sql += "AND category_type = ? ";
+                sql += "AND b.category_type = ? ";
             }
 
-            sql += "ORDER BY board_idx DESC LIMIT ?, ?";
+            sql += "ORDER BY b.board_idx DESC LIMIT ?, ?";
 
             pstmt = conn.prepareStatement(sql);
 
@@ -75,8 +82,8 @@ public class FreeBoardDao {
                 pstmt.setString(idx++, category);
             }
 
-            pstmt.setInt(idx++, start); // 시작 위치
-            pstmt.setInt(idx, pageSize); // 가져올 개수
+            pstmt.setInt(idx++, start);
+            pstmt.setInt(idx, pageSize);
 
             rs = pstmt.executeQuery();
 
@@ -89,6 +96,7 @@ public class FreeBoardDao {
                 dto.setNickname(rs.getString("nickname"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
+                dto.setCommentCount(rs.getInt("comment_count"));
 
                 list.add(dto);
             }
@@ -304,19 +312,37 @@ public class FreeBoardDao {
         }
     }
 
-    // 관리자용 게시글 목록 (삭제/숨김 포함)
+ // 관리자용 게시글 목록 (삭제/숨김 포함 + 댓글 수)
     public List<FreeBoardDto> getAdminBoardList(String category, int start, int pageSize) {
 
         List<FreeBoardDto> list = new ArrayList<>();
 
-        String sql = "SELECT * FROM free_board " + (category.equals("all") ? "" : "WHERE category_type = ? ")
-                + "ORDER BY board_idx DESC LIMIT ?, ?";
+        String sql =
+            "SELECT " +
+            " b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
+            " b.readcount, b.create_day, b.is_deleted, " +
+            " IFNULL(c.cnt, 0) AS comment_count " +
+            "FROM free_board b " +
+            "LEFT JOIN member m ON b.id = m.id " +
+            "LEFT JOIN ( " +
+            "   SELECT board_idx, COUNT(*) AS cnt " +
+            "   FROM free_comment " +
+            "   WHERE is_deleted = 0 " +
+            "   GROUP BY board_idx " +
+            ") c ON b.board_idx = c.board_idx ";
 
-        try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        if (!"all".equals(category)) {
+            sql += "WHERE b.category_type = ? ";
+        }
+
+        sql += "ORDER BY b.board_idx DESC LIMIT ?, ?";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             int idx = 1;
 
-            if (!category.equals("all")) {
+            if (!"all".equals(category)) {
                 pstmt.setString(idx++, category);
             }
             pstmt.setInt(idx++, start);
@@ -330,9 +356,12 @@ public class FreeBoardDao {
                 dto.setCategory_type(rs.getString("category_type"));
                 dto.setTitle(rs.getString("title"));
                 dto.setId(rs.getString("id"));
+                dto.setNickname(rs.getString("nickname"));
                 dto.setReadcount(rs.getInt("readcount"));
                 dto.setCreate_day(rs.getTimestamp("create_day"));
-                dto.setIs_deleted(rs.getInt("is_deleted")); // 관리자용
+                dto.setIs_deleted(rs.getInt("is_deleted"));
+                dto.setCommentCount(rs.getInt("comment_count"));
+
                 list.add(dto);
             }
 

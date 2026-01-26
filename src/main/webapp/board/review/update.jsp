@@ -16,7 +16,6 @@ ReviewBoardDto dto = dao.getBoard(board_idx);
 <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-<!-- Toast UI Editor -->
 <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 <title>리뷰 수정</title>
@@ -28,13 +27,9 @@ ReviewBoardDto dto = dao.getBoard(board_idx);
     <form method="post"
           action="updateAction.jsp"
           enctype="multipart/form-data">
-        <!-- 🔥 수정 대상 -->
         <input type="hidden" name="board_idx" value="<%= board_idx %>">
-        <!-- 리뷰 카테고리 고정 -->
         <input type="hidden" name="category" value="REVIEW">
-        <!-- 장르 (필요하면 유지) -->
         <input type="hidden" name="genre" value="<%= dto.getGenre_type() %>">
-		<!-- 스포 여부 -->
 		<div class="mb-3">
 		   <select name="is_spoiler" class="form-select">
 			    <option value="0" <%= !dto.isIs_spoiler_type() ? "selected" : "" %>>
@@ -80,7 +75,6 @@ const editor = new toastui.Editor({
     language: 'ko-KR',
     placeholder: '리뷰 내용을 수정하세요.'
 });
-// ✅ 기존 내용 세팅 (이미지 포함)
 editor.setHTML(`<%= dto.getContent().replace("`", "\\`") %>`);
 const form = document.querySelector('form');
 form.addEventListener('submit', function () {

@@ -12,7 +12,6 @@ public class ReviewBoardDao {
 	DBConnect db= new DBConnect();
 	
 	//[숨김] → is_deleted = 1
-
 	//[복구] → is_deleted = 0
 	
 	// 페이징 리스트
@@ -22,10 +21,14 @@ public class ReviewBoardDao {
 
 	    String sql =
 	        "SELECT r.board_idx, r.genre_type, r.title, r.id, r.readcount, " +
-	        "       r.create_day, r.is_spoiler, m.nickname " +
+	        "       r.create_day, r.is_spoiler, m.nickname, " +
+	        "       COUNT(c.comment_idx) AS comment_count " +
 	        "FROM review_board r " +
 	        "JOIN member m ON r.id = m.id " +
+	        "LEFT JOIN review_comment c " +
+	        "  ON r.board_idx = c.board_idx AND c.is_deleted = 0 " +
 	        "WHERE r.is_deleted = 0 " +
+	        "GROUP BY r.board_idx " +
 	        "ORDER BY r.board_idx DESC " +
 	        "LIMIT ?, ?";
 
@@ -47,6 +50,8 @@ public class ReviewBoardDao {
 	            dto.setReadcount(rs.getInt("readcount"));
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
+	            dto.setCommentCount(rs.getInt("comment_count"));
+
 	            list.add(dto);
 	        }
 
@@ -82,9 +87,15 @@ public class ReviewBoardDao {
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	        "SELECT board_idx, genre_type, title, id, readcount, create_day, is_spoiler, is_deleted " +
-	        "FROM review_board " +
-	        "ORDER BY board_idx DESC LIMIT ?, ?";
+	        "SELECT r.board_idx, r.genre_type, r.title, r.id, r.readcount, " +
+	        "       r.create_day, r.is_spoiler, r.is_deleted, " +
+	        "       COUNT(c.comment_idx) AS comment_count " +
+	        "FROM review_board r " +
+	        "LEFT JOIN review_comment c " +
+	        "  ON r.board_idx = c.board_idx AND c.is_deleted = 0 " +
+	        "GROUP BY r.board_idx " +
+	        "ORDER BY r.board_idx DESC " +
+	        "LIMIT ?, ?";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -104,6 +115,8 @@ public class ReviewBoardDao {
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            dto.setIs_spoiler_type(rs.getBoolean("is_spoiler"));
 	            dto.setIs_deleted(rs.getInt("is_deleted"));
+	            dto.setCommentCount(rs.getInt("comment_count"));
+
 	            list.add(dto);
 	        }
 
@@ -113,6 +126,7 @@ public class ReviewBoardDao {
 
 	    return list;
 	}
+
 
 	// 관리자용 전체 글 개수 (숨김 포함)
 	public int getAdminTotalCount() {
@@ -198,10 +212,10 @@ public class ReviewBoardDao {
 	    ReviewBoardDto dto = null;
 
 	    String sql =
-	        "SELECT r.*, m.nickname " +
+    		"SELECT r.*, m.nickname " +
 	        "FROM review_board r " +
 	        "JOIN member m ON r.id = m.id " +
-	        "WHERE r.board_idx = ? AND r.is_deleted = 0";
+	        "WHERE r.board_idx = ?";
 
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -321,7 +335,7 @@ public class ReviewBoardDao {
 	            ReviewBoardDto dto = new ReviewBoardDto();
 	            dto.setBoard_idx(rs.getInt("board_idx"));
 	            dto.setTitle(rs.getString("title"));
-	            dto.setNickname(rs.getString("nickname")); // ⭐ 핵심
+	            dto.setNickname(rs.getString("nickname")); 
 	            dto.setCreate_day(rs.getTimestamp("create_day"));
 	            list.add(dto);
 	        }

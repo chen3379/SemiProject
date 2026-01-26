@@ -153,7 +153,7 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 					style="cursor: pointer;">🔗 URL</span> <span>🔗 공유</span>
 			</div>
 			<!-- 댓글 작성 박스 -->
-			<% if (loginId != null && !isAdmin) { %>
+			<% if (!isAdmin) { %>
 			<div class="comment-input-box">
 				<!-- 입력 영역 -->
 				<form id="commentForm">
@@ -295,6 +295,12 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 			</div>
 		</div>
 	</main>
+	<script>
+		function closeUserModal() {
+		    $('#userInfoModal').fadeOut(150);
+		    $('#userInfoOverlay').fadeOut(150);
+		}
+	</script>
 	<script>
 	$(function () {
 	    /* =========================
@@ -497,11 +503,6 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
                closeUserModal();
            }
        });
-
-       function closeUserModal() {
-           $('#userInfoModal').fadeOut(150);
-           $('#userInfoOverlay').fadeOut(150);
-       }
 	});
 	</script>
 	<footer class="global-footer">
@@ -525,6 +526,10 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 			<div class="info-row">
 				<span class="label">가입일</span> <span class="value" id="uiJoinDate"></span>
 			</div>
+		 	<!-- 닫기 버튼 -->
+	        <div class="modal-footer">
+	            <button class="close-btn" onclick="closeUserModal()">닫기</button>
+	        </div>
 		</div>
 	</div>
 </body>

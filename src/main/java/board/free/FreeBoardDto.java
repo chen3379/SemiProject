@@ -17,7 +17,17 @@ public class FreeBoardDto {
     private String update_id;
     private String nickname;
     private String filename;
+    private int commentCount;
 
+    
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+    
     public String getNickname() {
         return nickname;
     }

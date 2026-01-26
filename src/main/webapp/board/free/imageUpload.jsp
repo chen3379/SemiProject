@@ -4,7 +4,7 @@
 <%@ page import="java.io.File" %>
 
 <%
-String uploadPath = application.getRealPath("/save/editor"); // 폴더 분리 추천
+String uploadPath = application.getRealPath("/save");
 File dir = new File(uploadPath);
 if (!dir.exists()) dir.mkdirs();
 
@@ -23,13 +23,12 @@ if (fileName == null) {
     return;
 }
 
-// 간단 확장자 체크 (최소 안전장치)
 String lower = fileName.toLowerCase();
 if (!(lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".gif") || lower.endsWith(".webp"))) {
     out.print("{\"error\":\"NOT_IMAGE\"}");
     return;
 }
 
-String imageUrl = request.getContextPath() + "/save/editor/" + fileName;
+String imageUrl = request.getContextPath() + "/save/" + fileName;
 out.print("{\"url\":\"" + imageUrl + "\"}");
 %>

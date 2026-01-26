@@ -142,21 +142,6 @@ th, td {
 th {
 	font-weight: 600;
 }
-
-td.title {
-	text-align: left;
-	word-break: break-word;
-}
-/* 제목 줄 너무 길면 말줄임 */
-td.title a {
-	display: inline-block;
-	max-width: 520px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	color: #fff;
-	text-decoration: none;
-}
 /* 스포일러 */
 .spoiler {
 	color: #d32f2f;
@@ -237,7 +222,6 @@ td.title a {
 		text-align: center;
 	}
 }
-
 .page-wrap {
 	display: flex;
 	justify-content: center;
@@ -252,8 +236,6 @@ td.title a {
 	padding: 0;
 	margin: 0;
 }
-
-/* 기본 숫자 */
 .page-list li a {
 	width: 42px;
 	height: 42px;
@@ -267,20 +249,14 @@ td.title a {
 	color: #9e9e9e;
 	transition: all 0.2s ease;
 }
-
-/* hover */
 .page-list li a:hover {
 	color: #fff;
 }
-
-/* 현재 페이지 (빨간 원) */
 .page-list li.active a {
 	background-color: #e50914;
 	color: #fff;
 	box-shadow: 0 0 14px rgba(229, 9, 20, 0.7);
 }
-
-/* 화살표 */
 .page-list li.arrow a {
 	font-size: 22px;
 	color: #9e9e9e;
@@ -288,6 +264,29 @@ td.title a {
 
 .page-list li.arrow a:hover {
 	color: #fff;
+}
+td.title {
+    text-align: left;
+}
+.title-wrap {
+    display: inline-flex;
+    align-items: baseline;
+    max-width: 520px;
+    gap: 6px;
+}
+.title-wrap a {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    text-decoration: none;
+}
+.comment-count {
+    color: #ff5252;
+    font-size: 13px;
+    flex-shrink: 0;
 }
 </style>
 </head>
@@ -316,18 +315,30 @@ td.title a {
 
 					</tr>
 				</thead>
-
 				<tbody>
 				<% for (ReviewBoardDto dto : list) { 
 		       boolean isSpoiler = dto.isIs_spoiler_type();
 				%>
 					<tr>
 						<td class="title">
-							<% if (isSpoiler) { %> <span class="badge bg-danger me-1">스포</span>
-							<% } %> <a href="javascript:void(0);" class="review-link"
-							data-url="detail.jsp?board_idx=<%=dto.getBoard_idx()%>"
-							data-spoiler="<%= isSpoiler ? 1 : 0 %>"> <%= dto.getTitle() %>
-						</a>
+						    <span class="title-wrap">
+						        <% if (isSpoiler) { %>
+						            <span class="badge bg-danger">스포</span>
+						        <% } %>
+						
+						        <a href="javascript:void(0);"
+						           class="review-link"
+						           data-url="detail.jsp?board_idx=<%=dto.getBoard_idx()%>"
+						           data-spoiler="<%= isSpoiler ? 1 : 0 %>">
+						            <%= dto.getTitle() %>
+						        </a>
+						
+						        <% if (dto.getCommentCount() > 0) { %>
+						            <span class="comment-count">
+						                [<%= dto.getCommentCount() %>]
+						            </span>
+						        <% } %>
+						    </span>
 						</td>
 						<td class="writer">
 						    <%= (isAdmin || dto.getNickname() == null)
@@ -485,9 +496,12 @@ document.querySelectorAll('.review-link').forEach(link => {
       location.href = url;
       return;
     }
-    if (confirm('스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?')) {
-      location.href = url;
-    }
+    alert(
+      '스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?',
+      function () {
+        location.href = url;
+      }
+    );
   });
 });
 </script>
