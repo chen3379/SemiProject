@@ -172,7 +172,7 @@
         
         setTimeout(() => {
             document.querySelector(".btn-alert-ok").focus();
-        }, 100);
+        }, 300);
     }
 
     function closeCustomAlert() {

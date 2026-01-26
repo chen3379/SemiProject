@@ -137,12 +137,12 @@
 
 <div class="profile-content-wrapper" data-context-path="${pageContext.request.contextPath}">
     <!-- 검색 폼 -->
-    <div class="search-container">
+    <!-- <div class="search-container">
         <form id="searchForm" action="memberSearchAction.jsp" method="post" class="d-flex w-100 gap-2">
             <input type="text" name="nickname" id="searchNickname" placeholder="검색할 닉네임을 입력하세요">
             <button type="submit" id="btnSearch">검색</button>
         </form>
-    </div>
+    </div> -->
 
     <p id="info-message" style="display:none;"></p>
 

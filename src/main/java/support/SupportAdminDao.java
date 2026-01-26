@@ -129,6 +129,7 @@ public class SupportAdminDao {
                 dto.setSupportIdx(rs.getInt("support_idx"));
                 dto.setCategoryType(rs.getString("category_type"));
                 dto.setTitle(rs.getString("title"));
+                dto.setContent(rs.getString("content"));
                 dto.setId(rs.getString("id"));
                 dto.setSecretType(rs.getString("secret_type"));
                 dto.setDeleteType(rs.getString("delete_type"));
