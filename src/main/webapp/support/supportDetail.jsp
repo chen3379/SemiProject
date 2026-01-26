@@ -123,6 +123,7 @@
 
   /* 제목 */
   .title{
+	color:black;
     font-size: 30px;
     font-weight: 900;
     letter-spacing: -0.5px;
