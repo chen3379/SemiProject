@@ -225,7 +225,7 @@ public class FreeBoardDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT * FROM free_board WHERE board_idx = ? AND is_deleted = 0";
+        String sql = "SELECT * FROM free_board WHERE board_idx = ?";
 
         try {
             conn = db.getDBConnect();
