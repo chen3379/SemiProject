@@ -162,20 +162,6 @@ th {
 	font-weight: 600;
 }
 
-td.title {
-	text-align: left;
-	word-break: break-word;
-}
-/* 제목 줄 너무 길면 말줄임 */
-td.title a {
-	display: inline-block;
-	max-width: 520px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	color: #fff;
-	text-decoration: none;
-}
 /* 스포일러 */
 .spoiler {
 	color: #d32f2f;
@@ -307,22 +293,32 @@ td.title a {
 .page-list li.arrow a:hover {
 	color: #fff;
 }
+.title-wrap {
+    display: inline-flex;
+    align-items: baseline; 
+    max-width: 520px;
+    gap: 6px;
+}
+td.title {
+    text-align: left;
+}
+.title-wrap a {
+    flex: 1;
+    min-width: 0;      
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    text-decoration: none;
+}
+.comment-count {
+    color: #ff5252;
+    font-size: 13px;
+    flex-shrink: 0;
+}
 </style>
 </head>
 <body>
-
-<%
-String msg = request.getParameter("msg");
-%>
-
-	<script>
-<% if ("hidden".equals(msg)) { %>
-    alert("숨김 처리되었습니다.");
-<% } else if ("restored".equals(msg)) { %>
-    alert("복구되었습니다.");
-<% } %>
-</script>
-
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
 
@@ -344,7 +340,6 @@ String msg = request.getParameter("msg");
 				</a>
 			</div>
 		</div>
-
 		<!-- 게시글 목록 -->
 		<div class="review-table-wrap">
 			<table>
@@ -369,44 +364,69 @@ String msg = request.getParameter("msg");
 						<td class="category"><%="FREE".equals(dto.getCategory_type()) ? "자유수다" : "질문/추천"%>
 						</td>
 						<td class="title">
-							<% if (dto.isIs_spoiler_type()) { %> <span class="spoiler">[스포]</span>
-							<% } %> <%-- 관리자 + 숨김 표시 --%> <% if (isAdmin && dto.getIs_deleted() == 1) { %>
-							<span class="badge bg-danger">숨김</span> <% } %> <%-- 클릭 가능 여부 분기 --%>
-							<% if (dto.getIs_deleted() == 1 && !isAdmin) { %> <span
-							style="color: #777; cursor: not-allowed;"> <%= dto.getTitle() %>
-						</span> <% } else { %> <a
-							href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>"> <%= dto.getTitle() %>
-						</a> <% } %>
+						    <%-- 스포일러 표시 --%>
+						    <% if (dto.isIs_spoiler_type()) { %>
+						        <span class="spoiler">[스포]</span>
+						    <% } %>
+						    <%-- 관리자 + 숨김 표시 --%>
+						    <% if (isAdmin && dto.getIs_deleted() == 1) { %>
+						        <span class="badge bg-danger">숨김</span>
+						    <% } %>
+						
+						    <%-- 삭제된 글 (관리자 제외) --%>
+						    <% if (dto.getIs_deleted() == 1 && !isAdmin) { %>
+						        <span style="color:#777; cursor:not-allowed;">
+						            <%= dto.getTitle() %>
+						        </span>
+						    <% } else { %>
+						        <span class="title-wrap">
+						            <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
+						                <%= dto.getTitle() %>
+						            </a>
+						
+						            <% if (dto.getCommentCount() > 0) { %>
+						                <span class="comment-count">
+						                    [<%= dto.getCommentCount() %>]
+						                </span>
+						            <% } %>
+						        </span>
+						    <% } %>
 						</td>
-						<td class="writer"><%= dto.getId() %></td>
+						<td class="writer">
+						    <%= (isAdmin || dto.getNickname() == null)
+						        ? dto.getId()
+						        : dto.getNickname() %>
+						</td>
 						<td class="date"><%= sdf.format(dto.getCreate_day()) %></td>
 						<td class="count"><%= dto.getReadcount() %></td>
 						<% if (isAdmin) { %>
 						<td>
-							<% if (dto.getIs_deleted() == 0) { %>
-							<form action="adminHideAction.jsp" method="post"
-								style="display: inline;">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-danger">숨김</button>
-							</form> <% } else { %>
-							<form action="adminRestoreAction.jsp" method="post"
-								style="display: inline;">
-								<input type="hidden" name="board_idx"
-									value="<%=dto.getBoard_idx()%>">
-								<button type="submit" class="btn btn-sm btn-secondary">복구</button>
-							</form> <% } %>
-							
-							<form action="adminDeleteForeverAction.jsp" method="post"
-					          style="display:inline;"
-					          onsubmit="return confirm('⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n정말 삭제하시겠습니까?');">
-					        <input type="hidden" name="board_idx" value="<%=dto.getBoard_idx()%>">
-					        <button type="submit" class="btn btn-sm btn-dark">완전삭제</button>
-					    </form>
+						  <% if (dto.getIs_deleted() == 0) { %>
+						    <!-- 숨김 -->
+						    <button
+						      type="button"
+						      class="btn btn-sm btn-danger"
+						      onclick="hideBoard(<%= dto.getBoard_idx() %>)">
+						      숨김
+						    </button>
+						  <% } else { %>
+						    <!-- 복구 -->
+						    <button
+						      type="button"
+						      class="btn btn-sm btn-secondary"
+						      onclick="restoreBoard(<%= dto.getBoard_idx() %>)">
+						      복구
+						    </button>
+						  <% } %>
+						  <!-- 완전삭제 -->
+						  <button
+						    type="button"
+						    class="btn btn-sm btn-dark"
+						    onclick="deleteBoardForever(<%= dto.getBoard_idx() %>)">
+						    완전삭제
+						  </button>
 						</td>
-						
 						<% } %>
-						
 					</tr>
 					<%
 			    }
@@ -430,7 +450,6 @@ String msg = request.getParameter("msg");
 		<% } %>
 		<div class="page-wrap">
 		  <ul class="page-list">
-		
 		    <%-- ◀ 이전 5페이지 --%>
 		    <% if (startPage > 1) { %>
 		    <li class="arrow">
@@ -439,7 +458,6 @@ String msg = request.getParameter("msg");
 		      </a>
 		    </li>
 		    <% } %>
-		
 		    <%-- 페이지 번호 5개씩 --%>
 		    <% for (int i = startPage; i <= endPage; i++) { %>
 		    <li class="<%= (i == currentPage) ? "active" : "" %>">
@@ -457,27 +475,94 @@ String msg = request.getParameter("msg");
 		      </a>
 		    </li>
 		    <% } %>
-		
 		  </ul>
 		</div>
-		<script>
+<script>
+/* ===== 공통 ===== */
+function reloadBoardList() {
+  location.reload();
+}
+/* ===== 관리자 액션 ===== */
+function restoreBoard(boardIdx) {
+  $.ajax({
+    url: "adminRestoreAction.jsp",
+    type: "POST",
+    dataType: "json",
+    data: { board_idx: boardIdx },
+
+    success(res) {
+      res.success
+        ? alert("복구되었습니다.", reloadBoardList)
+        : alert("복구에 실패했습니다.");
+    },
+
+    error() {
+      alert("서버 오류가 발생했습니다.");
+    }
+  });
+}
+
+function hideBoard(boardIdx) {
+  $.ajax({
+    url: "adminHideAction.jsp",
+    type: "POST",
+    dataType: "json",
+    data: { board_idx: boardIdx },
+
+    success(res) {
+      res.success
+        ? alert("숨김 처리되었습니다.", reloadBoardList)
+        : alert("숨김 처리에 실패했습니다.");
+    },
+
+    error() {
+      alert("서버 오류가 발생했습니다.");
+    }
+  });
+}
+/* ===== 완전삭제 ===== */
+function deleteBoardForever(boardIdx) {
+  alert(
+    "⚠️ 이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n계속하시겠습니까?",
+    function () {
+      $.ajax({
+        url: "adminDeleteForeverAction.jsp",
+        type: "POST",
+        dataType: "json",
+        data: { board_idx: boardIdx },
+
+        success(res) {
+          res.success
+            ? alert("완전히 삭제되었습니다.", reloadBoardList)
+            : alert("삭제에 실패했습니다.");
+        },
+
+        error() {
+          alert("서버 오류가 발생했습니다.");
+        }
+      });
+    }
+  );
+}
+</script>
+<script>
 	function needLoginAlert() {
 	    alert("로그인이 필요합니다.", function() {
 	    $('#loginModal').modal('show');			
 		});
 	}
-	</script>
-		<script>
+</script>
+<script>
 	window.addEventListener("pageshow", function (event) {
 	    if (event.persisted) {
 	        // 뒤로가기(bfcache)로 복원된 경우
 	        location.reload();
 	    }
 	});
-	</script>
+</script>
 	</div>
 </body>
 <footer>
-<jsp:include page="/main/footer.jsp"/>
+	<jsp:include page="/main/footer.jsp"/>
 </footer>
 </html>

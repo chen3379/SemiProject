@@ -1,15 +1,21 @@
 @charset "UTF-8";
 
-body{
-	margin-top: 200px;
-}
-.post-container {
-    max-width: 720px;
-    margin: 40px auto;  /* 위 / 좌우 / 아래 */
-    padding: 20px;
-    box-sizing: border-box;
+.post-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
+.post-container {
+  max-width: 720px;
+  width: 100%;
+  padding: 100px 16px 0;
+}
+
+.global-footer{
+	 width: 100%;
+	 max-width: none;
+	 margin: 0;	
+}
 .toastui-editor-contents p img {
     max-width: 50%;   /* 예: 50%로 축소 */
     height: auto;
@@ -25,6 +31,7 @@ body{
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	cursor: pointer;
 }
 
 .profile-img {
@@ -575,7 +582,6 @@ textarea:disabled {
     color: #111111 !important;   /* hover 시 텍스트 더 진하게 */
     text-decoration: underline !important;
 }
-
 /*Review detail*/
 .container { max-width: 720px; margin: 40px auto; position: relative;}
 .title { font-weight: bold; margin-top: 20px; }
@@ -607,4 +613,90 @@ textarea:disabled {
 .like-wrapper.active {
     background: #ff4d4d;
     color: #fff;
+}
+
+/* ===== 유저 정보 모달 ===== */
+.user-info-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+}
+
+.user-info-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 16px;
+    width: 420px;
+    padding: 24px;
+    z-index: 1000;
+    display: flex;
+    gap: 24px;
+}
+
+/* 왼쪽 아바타 */
+.user-info-left .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+}
+
+/* 오른쪽 정보 */
+.user-info-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-row {
+    display: flex;
+    gap: 16px;
+}
+
+.info-row .label {
+    width: 60px;
+    color: #777;
+    font-weight: 600;
+}
+
+.info-row .value {
+    color: #111;
+    font-weight: 700;
+}
+
+.info-row .value.email {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.modal-footer {
+    margin-top: auto;
+}
+
+.close-btn {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: #f3f4f6;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: #e5e7eb;
 }

@@ -29,10 +29,12 @@
         return;
     }
 
-    // 삭제글
+    // 삭제글: 관리자만 열람 허용
     if ("1".equals(dto.getDeleteType())) {
-        out.print("<script>alert('삭제된 글입니다');history.back();</script>");
-        return;
+    	if(!isAdmin){
+	        out.print("<script>alert('삭제된 글입니다');history.back();</script>");
+	        return;
+    	}
     }
 
     // 비밀글: 관리자 or 작성자만
@@ -69,12 +71,12 @@
     String statusText = "답변대기";
     if ("1".equals(dto.getStatusType())) statusText = "답변완료";
     
-    // 작성자, 관리자만 수정버튼 노출
-    boolean canEdit = isLogin && (id.equals(dto.getId()) || isAdmin);
+    // 작성자(답변대기), 관리자만 수정버튼 노출, 삭제된 글 미노출
+    boolean canEdit = isLogin && !"1".equals(dto.getDeleteType()) && (isAdmin || (id.equals(dto.getId()) && !"1".equals(dto.getStatusType())));
     
-    
-    
-    
+    // 목록 클릭 > 현재페이지
+    String currentPage = request.getParameter("currentPage");
+    if(currentPage == null) currentPage = "1";
 %>
 <!DOCTYPE html>
 <html>
@@ -85,16 +87,17 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<title>WHATFLIX - 고객지원 상세</title>
+<title>WHATFLIX - 고객센터 상세</title>
 
 <style>
   body{
-    padding-top: 80px;
     background:#fff;
-    color:#111;
+    color:white;
   }
   .support-container{
-    max-width: 820px;
+  	padding-top: 80px;
+    max-width: 720px;
+    min-height: 800px;
     margin: 70px auto 120px;
     padding: 0 18px;
   }
@@ -109,12 +112,12 @@
     margin-top: 4px;
   }
 
-  /* 카테고리(보라톤) */
+  /* 카테고리 */
   .category{
     display:inline-block;
     font-size: 13px;
     font-weight: 700;
-    color:#6f42c1;
+    color:#4a6cf7;
     margin-top: 14px;
   }
 
@@ -123,7 +126,7 @@
     font-size: 30px;
     font-weight: 900;
     letter-spacing: -0.5px;
-    margin: 6px 0 0;
+    margin: 10px 0 0;
     line-height: 1.12;
   }
 
@@ -168,7 +171,7 @@
     flex-wrap:wrap;
   }
 
-  /* ⋮ 메뉴 (detail.jsp 느낌) */
+  /* : 메뉴 */
   .more{
     cursor:pointer;
     font-size: 26px;
@@ -186,7 +189,7 @@
     position: absolute;
     top: 44px;
     right: 0;
-    width: 140px;
+    width: 100px;
     display:none;
     background: #fff;
     border: 1px solid #eee;
@@ -194,12 +197,14 @@
     overflow:hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     z-index: 50;
+    text-align: center;
   }
   .post-menu a{
     display:block;
     padding: 12px 14px;
     font-size: 14px;
     color: #111;
+    text-decoration: none;
   }
   .post-menu a:hover{
     background: rgba(0,0,0,0.04);
@@ -221,32 +226,50 @@
     box-shadow: none;
     border-color:#d0c5ff;
   }
+  
+  .profile-img {
+		width: 40px;
+		height: 40px;
+		background: #eee;
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	/* 삭제글 제목 표시 */
+	.title.deleted{
+	  text-decoration: line-through;
+	  color:#9aa0a6;
+	}
 </style>
 
 </head>
 <body>
+<header>
+	<jsp:include page="../main/nav.jsp" />
+	<jsp:include page="../login/loginModal.jsp" />
+	<jsp:include page="../profile/profileModal.jsp"/>
+</header>
 
-<jsp:include page="../main/nav.jsp" />
-    <jsp:include page="../login/loginModal.jsp" />
-    <jsp:include page="../profile/profileModal.jsp"/>
+<div class="header" style="background-color: black; height: 70px;"></div>
 
 <div class="support-container">
 
-  <!-- 상단 (id/작성시간/조회 + ⋮ 메뉴) -->
+  <!-- 상단 (id/작성시간/조회 + 메뉴) -->
   <div class="d-flex justify-content-between align-items-start position-relative">
-    <div>
-      <div class="d-flex align-items-center gap-2">
-        <strong><%= writerId %></strong>
-        <% if("1".equals(dto.getSecretType())){ %>
-          <span style="color:#6f42c1;">🔒</span>
-        <% } %>
+  
+	<div>
+      <div class="d-flex align-items-center gap-2" style="color: black;">
+      	<div class="profile-img">👤</div>
+        <strong><%= dto.getNickname() %></strong>
       </div>
       <div class="meta">
         <span><%= sdf.format(dto.getCreateDay()) %></span>
         <span>조회 <%= dto.getReadcount() %></span>
       </div>
     </div>
-
+    <!-- 메뉴 : 작성자만 수정/삭제 가능 -->
     <% if (canEdit) { %>
       <span class="more" id="postMenuBtn">⋮</span>
       <div class="post-menu" id="postMenu">
@@ -254,13 +277,20 @@
         <a href="javascript:void(0);" class="danger" id="deletePostBtn">삭제</a>
       </div>
     <% } %>
-  </div>
+	</div>
 
-  <!-- 카테고리(보라색 텍스트) -->
-  <div class="category"><%= categoryText %> · <%= statusText %></div>
-
+  <!-- 카테고리 -->
+  <span class="category">[<%= categoryText %>]</span>
+  
+  <br>
+  
   <!-- 제목 -->
-  <h2 class="title"><%= dto.getTitle() %></h2>
+  <span class="badge <%= "답변완료".equals(statusText) ? "bg-success" : "bg-warning" %>"><%=statusText%></span>
+  <% if("1".equals(dto.getSecretType())){ %>
+	<span style="color:#6f42c1;">🔒</span>
+  <% } %>
+  <span class="title <%= "1".equals(dto.getDeleteType()) ? "deleted" : "" %>"><%= dto.getTitle() %></span>
+
 
   <!-- 본문 -->
   <div class="post-body"><%= dto.getContent() %></div>
@@ -276,7 +306,7 @@
   %>
 
   <%-- 관리자면: 답변 입력/수정 UI 노출 --%>
-  <% if (isAdmin) { %>
+  <% if (isAdmin && !"1".equals(dto.getDeleteType())) { %>
 
     <div class="answer-wrap admin-form">
       <span class="answer-label">관리자 답변</span>
@@ -312,12 +342,12 @@
             <button class="btn btn-dark btn-sm" type="submit">수정</button>
 
             <a href="supportAdminDeleteAction.jsp?supportIdx=<%=supportIdx%>"
-               class="btn btn-outline-danger btn-sm"
-               onclick="return confirm('답변을 삭제하시겠습니까?');">
-              답변 삭제
-            </a>
+			   class="btn btn-outline-danger btn-sm"
+			   onclick="openCustomConfirm('답변을 삭제하시겠습니까?', function(ok){ if(ok) location.href=this.href; }.bind(this)); return false;">
+			  답변 삭제
+			</a>
 
-            <a href="supportList.jsp" class="btn btn-outline-secondary btn-sm">목록</a>
+            <a href="supportList.jsp?currentPage=<%=currentPage%>" class="btn btn-outline-secondary btn-sm">목록</a>
           </div>
         </form>
       <% } %>
@@ -334,7 +364,7 @@
     <% } %>
 
     <div class="footer-actions">
-      <a href="supportList.jsp" class="btn btn-outline-secondary btn-sm">목록</a>
+      <a href="supportList.jsp?currentPage=<%=currentPage%>" class="btn btn-outline-secondary btn-sm">목록</a>
     </div>
 
   <% } %>
@@ -362,14 +392,26 @@
 
     // 문의글 삭제
     $("#deletePostBtn").on("click", function(){
-      if(confirm("정말 삭제하시겠습니까?\\n삭제 후에는 복구할 수 없습니다.")){
-        location.href = "supportDeleteAction.jsp?supportIdx=<%=supportIdx%>";
-      }
-    });
+    	  openCustomConfirm(
+    	    "정말 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.",
+    	    function(){
+    	      location.href =
+    	        "supportDeleteAction.jsp?supportIdx=<%=supportIdx%>";
+    	    }
+    	  );
+    	});
+    
+    
+    
   });
 </script>
 
+<footer>
+	<jsp:include page="/main/footer.jsp" />
+</footer>
+
 <jsp:include page="../common/customAlert.jsp" />
+<jsp:include page="../common/customConfirm.jsp" />
 
 </body>
 

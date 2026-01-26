@@ -106,6 +106,7 @@ history.back();
             <div class="form-group">
                 <label>내용</label>
                 <textarea name="content"
+                		  rows="10"
                           id="content"
                           class="form-control content-area"
                           placeholder="문의 내용을 입력하세요"
