@@ -242,6 +242,12 @@
 	  text-decoration: line-through;
 	  color:#9aa0a6;
 	}
+	
+	    /* 스크롤바 커스텀 (Webkit) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
 </style>
 
 </head>
