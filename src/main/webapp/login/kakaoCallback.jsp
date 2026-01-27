@@ -114,7 +114,7 @@ if (member == null) {
     member = memberDao.selectOneMemberbyId(kakaoLoginId);
 }
 
-session.setAttribute("loginid", member.getId());
+session.setAttribute("id", member.getId());
 session.setAttribute("memberInfo", member);
 session.setAttribute("roleType", member.getRoleType());
 session.setAttribute("loginStatus", true);
