@@ -523,4 +523,36 @@ public class MemberDao {
             db.dbClose(null, pstmt, conn);
         }
     }
+    
+    //[추가] 카카오 소셜 회원 가입
+    public boolean insertKakaoMember(MemberDto dto) {
+
+        // 이미 가입된 카카오 회원이면 insert 안 함
+        if (isIdDuplicate(dto.getId())) {
+            return false;
+        }
+
+        String sql =
+            "INSERT INTO member " +
+            "(id, password, nickname, join_type, role_type, status, photo, create_day) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, dto.getId());
+            pstmt.setString(2, "KAKAO_LOGIN");
+            pstmt.setString(3, dto.getNickname());
+            pstmt.setString(4, "kakao");
+            pstmt.setString(5, "1");
+            pstmt.setString(6, "active");
+            pstmt.setString(7, "/profile_photo/default_photo.jpg");
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

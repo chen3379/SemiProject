@@ -186,7 +186,7 @@ public class FreeBoardDao {
         String sql =
         	    "SELECT board_idx, title, readcount " +
         	    "FROM free_board " +
-        	    "WHERE is_deleted = 0 " +
+        	    "WHERE (is_deleted = 0 OR is_deleted IS NULL) " +
         	    "ORDER BY readcount DESC " +
         	    "LIMIT 10";
 
