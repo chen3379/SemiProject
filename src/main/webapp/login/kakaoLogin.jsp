@@ -8,7 +8,8 @@
         "https://kauth.kakao.com/oauth/authorize"
       + "?client_id=" + REST_API_KEY
       + "&redirect_uri=" + java.net.URLEncoder.encode(REDIRECT_URI, "UTF-8")
-      + "&response_type=code";
-
+      + "&response_type=code"
+      + "&prompt=login";	
+    
     response.sendRedirect(url);
 %>
