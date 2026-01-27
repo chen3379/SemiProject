@@ -144,7 +144,7 @@
 
                     <div class="d-grid gap-2 mt-5">
                         <button type="submit" class="btn btn-primary btn-lg fw-bold py-3">영화 정보 등록하기</button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="history.back()">뒤로가기</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="location='../movie/movieList.jsp'">뒤로가기</button>
                     </div>
                 </form>
             </div>
