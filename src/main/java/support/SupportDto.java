@@ -16,7 +16,14 @@ public class SupportDto {
 	private Timestamp updateDay;
 	private String createId;
 	private String updateId;
+	private String nickname;
 	
+	public String getNickname() {
+		return nickname;
+	}
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
 	public int getSupportIdx() {
 		return supportIdx;
 	}

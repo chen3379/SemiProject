@@ -16,7 +16,18 @@ public class FreeBoardDto {
     private String create_id;
     private String update_id;
     private String nickname;
+    private String filename;
+    private int commentCount;
 
+    
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+    
     public String getNickname() {
         return nickname;
     }
@@ -27,8 +38,6 @@ public class FreeBoardDto {
 
     // ⭐ 관리자용 (숨김/삭제 여부)
     private int is_deleted; // 0: 정상, 1: 숨김(삭제)
-
-    private String filename;
 
     public int getBoard_idx() {
         return board_idx;

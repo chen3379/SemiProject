@@ -1,10 +1,11 @@
-<%@page import="board.free.FreeBoardDao"%>
+<%@ page contentType="application/json; charset=UTF-8" %>
+<%@ page import="board.free.FreeBoardDao" %>
+
 <%
 int board_idx = Integer.parseInt(request.getParameter("board_idx"));
 
 FreeBoardDao dao = new FreeBoardDao();
-dao.hideBoard(board_idx);   // is_deleted = 1
+boolean success = dao.hideBoard(board_idx); 
 
-response.sendRedirect("list.jsp?msg=hidden");
-return;
+out.print("{\"success\": " + success + "}");
 %>

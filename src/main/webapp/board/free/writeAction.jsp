@@ -5,15 +5,11 @@
 
 <%
 request.setCharacterEncoding("UTF-8");
-
-/* ===== 로그인 체크 ===== */
 String loginId = (String) session.getAttribute("loginid");
 if (loginId == null) {
     response.sendRedirect(request.getContextPath() + "/login/login.jsp");
     return;
 }
-
-/* ===== 파일 업로드 설정 ===== */
 String uploadPath = application.getRealPath("/save");
 File uploadDir = new File(uploadPath);
 if (!uploadDir.exists()) uploadDir.mkdirs();
@@ -27,8 +23,6 @@ MultipartRequest multi = new MultipartRequest(
     "UTF-8",
     new DefaultFileRenamePolicy()
 );
-
-/* ===== multipart 파라미터 ===== */
 String category = multi.getParameter("category");
 String title = multi.getParameter("title");
 String content = multi.getParameter("content");
@@ -39,7 +33,6 @@ out.print("content = " + content + "\n");
 out.print("</pre>");
 
 String uploadFileName = multi.getFilesystemName("uploadFile");
-/* ===== DTO ===== */
 FreeBoardDto dto = new FreeBoardDto();
 dto.setCategory_type(category);
 dto.setTitle(title);

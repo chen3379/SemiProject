@@ -1,11 +1,11 @@
-<%@page import="board.free.FreeBoardDao"%>
+<%@ page contentType="application/json; charset=UTF-8" %>
+<%@ page import="board.free.FreeBoardDao" %>
+
 <%
 int board_idx = Integer.parseInt(request.getParameter("board_idx"));
 
 FreeBoardDao dao = new FreeBoardDao();
-dao.restoreBoard(board_idx);   // is_deleted = 0
+boolean success = dao.restoreBoard(board_idx);
 
-response.sendRedirect("list.jsp?msg=restored&ts=" + System.currentTimeMillis());
-
+out.print("{\"success\": " + success + "}");
 %>
-
