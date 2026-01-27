@@ -67,6 +67,12 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 	<main class="post-wrapper">
 		<div class="post-container">
 			<!-- 작성자 영역 -->
+			<div class="d-flex justify-content-end mb-3">
+			    <a href="list.jsp?page=1"
+			       class="btn btn-sm btn-outline-secondary">
+			        목록
+			    </a>
+			</div>
 			<div class="post-header">
 				<div class="profile user-profile" data-user-id="<%=dto.getId()%>"
 					data-nickname="<%=dto.getNickname()%>">
