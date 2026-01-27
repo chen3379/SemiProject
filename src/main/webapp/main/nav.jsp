@@ -21,8 +21,14 @@ if (!"true".equals(loginStatus)) {
 :root {
 	--nav-height: 70px;
 	--primary-red: #E50914;
+	--primary-red-hover: #B20710;
+	--bg-main: #141414;
+	--bg-surface: #181818;
+	--bg-glass: rgba(20, 20, 20, 0.7);
+	--border-glass: rgba(255, 255, 255, 0.1);
 	--text-white: #FFFFFF;
 	--text-gray: #B3B3B3;
+	--text-muted: #666666;
 }
 
 .global-nav {
@@ -196,10 +202,15 @@ if (!"true".equals(loginStatus)) {
 			</ul>
 		</div>
 		<ul class="nav-actions">
+			<%
+			if ("3".equals(roleType)||"8".equals(roleType)||"9".equals(roleType)) {
+			%>
 			<li><a
 				href="<%=request.getContextPath()%>/main/sessionCheck.jsp"
 				class="nav-item" style="font-size: 0.8rem; opacity: 0.5;">Dev:세션</a></li>
-
+			<%
+			}
+			%>
 			<% if ("true".equals(loginStatus)) { %>
 			<li><a href="#" id="openProfile" data-bs-toggle="modal"
 				data-bs-target="#profileModal" class="nav-item"> <i

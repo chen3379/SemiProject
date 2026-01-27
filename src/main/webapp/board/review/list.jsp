@@ -20,6 +20,8 @@
 	crossorigin="anonymous">
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 <title>커뮤니티-왓플릿스</title>
 <%
 ReviewBoardDao dao = new ReviewBoardDao();
@@ -293,7 +295,7 @@ td.title {
 <body>
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
-
+	<jsp:include page="/profile/profileModal.jsp" />
 	<div class="container" style="padding-top: 80px;">
 		<div class="review-header">
 			<h2>
@@ -475,8 +477,14 @@ function deleteReviewBoardForever(boardIdx) {
 </script>
 <script>
 function needLoginAlert() {
-    alert("로그인이 필요합니다.");
-    $('#loginModal').modal('show');
+    alert("로그인이 필요합니다.", function() {
+        // [수정] Bootstrap 5 표준 방식으로 모달 띄우기
+        const modalEl = document.getElementById('loginModal');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
+    });
 }
 </script>
 <script>
