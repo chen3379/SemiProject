@@ -115,6 +115,7 @@ if (member == null) {
 }
 
 session.setAttribute("id", member.getId());
+session.setAttribute("loginid", member.getId());
 session.setAttribute("memberInfo", member);
 session.setAttribute("roleType", member.getRoleType());
 session.setAttribute("loginStatus", true);
