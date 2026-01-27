@@ -94,6 +94,25 @@
         color: var(--text-white);
         text-decoration: underline;
     }
+            .btn-load-form {
+            padding: 12px;
+            border: 1px solid var(--border-glass);
+            background: var(--bg-surface);
+            color: white;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-load-form:hover {
+            background: #252525;
+            border-color: #555;
+        }
+    .btn-kakao:hover { border-color: #FEE500; color: #FEE500; }
 </style>
 
 <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
@@ -127,7 +146,10 @@
                         <label class="form-check-label" for="loginSaveID">아이디 저장</label>
                     </div>
                 </div>
-
+                <a href="<%=request.getContextPath()%>/login/kakaoLogin.jsp"
+					   class="btn-load-form btn-kakao">
+					   <i class="bi bi-chat-fill"></i>카카오로 로그인
+					</a>
                 <button type="submit" class="btn-login" id="loginBtn">로그인</button>
 
                 <div class="login-footer">

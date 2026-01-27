@@ -20,7 +20,8 @@
 	crossorigin="anonymous">
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
 <title>커뮤니티-왓플릿스</title>
 <%
 ReviewBoardDao dao = new ReviewBoardDao();
@@ -304,7 +305,7 @@ td.title {
 <body>
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
-
+	<jsp:include page="/profile/profileModal.jsp" />
 	<div class="container" style="padding-top: 80px;">
 		<div class="review-header">
 			<h2>

@@ -14,12 +14,6 @@
 <style>
     /* [1] Expert Level: CSS Variables & Reset */
     :root {
-        --primary-red: #E50914;
-        --primary-red-hover: #B20710;
-        --bg-main: #141414;
-        --bg-surface: #181818;
-        --text-white: #FFFFFF;
-        --text-gray: #BCBCBC;
         --glass-bg: rgba(22, 22, 22, 0.6);
         --glass-border: rgba(255, 255, 255, 0.08);
         --shadow-elevation: 0 10px 40px -10px rgba(0,0,0,0.7);

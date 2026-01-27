@@ -14,16 +14,6 @@
 <style>
     /* [Core System] Design Tokens */
     :root {
-        --primary-red: #E50914;
-        --primary-red-hover: #B20710;
-        --bg-main: #141414;
-        --bg-surface: #181818;
-        --bg-glass: rgba(20, 20, 20, 0.7);
-        --border-glass: rgba(255, 255, 255, 0.1);
-        --text-white: #FFFFFF;
-        --text-gray: #B3B3B3;
-        --text-muted: #666666;
-        
         /* Layout Dimensions */
         --nav-height: 70px;
         --sidebar-width: 240px;

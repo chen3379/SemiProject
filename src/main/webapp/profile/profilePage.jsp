@@ -14,13 +14,6 @@
     <style>
         /* [Core System] WHATFLIX Design Tokens */
         :root {
-            --primary-red: #E50914;
-            --bg-main: #141414;
-            --bg-surface: #181818;
-            --border-glass: rgba(255, 255, 255, 0.1);
-            --text-white: #FFFFFF;
-            --text-gray: #B3B3B3;
-            --nav-height: 70px;
             --sidebar-width: 280px; /* 프로필용 사이드바는 조금 더 넓게 설정 */
         }
 

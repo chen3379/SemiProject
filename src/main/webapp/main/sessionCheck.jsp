@@ -33,12 +33,13 @@
 <body>
     <div class="debug-console">
         <h2>🛠️ SESSION DEBUGGER</h2>
-        <div class="debug-item"><span class="debug-key">memberInfo 객체</span> <span class="debug-val"><%= session.getAttribute("memberInfo") != null %></span></div>
+        <div class="debug-item"><span class="debug-key">memberInfo</span> <span class="debug-val"><%= session.getAttribute("memberInfo") != null %></span></div>
         <div class="debug-item"><span class="debug-key">loginStatus</span> <span class="debug-val"><%= session.getAttribute("loginStatus") %></span></div>
-        <div class="debug-item"><span class="debug-key">ID</span> <span class="debug-val"><%= session.getAttribute("id") %></span></div>
-        <div class="debug-item"><span class="debug-key">Nickname</span> <span class="debug-val">${sessionScope.memberInfo.nickname}</span></div>
-        <div class="debug-item"><span class="debug-key">GuestUUID</span> <span class="debug-val"><%= session.getAttribute("guestUUID") %></span></div>
-        <div class="debug-item"><span class="debug-key">RoleType</span> <span class="debug-val">${sessionScope.memberInfo.roleType}</span></div>
+        <div class="debug-item"><span class="debug-key">loginid</span> <span class="debug-val"><%= session.getAttribute("loginid") %></span></div>
+        <div class="debug-item"><span class="debug-key">id</span> <span class="debug-val"><%= session.getAttribute("id") %></span></div>
+        <div class="debug-item"><span class="debug-key">nickname</span> <span class="debug-val">${sessionScope.memberInfo.nickname}</span></div>
+        <div class="debug-item"><span class="debug-key">guestUUID</span> <span class="debug-val"><%= session.getAttribute("guestUUID") %></span></div>
+        <div class="debug-item"><span class="debug-key">roleType</span> <span class="debug-val">${sessionScope.memberInfo.roleType}</span></div>
         <div class="debug-item"><span class="debug-key">Time Left</span> <span class="debug-val"><%= session.getMaxInactiveInterval() %> sec</span></div>
         <div class="debug-item"><span class="debug-key">Session ID</span> <span class="debug-val"><%= session.getId() %></span></div>
         
