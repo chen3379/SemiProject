@@ -32,21 +32,19 @@ if (boardIdxParam == null || boardIdxParam.isEmpty()) {
     out.println("<script>alert('잘못된 접근입니다.'); location.href='list.jsp';</script>");
     return;
 }
+
 int board_idx = Integer.parseInt(boardIdxParam);
 
 String loginId = (String) session.getAttribute("loginid");
 String roleType = (String) session.getAttribute("roleType");
-
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
 ReviewBoardDao dao = new ReviewBoardDao();
 ReviewBoardDto dto;
 
 if (isAdmin) {
-    // 관리자: 숨김 글 포함 조회
     dto = dao.getAdminBoard(board_idx);
 } else {
-    // 일반 유저: 숨김 제외
     dto = dao.getBoard(board_idx);
 }
 
@@ -80,12 +78,17 @@ List<ReviewCommentDto> clist = cdao.getCommentList(board_idx);
 int commentCount = cdao.getCommentCount(board_idx);
 
 List<ReviewBoardDto> otherList = dao.getOtherBoards(board_idx, 5);
-SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
 %>
 <jsp:include page="/main/nav.jsp" />
 <body>
     <main class="post-wrapper">
         <div class="post-container">
+		<div class="d-flex justify-content-end mb-3">
+		    <a href="list.jsp?page=1"
+		       class="btn btn-sm btn-outline-secondary">
+		        목록
+		    </a>
+		</div>
 		<div class="post-header">
 		    <div class="profile user-profile"
 		         data-user-id="<%=dto.getId()%>"
