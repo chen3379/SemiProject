@@ -30,6 +30,17 @@ List<ReviewBoardDto> reviewTop10 = reviewDao.getTop10ByReadcount();
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style type="text/css">
+:root {
+  --primary-red: #E50914;
+  --primary-red-hover: #B20710;
+  --bg-main: #141414;
+  --bg-surface: #181818;
+  --text-white: #FFFFFF;
+  --text-gray: #BCBCBC;
+  --text-muted: #aaaaaa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+}
+
 /* 공지사항 스타일 */
 .notice-area {
 	margin-top: 50px;

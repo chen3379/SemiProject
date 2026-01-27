@@ -110,7 +110,7 @@ footer .bi {
 			</ul>
 		</div>
 		<div class="footer-col">
-			<h4>고객지원</h4>
+			<h4>고객센터</h4>
 			<ul class="footer-links">
 				<li>문의: help@whatflix.com</li>
 				<li>Tel: 02-1234-5678</li>
