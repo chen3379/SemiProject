@@ -14,12 +14,6 @@
 <style>
     /* [1] Expert Level: CSS Variables & Reset */
     :root {
-        --primary-red: #E50914;
-        --primary-red-hover: #B20710;
-        --bg-main: #141414;
-        --bg-surface: #181818;
-        --text-white: #FFFFFF;
-        --text-gray: #BCBCBC;
         --glass-bg: rgba(22, 22, 22, 0.6);
         --glass-border: rgba(255, 255, 255, 0.08);
         --shadow-elevation: 0 10px 40px -10px rgba(0,0,0,0.7);
@@ -356,12 +350,10 @@
     
    <%
     String id=(String)session.getAttribute("id");
-    
-    MemberDao memberDao=new MemberDao();
+    String roleType=(String)session.getAttribute("roleType");
 
     if(id!=null){
         
-    String roleType=memberDao.getRoleType(id);
     //roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
     //nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
     if("3".equals(roleType)||"9".equals(roleType)){

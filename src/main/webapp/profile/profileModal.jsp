@@ -95,19 +95,19 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 
                 <!-- 프로필 이미지 및 정보 (세션 데이터 바인딩) -->
-                <img src="${pageContext.request.contextPath}${sessionScope.memberInfo.photo}" class="profile-img" alt="프로필 이미지">
+                <img src="${pageContext.request.contextPath}${sessionScope.memberInfo.photo}" class="profile-img" alt="프로필 이미지" onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'"   >
                 <div id="nickname">${sessionScope.memberInfo.nickname}님</div>
                 <div class="user-email">${sessionScope.memberInfo.id}</div>
 
                 <!-- 메뉴 리스트 -->
                 <div class="profile-menu-list">
-                    <a href="../profile/profilePage.jsp?id=${sessionScope.memberInfo.id}" class="profile-menu-item">
+                    <a href="<%= request.getContextPath() %>/profile/profilePage.jsp?id=${sessionScope.memberInfo.id}" class="profile-menu-item">
                         <i class="bi bi-person-circle me-2"></i>내 프로필 관리
                     </a>
                 </div>
 
                 <!-- 로그아웃 폼 -->
-                <form action="../login/logoutAction.jsp" method="post">
+                <form action="<%= request.getContextPath() %>/login/logoutAction.jsp" method="post">
                     <button type="submit" id="modalLogoutBtn">
                         <i class="bi bi-box-arrow-right me-2"></i>로그아웃
                     </button>

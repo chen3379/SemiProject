@@ -20,23 +20,29 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 	        
-	        String sql ="select * from support where delete_type='0' ";
+	        String sql ="select " +
+	                " s.support_idx, s.category_type, s.title, s.id, s.secret_type, s.delete_type, " +
+	                " s.status_type, s.readcount, s.create_day as support_create_day, " +
+	                " m.nickname as writer_nickname " +
+	                "from support s " +
+	                "left join member m on s.id = m.id " +
+	                "where 1=1 ";
 
 	        // 문의유형 필터
 	        if (categoryType != null && !categoryType.equals("")) {
-	            sql += " and category_type = ?";
+	            sql += " and s.category_type = ? ";
 	        }
 	        
 	        // 답변상태 필터
 	        if(status != null && !status.isEmpty()){
-	            sql += " and status_type=? ";
+	            sql += " and s.status_type = ? ";
 	        }
 	        
 	        // 정렬
 	        if("old".equals(order)){
-	            sql += " order by support_idx asc";
+	            sql += " order by s.support_idx asc";
 	        } else {
-	            sql += " order by support_idx desc";
+	            sql += " order by s.support_idx desc";
 	        }
 
 	        try {
@@ -66,7 +72,9 @@ public class SupportDao {
 	                dto.setDeleteType(rs.getString("delete_type"));
 	                dto.setStatusType(rs.getString("status_type"));
 	                dto.setReadcount(rs.getInt("readcount"));
-	                dto.setCreateDay(rs.getTimestamp("create_day"));
+	                dto.setCreateDay(rs.getTimestamp("support_create_day")); // 충돌 방지
+	                dto.setNickname(rs.getString("writer_nickname"));        // 닉네임
+
 	                
 	                list.add(dto);
 	                
@@ -88,7 +96,14 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 
-	        String sql="select * from support where support_idx=?";
+	        String sql="select " +
+	                " s.support_idx, s.category_type, s.title, s.content, s.id, " +
+	                " s.secret_type, s.delete_type, s.status_type, s.readcount, " +
+	                " s.create_day as support_create_day, " +
+	                " m.nickname as writer_nickname " +
+	                "from support s " +
+	                "left join member m on s.id = m.id " +
+	                "where s.support_idx=?";
 
 	        try {
 	            pstmt = conn.prepareStatement(sql);
@@ -108,7 +123,8 @@ public class SupportDao {
 	                dto.setDeleteType(rs.getString("delete_type"));
 	                dto.setStatusType(rs.getString("status_type"));
 	                dto.setReadcount(rs.getInt("readcount"));
-	                dto.setCreateDay(rs.getTimestamp("create_day"));
+	                dto.setCreateDay(rs.getTimestamp("support_create_day")); // 충돌 방지
+	                dto.setNickname(rs.getString("writer_nickname"));        // 닉네임
 	                
 	            }
 	            
@@ -142,31 +158,33 @@ public class SupportDao {
 	    }
 
 	    // 문의글 등록
-	    public void insertSupport(String categoryType,String title,String content,String id,String secret) {
+	    public boolean insertSupport(String categoryType,String title,String content,String id,int secretType
+	    	){
+	    	    Connection conn = db.getDBConnect();
+	    	    PreparedStatement pstmt = null;
 
-			Connection conn = db.getDBConnect();
-			PreparedStatement pstmt = null;
-			
-			String sql ="insert into support (category_type, title, content, id, secret_type, " +
-			"delete_type, status_type, readcount, create_day) values (?, ?, ?, ?, ?, '0', '0', 0, now())";
-			
-			try {
-				pstmt = conn.prepareStatement(sql);
-				
-				pstmt.setString(1, categoryType); // 0,1,2
-				pstmt.setString(2, title);
-				pstmt.setString(3, content);
-				pstmt.setString(4, id);
-				pstmt.setString(5, secret);       // 0 or 1
-				
-				pstmt.executeUpdate();
-			
-			} catch (SQLException e) {
-				
-			} finally {
-				db.dbClose(null, pstmt, conn);
-			}
-		}
+	    	    String sql =
+	    	        "insert into support " +
+	    	        "(category_type, title, content, id, secret_type, create_day) " +
+	    	        "values (?,?,?,?,?,now())";
+
+	    	    try {
+	    	        pstmt = conn.prepareStatement(sql);
+	    	        pstmt.setString(1, categoryType);
+	    	        pstmt.setString(2, title);
+	    	        pstmt.setString(3, content);
+	    	        pstmt.setString(4, id);
+	    	        pstmt.setInt(5, secretType);
+
+	    	        return pstmt.executeUpdate() > 0;
+
+	    	    } catch (Exception e) {
+	    	        e.printStackTrace();
+	    	        return false;
+	    	    } finally {
+	    	        db.dbClose(null, pstmt, conn);
+	    	    }
+	    	}
 
 	    // 문의글 삭제
 	    public void deleteSupport(int supportIdx){
@@ -190,28 +208,34 @@ public class SupportDao {
 	    }
 	    
 	    // 문의글 수정
-	    public void updateSupport(int supportIdx, String title, String content){
+	    public boolean updateSupport(int supportIdx,String categoryType,String title,String content,int secretType
+	    	){
+	    	    Connection conn = db.getDBConnect();
+	    	    PreparedStatement pstmt = null;
 
-	        Connection conn = db.getDBConnect();
-	        PreparedStatement pstmt = null;
+	    	    String sql =
+	    	        "update support set " +
+	    	        "category_type=?, title=?, content=?, secret_type=?, update_day=now() " +
+	    	        "where support_idx=?";
 
-	        String sql =
-	          "update support " +
-	          "set title=?, content=?, update_day=now() " +
-	          "where support_idx=?";
+	    	    try {
+	    	        pstmt = conn.prepareStatement(sql);
+	    	        pstmt.setString(1, categoryType);
+	    	        pstmt.setString(2, title);
+	    	        pstmt.setString(3, content);
+	    	        pstmt.setInt(4, secretType);
+	    	        pstmt.setInt(5, supportIdx);
 
-	        try{
-	            pstmt = conn.prepareStatement(sql);
-	            pstmt.setString(1, title);
-	            pstmt.setString(2, content);
-	            pstmt.setInt(3, supportIdx);
-	            pstmt.executeUpdate();
-	        }catch(Exception e){
-	            e.printStackTrace();
-	        }finally{
-	            db.dbClose(null, pstmt, conn);
-	        }
-	    }
+	    	        return pstmt.executeUpdate() > 0;
+
+	    	    } catch (Exception e) {
+	    	        e.printStackTrace();
+	    	        return false;
+	    	    } finally {
+	    	        db.dbClose(null, pstmt, conn);
+	    	    }
+	    	}
+
 
 
 	    // 답변상태 변경
@@ -235,4 +259,140 @@ public class SupportDao {
 	            db.dbClose(null,pstmt,conn);
 	        }
 	    }
+	    
+	    // (페이징용) 전체 글 갯수
+	    public int getTotalCount(String status, String categoryType) {
+	        int total = 0;
+
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
+
+	        // 4가지 경우(둘 다 없음 / category만 / status만 / category+status)
+	        String sql;
+
+	        boolean hasCategory = (categoryType != null && !categoryType.trim().isEmpty());
+	        boolean hasStatus = (status != null && !status.trim().isEmpty());
+
+	        if (!hasCategory && !hasStatus) {
+	            sql = "select count(*) from support";
+	        } else if (hasCategory && !hasStatus) {
+	            sql = "select count(*) from support where category_type=?";
+	        } else if (!hasCategory && hasStatus) {
+	            sql = "select count(*) from support where status_type=?";
+	        } else {
+	            sql = "select count(*) from support where category_type=? and status_type=?";
+	        }
+
+	        try {
+	            pstmt = conn.prepareStatement(sql);
+
+	            int idx = 1;
+	            
+	            if (hasCategory) pstmt.setString(idx++, categoryType.trim());
+	            if (hasStatus) pstmt.setString(idx++, status.trim());
+
+	            rs = pstmt.executeQuery();
+	            if (rs.next()) total = rs.getInt(1);
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        } finally {
+	            db.dbClose(rs, pstmt, conn);
+	        }
+
+	        return total;
+	    }
+
+	    
+	    // (페이징용) 목록 조회
+	    public List<SupportDto> getPagingList(int startNum, int perPage, String status, String categoryType) {
+
+	        List<SupportDto> list = new ArrayList<>();
+
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
+	        
+	        // 4가지 경우(둘 다 없음 / category만 / status만 / category+status)
+	        boolean hasCategory = (categoryType != null && !categoryType.trim().isEmpty());
+	        boolean hasStatus = (status != null && !status.trim().isEmpty());
+	        
+	        String sql =  "select " +
+	                " s.support_idx, s.category_type, s.title, s.id, s.secret_type, s.status_type, " +
+	                " s.readcount, s.delete_type, s.create_day as support_create_day, " +
+	                " m.nickname as writer_nickname " +
+	                "from support s " +
+	                "left join member m on s.id = m.id ";
+	        
+	        if (!hasCategory && !hasStatus) {
+	            sql += " order by s.support_idx desc limit ?, ?";
+	        } else if (hasCategory && !hasStatus) {
+	            sql += " where s.category_type=? order by s.support_idx desc limit ?, ?";
+	        } else if (!hasCategory && hasStatus) {
+	            sql += " where s.status_type=? order by s.support_idx desc limit ?, ?";
+	        } else {
+	            sql += " where s.category_type=? and s.status_type=? order by s.support_idx desc limit ?, ?";
+	        }
+
+	        try {
+	            pstmt = conn.prepareStatement(sql);
+
+	            int idx = 1;
+	            if (hasCategory) pstmt.setString(idx++, categoryType.trim());
+	            if (hasStatus) pstmt.setString(idx++, status.trim());
+
+	            pstmt.setInt(idx++, startNum);  // offset
+	            pstmt.setInt(idx++, perPage);   // limit
+
+	            rs = pstmt.executeQuery();
+	            while (rs.next()) {
+	                SupportDto dto = new SupportDto();
+	                
+	                dto.setSupportIdx(rs.getInt("support_idx"));
+	                dto.setCategoryType(rs.getString("category_type"));
+	                dto.setTitle(rs.getString("title"));
+	                dto.setId(rs.getString("id"));
+	                dto.setSecretType(rs.getString("secret_type"));
+	                dto.setStatusType(rs.getString("status_type"));
+	                dto.setReadcount(rs.getInt("readcount"));
+	                dto.setDeleteType(rs.getString("delete_type"));
+	                dto.setCreateDay(rs.getTimestamp("support_create_day")); // 충돌 방지
+	                dto.setNickname(rs.getString("writer_nickname"));        // 닉네임
+
+	                list.add(dto);
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        } finally {
+	            db.dbClose(rs, pstmt, conn);
+	        }
+
+	        return list;
+	    }
+	    
+	    public int getAnsweredCount(String status, String categoryType){
+	        Connection conn = db.getDBConnect();
+	        PreparedStatement pstmt = null;
+	        ResultSet rs = null;
+	        int count = 0;
+
+	        String sql = "select count(*) from support where status_type='1' and delete_type='0'";
+
+	        try{
+	            pstmt = conn.prepareStatement(sql);
+	            rs = pstmt.executeQuery();
+	            if(rs.next()) count = rs.getInt(1);
+	        }catch(Exception e){
+	            e.printStackTrace();
+	        }finally{
+	            db.dbClose(rs, pstmt, conn);
+	        }
+	        return count;
+	    }
+
+	    
+
+	    
 }

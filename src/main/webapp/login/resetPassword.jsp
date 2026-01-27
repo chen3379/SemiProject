@@ -101,8 +101,25 @@
         font-size: 0.8rem;
         border-radius: 4px;
     }
-</style>
 
+    /* 에러/성공 메시지 스타일 */
+    .error-msg {
+        display: block;
+        font-size: 0.75rem;
+        margin-top: -15px;
+        margin-bottom: 15px;
+        height: 1rem;
+        opacity: 0;
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+    }
+
+    .error-msg.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+<jsp:include page="../common/customAlert.jsp"/>
 <div class="reset-password-container">
     <!-- 원본 폼 구조 100% 유지 -->
     <form action="sendOtpAction.jsp" id="sendOtpForm">
@@ -129,12 +146,17 @@
 
     <form action="resetPasswordAction.jsp" id="resetPasswordForm" style="display: none; margin-top: 20px;">
         <label for="newPassword">새 비밀번호</label>
-        <input type="password" name="password" id="newPassword">
+        <input type="password" name="password" id="newPassword" placeholder="영문, 숫자, 특수문자 조합">
+        
+        <label for="newPasswordConfirm">새 비밀번호 확인</label>
+        <input type="password" id="newPasswordConfirm" placeholder="비밀번호 재입력">
+        <span id="pwConfirmMsg" class="error-msg"></span>
+
         <button type="submit" id="resetPasswordActionBtn">비밀번호 변경</button>
     </form>
 
     <span id="resetPasswordMsg"></span>
-    <p>세션에 저장된 인증번호 : <%=session.getAttribute("otp") %>, ${sessionScope.otp}</p>
+    <p>세션에 저장된 인증번호 : <span id="adminOtpDisplay"><%=session.getAttribute("otp") != null ? session.getAttribute("otp") : "" %></span></p>
 </div>
 
 <script>
@@ -161,6 +183,7 @@
                         return;
                     } else if (res.status == 'SUCCESS') {
                         $('#sendOtpMsg').text('해당 이메일로 6자리의 인증번호가 전송되었습니다.');
+                        $('#adminOtpDisplay').text(res.otp);
                         $('#otpConfirmForm').show();
                         $fields.eq(0).focus()
                     }
@@ -214,12 +237,42 @@
             })
         });
 
+        // 비밀번호 실시간 일치 확인
+        function checkPasswordMatch() {
+            var pw = $('#newPassword').val();
+            var pwConfirm = $('#newPasswordConfirm').val();
+            var $msg = $('#pwConfirmMsg');
+
+            if (!pw || !pwConfirm) {
+                $msg.removeClass('show');
+                return;
+            }
+
+            if (pw !== pwConfirm) {
+                $msg.addClass('show').text('비밀번호가 일치하지 않습니다.').css('color', '#E50914');
+            } else {
+                $msg.addClass('show').text('비밀번호가 일치합니다.').css('color', '#28a745');
+            }
+        }
+
+        $('#newPassword, #newPasswordConfirm').on('input', checkPasswordMatch);
+
         // 비밀번호 변경
         $('#resetPasswordForm').on('submit', function (e) {
             e.preventDefault();
 
-            if ($('#newPassword').val().length < 4) {
+            var pw = $('#newPassword').val();
+            var pwConfirm = $('#newPasswordConfirm').val();
+
+            if (pw.length < 4) {
                 alert('비밀번호는 4자리 이상이어야 합니다.');
+                $('#newPassword').focus();
+                return;
+            }
+
+            if (pw !== pwConfirm) {
+                alert('비밀번호가 일치하지 않습니다.');
+                $('#newPasswordConfirm').focus();
                 return;
             }
 
@@ -233,8 +286,9 @@
                         alert('오류가 발생했습니다. 다시 시도해주세요');
                         return;
                     } else if (res.status == 'SUCCESS') {
-                        alert('비밀번호가 변경되었습니다.');
-                        window.location.href = '../main/mainPage.jsp';
+                        alert('비밀번호가 변경되었습니다.', function() {
+                            location.replace("../main/mainPage.jsp");
+                        });
                     }
                 },
                 error: function (xhr, status, error) {

@@ -11,8 +11,36 @@ public class ReviewBoardDto {
     private boolean is_spoiler_type;
     private int readcount;
     private Timestamp create_day;
-    
+    private Timestamp update_day;
+    private String nickname;
     private String filename;
+    private int commentCount;
+    
+    public int getCommentCount() {
+        return commentCount;
+    }
+
+    public void setCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public Timestamp getUpdate_day() {
+        return update_day;
+    }
+    public void setUpdate_day(Timestamp update_day) {
+        this.update_day = update_day;
+    }
+    
+    // ⭐ 관리자용 (숨김/삭제 여부)
+    private int is_deleted; // 0: 정상, 1: 숨김(삭제)
 
     public String getFilename() {
         return filename;
@@ -69,6 +97,14 @@ public class ReviewBoardDto {
 	}
 	public void setCreate_day(Timestamp create_day) {
 		this.create_day = create_day;
+	}
+
+	public int getIs_deleted() {
+		return is_deleted;
+	}
+
+	public void setIs_deleted(int is_deleted) {
+		this.is_deleted = is_deleted;
 	}
     
     

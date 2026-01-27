@@ -1,3 +1,4 @@
+<%@page import="member.MemberDao"%>
 <%@page import="support.SupportDao"%>
 <%@page import="support.SupportDto"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
@@ -5,11 +6,12 @@
 <%
 
 //로그인 여부 확인
-String loginId = (String)session.getAttribute("id");
-String roleType = (String)session.getAttribute("roleType");
+String id = (String)session.getAttribute("id");
+boolean isLogin = (id != null);
+String roleType = isLogin ? new MemberDao().getRoleType(id) : null;
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 
-if(loginId == null){
+if(id == null){
 %>
 <script>
 alert("로그인 후 이용 가능합니다");
@@ -31,7 +33,7 @@ if(isUpdate){
     dto = dao.getOneData(supportIdx);
     
  	// 수정 권한 체크
-    if(!loginId.equals(dto.getId()) && !isAdmin){
+    if(!id.equals(dto.getId()) && !isAdmin){
 %>
 <script>
 alert("수정 권한이 없습니다");
@@ -49,61 +51,107 @@ history.back();
 <link href="https://fonts.googleapis.com/css2?family=Dongle&family=Gamja+Flower&family=Nanum+Myeongjo&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="<%=request.getContextPath()%>/css/support.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <title>Insert title here</title>
 </head>
 <body>
 
-<h2>고객지원 문의</h2>
+<div class="support-container">
 
-<form id="supportForm">
+    <!-- 헤더 -->
+    <div class="support-header">
+        <h2 style="font-weight: bold;">1:1 문의하기</h2>
+        <span>문의 내용을 자세히 작성해주세요</span>
+    </div>
 
-  <% if(isUpdate){ %>
-    <input type="hidden" id="supportIdx" value="<%= supportIdxStr %>">
-  <% } %>
+    <!-- 폼 카드 -->
+    <div class="support-form">
 
-  <!-- 문의 유형 선택 -->
-  <label>문의 유형</label><br>
-  <select name="categoryType" id="categoryType">
-    <option value="0" <%= (isUpdate && "0".equals(dto.getCategoryType())) ? "selected" : "" %>>회원정보</option>
-    <option value="1" <%= (isUpdate && "1".equals(dto.getCategoryType())) ? "selected" : "" %>>신고</option>
-    <option value="2" <%= (!isUpdate || "2".equals(dto.getCategoryType())) ? "selected" : "" %>>기타</option>
-  </select>
-  <br><br>
-  
-  <label>제목</label><br>
-  <input type="text" name="title" id="title" value="<%= isUpdate ? dto.getTitle() : "" %>" placeholder="제목" required><br><br>
+        <form id="supportForm">
 
-  <label>내용</label><br>
-  <textarea name="content" id="content" rows="6" cols="50" placeholder="문의 내용을 입력하세요" required><%= isUpdate ? dto.getContent() : "" %></textarea><br><br>
+            <% if(isUpdate){ %>
+                <input type="hidden" id="supportIdx" value="<%= supportIdxStr %>">
+            <% } %>
 
-  <label>
-    <input type="checkbox" name="secret" id="secret" value="1" <%= (isUpdate && "1".equals(dto.getSecretType())) ? "checked" : "" %>>비밀글
-  </label><br><br>
+            <!-- 문의 유형 -->
+            <div class="form-group">
+                <label>문의 유형</label>
+                <select name="categoryType" id="categoryType" class="form-select">
+                    <option value="0" <%= (!isUpdate || "0".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                        회원정보
+                    </option>
+                    <option value="1" <%= (isUpdate && "1".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                        신고
+                    </option>
+                    <option value="2" <%= (isUpdate && "2".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                        기타
+                    </option>
+                </select>
+            </div>
 
-  <button type="button" onclick="saveSupport()"><%= isUpdate ? "수정" : "등록" %></button>
-  <button type="button" onclick="history.back()">뒤로가기</button>
-</form>
+            <!-- 제목 -->
+            <div class="form-group">
+                <label>제목</label>
+                <input type="text"
+                       name="title"
+                       id="title"
+                       class="form-control"
+                       placeholder="제목을 입력하세요"
+                       value="<%= isUpdate ? dto.getTitle() : "" %>"
+                       required>
+            </div>
+
+            <!-- 내용 -->
+            <div class="form-group">
+                <label>내용</label>
+                <textarea name="content"
+                		  rows="10"
+                          id="content"
+                          class="form-control content-area"
+                          placeholder="문의 내용을 입력하세요"
+                          required><%= isUpdate ? dto.getContent() : "" %></textarea>
+            </div>
+
+            <!-- 비밀글 -->
+            <div class="form-check">
+                <input type="checkbox" name="secret" id="secret" value="1" class="form-check-input" <%= (isUpdate &&  dto != null && "1".equals(dto.getSecretType())) ? "checked" : "" %>>
+                <label for="secret" class="form-check-label">
+                    비밀글로 작성
+                </label>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="form-actions">
+                <button type="button" class="btn-submit" onclick="saveSupport()"><%= isUpdate ? "수정" : "등록" %></button>
+                <button type="button" class="btn-cancel" onclick="history.back()">뒤로가기</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
 
 <script type="text/javascript">
 
-var isUpdate = <%= isUpdate %>;
-
-function saveSupport(){
-	  
+	var isUpdate = <%= isUpdate %>;
+	
+	function saveSupport(){
+	
 	  var supportIdx = $("#supportIdx").val();
 	  var categoryType = $("#categoryType").val();
 	  var title = $("#title").val();
 	  var content = $("#content").val();
 	  var secret = $("#secret").is(":checked") ? "1" : "0";
-
-	  if(title.trim()=="" || content.trim()==""){
+	
+	  if(title.trim() === "" || content.trim() === ""){
 	    alert("제목과 내용을 입력하세요");
 	    return;
 	  }
-
+	
 	  $.ajax({
-	    url : "supportInsertAction.jsp",
+	    url : isUpdate ? "supportUpdateAction.jsp" : "supportInsertAction.jsp",
 	    type : "post",
 	    dataType : "json",
 	    data : {
@@ -114,33 +162,29 @@ function saveSupport(){
 	      secret : secret
 	    },
 	    success : function(res){
-	      if(res.result == "OK"){
-	    	  
-	    	alert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다");
-	    	if(isUpdate){
-    	      location.href = "supportDetail.jsp?supportIdx=" + res.supportIdx;
-    	    } else {
-    	      location.href = "supportList.jsp";
-    	    }
 	    	
-	      } else if(res.result == "NO_LOGIN"){
-	        alert("로그인이 필요합니다");
-	        location.href = "../login/loginForm.jsp";
-	      } else {	  
-	        alert("등록 실패");
-	      }
-	    },
-	    error : function(){
-	      alert("서버 오류");
-	    }
-	    
-	    
-	  });
-	  
-	  
-	}
+	    	console.log("서버응답:", res);
+	    	  if(res.result === "OK"){
+	    	    alert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다");
 
+	    	    if(isUpdate){
+	    	      location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
+	    	    } else {
+	    	      location.href = "supportList.jsp";
+	    	    }
+
+	    	  } else if(res.result === "NO_LOGIN"){
+	    	    alert("로그인이 필요합니다");
+	    	    location.href = "../login/loginForm.jsp";
+	    	  } else {
+	    	    alert("처리에 실패했습니다");
+	    	  }
+	    	}
+	  });
+	}
 </script>
+
+<jsp:include page="../common/customAlert.jsp" />
 
 </body>
 </html>

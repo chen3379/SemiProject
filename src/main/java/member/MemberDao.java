@@ -148,6 +148,30 @@ public class MemberDao {
         }
     }
 
+    // checkPassword 비밀번호 확인
+    public boolean checkPassword(String id, String password) {
+        Connection conn = db.getDBConnect();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        String sql = "select count(*) from member where id = ? and password = ?";
+
+        try {
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, id);
+            pstmt.setString(2, password);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            db.dbClose(rs, pstmt, conn);
+        }
+        return false;
+    }
+
     // deleteMember 회원삭제
     public int deleteMember(String id) {
         Connection conn = db.getDBConnect();
@@ -497,6 +521,38 @@ public class MemberDao {
             e.printStackTrace();
         } finally {
             db.dbClose(null, pstmt, conn);
+        }
+    }
+    
+    //[추가] 카카오 소셜 회원 가입
+    public boolean insertKakaoMember(MemberDto dto) {
+
+        // 이미 가입된 카카오 회원이면 insert 안 함
+        if (isIdDuplicate(dto.getId())) {
+            return false;
+        }
+
+        String sql =
+            "INSERT INTO member " +
+            "(id, password, nickname, join_type, role_type, status, photo, create_day) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        try (Connection conn = db.getDBConnect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, dto.getId());
+            pstmt.setString(2, "KAKAO_LOGIN");
+            pstmt.setString(3, dto.getNickname());
+            pstmt.setString(4, "kakao");
+            pstmt.setString(5, "1");
+            pstmt.setString(6, "active");
+            pstmt.setString(7, "/profile_photo/default_photo.jpg");
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }

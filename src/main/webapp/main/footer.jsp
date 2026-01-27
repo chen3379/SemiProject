@@ -92,8 +92,8 @@ footer .bi {
 		<div class="footer-col">
 			<h4>WHATFLIX</h4>
 			<ul class="footer-links">
-				<li><a href="main.jsp">홈</a></li>
-				<li><a href="support.jsp">고객센터</a></li>
+				<li><a href="<%=request.getContextPath()%>/main/mainPage.jsp">홈</a></li>
+				<li><a href="<%=request.getContextPath()%>/support/supportList.jsp">고객센터</a></li>
 				<li><a href="#">이용약관</a></li>
 				<li><a href="#">개인정보처리방침</a></li>
 			</ul>
@@ -110,7 +110,7 @@ footer .bi {
 			</ul>
 		</div>
 		<div class="footer-col">
-			<h4>고객지원</h4>
+			<h4>고객센터</h4>
 			<ul class="footer-links">
 				<li>문의: help@whatflix.com</li>
 				<li>Tel: 02-1234-5678</li>

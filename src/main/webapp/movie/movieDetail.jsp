@@ -1,3 +1,5 @@
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="movie.MovieWishDao"%>
 <%@page import="member.MemberDao"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="movie.MovieRatingStatDao"%>
@@ -52,10 +54,22 @@ MovieRatingStatDao statDao = new MovieRatingStatDao();
 BigDecimal avgScore = statDao.getAvgScore(movieIdx);
 int ratingCount = statDao.getRatingCount(movieIdx);
 
-//로그인 수정 필요
-String id = (String) session.getAttribute("id");
-Boolean loginStatus = (Boolean) session.getAttribute("loginStatus");
-boolean isLogin = (loginStatus != null && loginStatus == true && id != null);
+//로그인 정보 조회
+String id = (String)session.getAttribute("id");
+boolean isLogin = (id != null);
+
+//위시
+MovieWishDao wishDao = new MovieWishDao();
+boolean isWished = false;
+
+if (isLogin) {
+    isWished = wishDao.isWished(movieIdx, id);
+}
+
+SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+// 세션 roleType 가져오기
+String roleType=(String)session.getAttribute("roleType");
 %>
 <!DOCTYPE html>
 <html>
@@ -68,15 +82,22 @@ boolean isLogin = (loginStatus != null && loginStatus == true && id != null);
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <style>
 /* [1] 전역 테마 및 배경 설정 */
 :root {
 	--primary-red: #E50914;
+	--primary-red-hover: #B20710;
 	--bg-main: #141414;
 	--bg-card: #1f1f1f;
+	--bg-surface: #181818;
+	--bg-glass: rgba(20, 20, 20, 0.7);
 	--text-white: #FFFFFF;
 	--text-gray: #B3B3B3;
+	--text-muted: #666666;
 	--glass-border: rgba(255, 255, 255, 0.1);
+	--border-glass: rgba(255, 255, 255, 0.1);
 }
 
 body {
@@ -307,6 +328,13 @@ h1.fw-bold small {
 .adminDiv {
 	transition: opacity 0.3s ease;
 }
+
+    /* 스크롤바 커스텀 (Webkit) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    
 </style>
 </head>
 
@@ -314,6 +342,8 @@ h1.fw-bold small {
 
 	<input type="hidden" id="movieIdx" value="<%=movie_idx%>">
 	<jsp:include page="../main/nav.jsp" />
+	<jsp:include page="../login/loginModal.jsp" />
+	<jsp:include page="../profile/profileModal.jsp"/>
 
 	<div class="container">
 		<div class="mb-4 border-bottom pb-3">
@@ -339,9 +369,9 @@ h1.fw-bold small {
 					</span> &nbsp;&nbsp;&nbsp;
 					<button type="button" id="wishBtn"
 						class="btn p-0 border-0 bg-transparent d-flex align-items-center gap-1"
-						data-wished="false">
-						<span id="wishText" class="text-muted">위시</span> <i id="wishIcon"
-							class="bi bi-heart text-danger fs-4"></i>
+						data-wished="<%=isWished%>">
+						<span id="wishText" class="<%=isWished ? "text-danger" : "text-muted"%>">위시</span> 
+						<i id="wishIcon" class="bi <%=isWished ? "bi-heart-fill" : "bi-heart"%> text-danger fs-4"></i>
 					</button>
 				</div>
 
@@ -427,8 +457,10 @@ h1.fw-bold small {
 				id="reviewSecondBox">
 
 				<input type="hidden" id="movieIdxHidden" value="<%=movie_idx%>">
+				<input type="hidden" id="reviewIdxHidden" value="">
+				<input type="hidden" id="reviewMode" value="insert">
 
-				<h5 class="fw-bold mb-3">
+				<h5 class="fw-bold mb-3" id="reviewFormTitle">
 					<i class="bi bi-pencil-square"></i> 한줄평 작성
 				</h5>
 
@@ -459,9 +491,9 @@ h1.fw-bold small {
 					</div>
 				</div>
 
-				<div class="d-flex justify-content-end">
-					<button type="button" class="btn btn-outline-danger text-white fw-bold"
-						id="btnReviewSubmit">등록</button>
+				<div class="d-flex justify-content-end gap-2">
+					<button type="button" class="btn btn-outline-danger text-white fw-bold" id="btnReviewSubmit">등록</button>
+					<button type="button" class="btn btn-secondary fw-bold d-none" id="btnReviewCancel">취소</button>
 				</div>
 			</div>
 
@@ -478,7 +510,7 @@ h1.fw-bold small {
 					<div class="list-group-item">
 						<div class="d-flex justify-content-between align-items-center">
 							<div>
-								<b><%=r.getId()%></b>
+								<b><%=r.getNickname()%></b>
 
 								<%
 								double score = (r.getScore() == null) ? 0.0 : r.getScore().doubleValue();
@@ -491,27 +523,27 @@ h1.fw-bold small {
 									<%
 									for (int i = 0; i < full; i++) {
 									%><i class="bi bi-star-fill text-warning"></i> <%
- }
- %> <%
- if (half) {
- %><i class="bi bi-star-half text-warning"></i> <%
- }
- %> <%
- for (int i = 0; i < empty; i++) {
- %><i class="bi bi-star text-warning"></i> <%
- }
- %>
+									 }
+									 %> <%
+									 if (half) {
+									 %><i class="bi bi-star-half text-warning"></i> <%
+									 }
+									 %> <%
+									 for (int i = 0; i < empty; i++) {
+									 %><i class="bi bi-star text-warning"></i> <%
+									 }
+									 %>
 								</span> <span class="ms-2 text-warning fw-semibold"><%=String.format("%.1f", score)%></span>
 							</div>
 
 							<div class="d-flex align-items-center gap-2">
-								<span class="text-muted small"><%=r.getCreateDay()%></span>
+								<span class="text-muted small"><%=sdf.format(r.getCreateDay())%></span>
 
-								<%
-								if (isLogin && id.equals(r.getId())) {
+								<% // 한줄평 작성자 + 관리자(3,9) 수정, 삭제 가능
+								if (isLogin && id.equals(r.getId()) || "3".equals(roleType) || "9".equals(roleType) ) {
 								%>
 								<button type="button" class="btn btn-sm btn-outline-primary"
-									onclick="updateReview(<%=r.getReviewIdx()%>, '<%=r.getContent().replace("'", "\\'")%>')">수정</button>
+									onclick="openReviewEdit(<%=r.getReviewIdx()%>, '<%=String.format("%.1f", score)%>', '<%=r.getContent().replace("'", "\\'")%>')">수정</button>
 								<button type="button" class="btn btn-outline-danger btn-sm"
 									onclick="deleteReview(<%=r.getReviewIdx()%>)">삭제</button>
 								<%
@@ -534,13 +566,14 @@ h1.fw-bold small {
 		</div>
 	</div>
 	<jsp:include page="chatWidget.jsp" />
-	
+
 	<script type="text/javascript">
 	// 영화 삭제
 	function delMovie(idx) {
-		if (confirm("정말 이 영화 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
-			location.href = "movieDeleteAction.jsp?movie_idx=" + idx;
-		}
+	  openCustomConfirm("정말 이 영화 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.", function(confirmed){
+	    if(!confirmed) return;
+	    location.href = "movieDeleteAction.jsp?movie_idx=" + encodeURIComponent(idx);
+	  });
 	}
 
 	// 유튜브 URL -> Embed
@@ -562,251 +595,350 @@ h1.fw-bold small {
 	
 	 /* ===== (reviewCount==0일 때) 작성하기 버튼 ===== */
 	 
-	 //임시 주석
-	 var isLogin = <%=isLogin ? "true" : "false"%>;
-	 
-	  $(document).on("click", "#btnReviewWrite", function(){
-		
-		//임시 주석
-		//비회원일때는 로그인창으로 넘어가기
-		if(!isLogin){
-		    alert("로그인이 필요합니다.");
-		    location.href = "../login/loginModal.jsp";
-		    return;
-		}
-		
-	    $("#reviewBox").hide();                 // 안내박스 숨김
-	    $("#reviewSecondBox").removeClass("d-none"); // 폼 보이기
+	/* ===== 로그인 여부 ===== */
+	var isLogin = <%=isLogin ? "true" : "false"%>;
+	
+	/* ===== 별점 전역 상태(수정에서도 써야해서 전역으로 뺌) ===== */
+	var currentRating = 0.0;
+	var hoverRating = 0.0;
+	
+	function updateRatingUI(){
+	  var percent = (currentRating / 5.0) * 100;
+	  $("#starFill").css("width", percent + "%");
+	  $("#myScoreText").text(currentRating.toFixed(1));
+	  $("#reviewScore").val(currentRating.toFixed(1));
+	}
+	
+	function setRating(r){
+	  var v = parseFloat(r);
+	  if (isNaN(v)) v = 0.0;
+	  currentRating = v;
+	  updateRatingUI();
+	}
+	
+	function setFormMode(mode){
+	  $("#reviewMode").val(mode);
+	
+	  if(mode === "update"){
+	    $("#reviewFormTitle").html('<i class="bi bi-pencil-square"></i> 한줄평 수정');
+	    $("#btnReviewSubmit").text("수정");
+	    $("#btnReviewCancel").removeClass("d-none");
+	  }else{
+	    $("#reviewFormTitle").html('<i class="bi bi-pencil-square"></i> 한줄평 작성');
+	    $("#btnReviewSubmit").text("등록");
+	    $("#btnReviewCancel").addClass("d-none");
+	    $("#reviewIdxHidden").val("");
+	  }
+	}
+	
+	// reviewSecondBox 초기화 Form
+	function resetReviewForm(){
+	  setFormMode("insert");
+	  $("#reviewContent").val("");
+	  $("#reviewLen").text("0");
+	  setRating(0.0);
+	}
+	
+	/* ===== 작성하기 버튼 ===== */
+	$(document).on("click", "#btnReviewWrite", function(){
+	  if(!isLogin){
+		alert("로그인이 필요합니다.");
+	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+        modal.show();
+        return;	
+	  }
+	  
+	  $("#reviewBox").hide();
+	  $("#reviewSecondBox").removeClass("d-none");
+	
+
+	
+	  // 작성모드 초기화
+	  setFormMode("insert");
+	  $("#reviewContent").val("");
+	  $("#reviewLen").text("0");
+	  setRating(0.0);
+	});
+	
+	/* ===== 별점 UI 이벤트 ===== */
+	(function initStarUI(){
+	  if(!$("#reviewSecondBox").length) return;
+	
+	  updateRatingUI();
+	
+	  $("#starWrap").on("mousemove", function(e){
+	    var offset = $(this).offset();
+	    var x = e.pageX - offset.left;
+	    var w = $(this).width();
+	
+	    var raw = (x / w) * 5.0;
+	    raw = Math.round(raw * 2) / 2;
+	
+	    if (raw < 0.5) raw = 0.5;
+	    if (raw > 5.0) raw = 5.0;
+	
+	    hoverRating = raw;
+	
+	    var percent = (hoverRating / 5.0) * 100;
+	    $("#starFill").css("width", percent + "%");
+	    $("#myScoreText").text(hoverRating.toFixed(1));
 	  });
-
-
-	  /* ===== 별점 UI (폼이 있을 때만) ===== */
-	  (function initStarUI(){
-	    if(!$("#reviewSecondBox").length) return; // 폼 자체가 없으면 종료
-
-	    var currentRating = 0.0;
-	    var hoverRating = 0.0;
-
-	    function updateRatingUI(){
-	      var percent = (currentRating / 5.0) * 100;
-	      $("#starFill").css("width", percent + "%");
-	      $("#myScoreText").text(currentRating.toFixed(1));
-	      $("#reviewScore").val(currentRating.toFixed(1));
-	    }
-
+	
+	  $("#starWrap").on("mouseleave", function(){
 	    updateRatingUI();
-
-	    $("#starWrap").on("mousemove", function(e){
-	      var offset = $(this).offset();
-	      var x = e.pageX - offset.left;
-	      var w = $(this).width();
-
-	      var raw = (x / w) * 5.0;
-	      raw = Math.round(raw * 2) / 2;
-
-	      if (raw < 0.5) raw = 0.5;
-	      if (raw > 5.0) raw = 5.0;
-
-	      hoverRating = raw;
-
-	      var percent = (hoverRating / 5.0) * 100;
-	      $("#starFill").css("width", percent + "%");
-	      $("#myScoreText").text(hoverRating.toFixed(1));
-	    });
-
-	    $("#starWrap").on("mouseleave", function(){
-	      updateRatingUI();
-	    });
-
-	    $("#starWrap").on("click", function(){
-	      if (hoverRating < 0.5) hoverRating = 0.5;
-	      currentRating = hoverRating;
-	      updateRatingUI();
-	    });
-
-	    $("#reviewContent").on("input", function(){
-	      $("#reviewLen").text($(this).val().length);
-	    });
-	  })();
-
-
-	  /* ===== 등록 버튼 (한줄평 + 별점) ===== */
-	  $(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
-		  
-	  	if(!isLogin){
-		  alert("로그인이 필요합니다.");
-		  location.href = "../login/loginModal.jsp";
-		  return;
-	  	}
-		
-	    var movieIdx = $("#movieIdxHidden").val();
-	    var score = $("#reviewScore").val();
-	    var content = $("#reviewContent").val();
-
-	    if (score === "0.0") { alert("별점을 선택해 주세요."); return; }
-	    if (!content || $.trim(content).length === 0) {
-	      alert("코멘트를 입력해 주세요.");
-	      $("#reviewContent").focus();
+	  });
+	
+	  $("#starWrap").on("click", function(){
+	    if (hoverRating < 0.5) hoverRating = 0.5;
+	    currentRating = hoverRating;
+	    updateRatingUI();
+	  });
+	
+	  $("#reviewContent").on("input", function(){
+	    $("#reviewLen").text($(this).val().length);
+	  });
+	})();
+	
+	/* ===== 취소 버튼 ===== */
+	$(document).on("click", "#btnReviewCancel", function(){
+	  setFormMode("insert");
+	  $("#reviewContent").val("");
+	  $("#reviewLen").text("0");
+	  setRating(0.0);
+	});
+	
+	/* ===== 등록/수정 버튼 ===== */
+	$(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
+	
+	  if(!isLogin){
+	    var modal = new bootstrap.Modal(document.getElementById('loginModal'));
+        modal.show();
+        return;
+	  }
+	
+	  var movieIdx = $("#movieIdxHidden").val();
+	  var score = $("#reviewScore").val();
+	  var content = $("#reviewContent").val();
+	
+	  if (score === "0.0") { alert("별점을 선택해 주세요."); return; }
+	  if (!content || $.trim(content).length === 0) {
+	    alert("코멘트를 입력해 주세요.");
+	    $("#reviewContent").focus();
+	    return;
+	  }
+	
+	  var mode = $("#reviewMode").val();
+	
+	  // ===== 수정 모드 =====
+	  if(mode === "update"){
+	    var reviewIdx = $("#reviewIdxHidden").val();
+	    if(!reviewIdx){
+	      alert("수정할 리뷰가 지정되지 않았습니다.");
 	      return;
 	    }
-
-	    // 1) 한줄평 저장
+	
+	    // 1) 한줄평 수정
 	    $.ajax({
 	      type: "post",
-	      url: "movieReviewInsertAction.jsp",
-	      data: { movie_idx: movieIdx, content: content },
+	      url: "movieReviewUpdateAction.jsp",
+	      data: { review_idx: reviewIdx, content: content },
 	      dataType: "json",
-	      success: function (r1) {
-	        if (r1.status !== "OK") {
-	          alert(r1.message || "한줄평 등록 실패");
+	      success: function(res1){
+	        if(res1.status !== "OK"){
+	          alert(res1.message || "한줄평 수정 실패");
 	          return;
 	        }
-
-	        // 2) 별점 저장
+	
+	        // 2) 별점 수정(※ update용 action이 있어야 함)
 	        $.ajax({
 	          type: "post",
-	          url: "movieRatingInsertAction.jsp",
+	          url: "movieRatingUpdateAction.jsp",
 	          data: { movie_idx: movieIdx, score: score },
 	          dataType: "json",
-	          success: function (r2) {
-	            if (r2.status !== "OK") {
-	              alert(r2.message || "별점 저장 실패");
+	          success: function(res2){
+	            if(res2.status !== "OK"){
+	              alert(res2.message || "별점 수정 실패");
 	              return;
 	            }
-	            // ✅ 첫 등록 이후/등록 후 상태 동기화
+	            alert("수정 완료");
 	            location.reload();
 	          },
-	          error: function (xhr) {
+	          error: function(xhr){
 	            console.log(xhr.status, xhr.responseText);
-	            alert("별점 저장 서버 오류");
+	            alert("서버 오류(별점 수정)");
 	          }
 	        });
 	      },
-	      error: function (xhr) {
+	      error: function(xhr){
 	        console.log(xhr.status, xhr.responseText);
-	        alert("한줄평 저장 서버 오류");
+	        alert("서버 오류(한줄평 수정)");
 	      }
 	    });
-	  });
-
 	
-	/* ===== 리뷰 삭제 ===== */
-	function deleteReview(reviewIdx) {
-	  var movieIdx = $("#movieIdx").val();
-	  if (!confirm("정말 삭제할까요?")) return;
-
-	  $.ajax({
-	    type: "post",
-	    url: "movieReviewDeleteAction.jsp",
-	    data: { movie_idx: movieIdx, review_idx: reviewIdx },
-	    dataType: "json",
-	    success: function(res) {
-	      if (res.status === "OK") {
-	        alert("삭제 완료");
-	        // ✅ 마지막 리뷰 삭제면 reviewCount==0이 되어 reviewBox만 뜸
-	        location.reload();
-	      } else {
-	        alert(res.message || "삭제 실패");
-	      }
-	    },
-	    error: function(xhr) {
-	      console.log(xhr.status, xhr.responseText);
-	      alert("서버 오류(삭제)");
-	    }
-	  });
-	}
-
-
-	/* ===== 리뷰 수정 ===== */
-	function updateReview(reviewIdx, oldContent) {
-	  var newContent = prompt("한줄평 수정", oldContent);
-	  if (newContent == null) return;
-
-	  newContent = $.trim(newContent);
-	  if (newContent.length === 0) {
-	    alert("내용을 입력해 주세요.");
 	    return;
 	  }
-
+	
+	  // ===== 등록 모드 =====
 	  $.ajax({
 	    type: "post",
-	    url: "movieReviewUpdateAction.jsp",
-	    data: { review_idx: reviewIdx, content: newContent },
+	    url: "movieReviewInsertAction.jsp",
+	    data: { movie_idx: movieIdx, content: content },
 	    dataType: "json",
-	    success: function(res) {
-	      if (res.status === "OK") {
-	        alert("수정 완료");
-	        location.reload();
-	      } else {
-	        alert(res.message || "수정 실패");
+	    success: function (r1) {
+	      if (r1.status !== "OK") {
+	    	var msg = r1.message || "한줄평 등록 실패";
+	        alert(msg);
+	        
+	     	// 중복 작성이면 secondBox 안을 '처음 상태'로 리셋
+	        if (msg.indexOf("이미 이 영화에 한줄평을 작성") > -1) {
+	            resetReviewForm();
+	            $("#reviewContent").focus();
+	          }
+	        return;
 	      }
+	
+	      $.ajax({
+	        type: "post",
+	        url: "movieRatingInsertAction.jsp",
+	        data: { movie_idx: movieIdx, score: score },
+	        dataType: "json",
+	        success: function (r2) {
+	          if (r2.status !== "OK") {
+	            alert(r2.message || "별점 저장 실패");
+	            return;
+	          }
+	          location.reload();
+	        },
+	        error: function (xhr) {
+	          console.log(xhr.status, xhr.responseText);
+	          alert("서버 오류(별점 저장)");
+	        }
+	      });
 	    },
-	    error: function(xhr) {
+	    error: function (xhr) {
 	      console.log(xhr.status, xhr.responseText);
-	      alert("서버 오류(수정)");
+	      alert("서버 오류(한줄평 저장)");
 	    }
 	  });
+	});
+	
+	/* ===== 한줄평 수정 ===== */
+	function openReviewEdit(reviewIdx, oldScore, oldContent) {
+	  if(!isLogin){
+	    alert("로그인이 필요합니다.");
+	    return;
+	  }
+	
+	  $("#reviewBox").hide();
+	  $("#reviewSecondBox").removeClass("d-none");
+	
+	  $("#reviewIdxHidden").val(reviewIdx);
+	  $("#reviewContent").val(oldContent);
+	  $("#reviewLen").text((oldContent || "").length);
+	
+	  setRating(oldScore);
+	  setFormMode("update");
+	
+	  $("html, body").animate({ scrollTop: $("#reviewSecondBox").offset().top - 80 }, 200);
+	  $("#reviewContent").focus();
 	}
 	
-	/* ===== 위시 추가/삭제 ===== */
-	$("#wishBtn").on("click", function(e){	
-	e.preventDefault();
-	e.stopPropagation();
-
-	if(!isLogin){
+	/* ===== 한줄평 삭제 ===== */
+	function deleteReview(reviewIdx){
+	  if(!isLogin){
 	    alert("로그인이 필요합니다.");
 	    location.href = "../login/loginModal.jsp";
 	    return;
+	  }
+	
+	  var movieIdx = $("#movieIdxHidden").val();
+	
+	  openCustomConfirm("한줄평을 삭제할까요?\n삭제 후 복구할 수 없습니다.", function(confirmed){
+	    if(!confirmed) return;
+	
+	    $.ajax({
+	      type: "post",
+	      url: "movieReviewDeleteAction.jsp",
+	      data: { review_idx: reviewIdx, movie_idx: movieIdx },
+	      dataType: "json",
+	      success: function(res){
+	        if(res.status === "OK"){
+	          alert("삭제 완료");
+	          location.reload();
+	        }else{
+	          alert(res.message || "삭제 실패");
+	        }
+	      },
+	      error: function(xhr){
+	        console.log(xhr.status, xhr.responseText);
+	        alert("서버 오류(삭제)");
+	      }
+	    });
+	  });
 	}
 
-	var movieIdx = $("#movieIdx").val();
-    var wished = $(this).data("wished");
-    var url = wished ? "movieWishDeleteAction.jsp" : "movieWishInsertAction.jsp";
-
-    $.ajax({
-        type: "post",
-        url: url,
-        data: { movie_idx: movieIdx },
-        dataType: "json",
-        success: function(res){
-          if(res.status === "OK"){
-
-            // 성공했을 때만 UI 변경
-            if(!wished){
-              $("#wishIcon").removeClass("bi-heart").addClass("bi-heart-fill active");
-              $("#wishText").removeClass("text-muted").addClass("text-danger fw-semibold").text("위시 추가");
-              $("#wishBtn").data("wished", true);
-            }else{
-              $("#wishIcon").removeClass("bi-heart-fill active").addClass("bi-heart");
-              $("#wishText").removeClass("text-danger fw-semibold").addClass("text-muted").text("위시 삭제");
-              $("#wishBtn").data("wished", false);
-            }
-
-          }else{
-            alert(res.message || "처리 실패");
-          }
-        },
-        error: function(xhr){
-          console.log(xhr.status, xhr.responseText);
-          alert("서버 오류");
-        }
-      });
-    
-    
-	});
-	 <%MemberDao memberDao = new MemberDao();
-
-if (id != null) {
-
-	String roleType = memberDao.getRoleType(id);
-	//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
-	//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
-	if ("3".equals(roleType) || "9".equals(roleType)) {%>
-	        $(".adminDiv").css("visibility","visible");              
-	    <%}
-}%> 
+	
+	/* ===== 위시 추가/삭제 ===== */
+	$("#wishBtn").on("click", function(e){    
+	    
+	    if(!isLogin){
+	        alert("로그인이 필요합니다.", function(){
+	            
+	            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+	            modal.show();
+	        });
+	        return; 
+	    }
+	
+		var movieIdx = $("#movieIdx").val();
+	    var wished = $(this).data("wished");
+	    var url = wished ? "movieWishDeleteAction.jsp" : "movieWishInsertAction.jsp";
+	
+	    $.ajax({
+	        type: "post",
+	        url: url,
+	        data: { movie_idx: movieIdx },
+	        dataType: "json",
+	        success: function(res){
+	          if(res.status === "OK"){
+	
+	            // 성공했을 때만 UI 변경
+	            if(!wished){
+	              $("#wishIcon").removeClass("bi-heart").addClass("bi-heart-fill active");
+	              $("#wishText").removeClass("text-muted").addClass("text-danger").text("위시");
+	              $("#wishBtn").data("wished", true);
+	            }else{
+	              $("#wishIcon").removeClass("bi-heart-fill active").addClass("bi-heart");
+	              $("#wishText").removeClass("text-danger").addClass("text-muted").text("위시");
+	              $("#wishBtn").data("wished", false);
+	            }
+	
+	          }else{
+	            alert(res.message || "처리 실패");
+	          }
+	        },
+	        error: function(xhr){
+	          console.log(xhr.status, xhr.responseText);
+	          alert("서버 오류");
+	        }
+	      });
+	    
+	    
+		});
+	
+	
+	 <%if (id != null) {
+		//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
+		//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
+		if ("3".equals(roleType) || "9".equals(roleType)) {%>
+		        $(".adminDiv").css("visibility","visible");              
+		    <%}
+	}%> 
 	
 	
 </script>
+
+<jsp:include page="../main/footer.jsp" />
+<jsp:include page="../common/customConfirm.jsp" />
 </body>
 </html>

@@ -1,18 +1,25 @@
 @charset "UTF-8";
 
-a,
-a:hover,
-a:focus,
-a:active {
-    text-decoration: none;
-    color: inherit;
-}
-.post-container {
-	max-width: 720px;
-	margin: 40px auto;
-	padding: 20px;
+.post-wrapper {
+  display: flex;
+  justify-content: center;
 }
 
+.post-container {
+  max-width: 720px;
+  width: 100%;
+  padding: 100px 16px 0;
+}
+
+.global-footer{
+	 width: 100%;
+	 max-width: none;
+	 margin: 0;	
+}
+.toastui-editor-contents p img {
+    max-width: 50%;   /* 예: 50%로 축소 */
+    height: auto;
+}
 .post-header {
 	display: flex;
 	justify-content: space-between;
@@ -24,6 +31,7 @@ a:active {
 	display: flex;
 	align-items: center;
 	gap: 10px;
+	cursor: pointer;
 }
 
 .profile-img {
@@ -48,6 +56,26 @@ a:active {
 	font-size: 13px;
 }
 
+.post-content p img {
+    max-width: 100%;    
+    height: auto;        
+    display: inline-block; 
+    margin: 16px;  
+}
+
+.post-content img,
+.mt-4 img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 16px auto;
+}
+
+.post-content * {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 .readcount {
 	white-space: nowrap;
 }
@@ -63,18 +91,32 @@ a:active {
 }
 
 .post-title {
-	margin-top: 20px;
 	font-weight: bold;
+	padding-bottom: 20px;
 }
 
+.post-title-more {
+	color: #222;
+    font-size: 14px;
+    text-decoration: none;
+
+    max-width: 70%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.post-title-more:hover {
+    text-decoration: underline;
+}
 .post-category {
-	margin-top: 8px;
+	padding-top:20px;
 	color: #4a6cf7;
-	font-size: 14px;
+	font-size: 13px;
+	font-weight: 800;
 }
 
 .post-content {
-	margin-top: 20px;
 	line-height: 1.7;
 }
 
@@ -102,6 +144,8 @@ a:active {
 .post-menu a:hover {
     background: #f5f5f5;
 }
+
+
 
 @media (max-width: 576px) {
 
@@ -370,7 +414,6 @@ a:active {
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     padding: 14px;
-    margin-bottom: 24px;
     background: #fff;
 }
 
@@ -385,7 +428,7 @@ a:active {
 /* textarea */
 .comment-input-box textarea {
     width: 100%;
-    height: 90px;
+    min-height: 60px; 
     border: none;
     resize: none;
     font-size: 14px;
@@ -445,21 +488,102 @@ textarea:disabled {
     cursor: not-allowed;
 }
 
+.related-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.related-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid #eee;
+}
+
+.related-item {
+    border-bottom: 1px solid #eee;
+}
+
+.related-item a.post-title-more {
+    display: block;
+    padding: 14px 6px 6px;
+    font-size: 15px;
+    color: #222;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.related-item:hover {
+    background-color: #f7f7f7;
+}
+
+.related-item:hover a.post-title-more {
+    text-decoration: underline;
+}
+
+.related-item .post-meta {
+    padding: 0 6px 12px;
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+}
+
+.related-item a.post-title-more {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 오른쪽 메타 */
+.post-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    color: #777;
+    white-space: nowrap;
+}
+
+/* ===== 첨부파일 영역 (화이트 테마) ===== */
 .post-attachment {
-    padding: 12px 16px;
-    background: #1f1f1f;
-    border-radius: 8px;
-    font-size: 14px;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+
+    padding: 10px 14px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 8px !important;
+}
+
+.post-attachment i {
+    color: #6b7280 !important;   /* 아이콘: 중간 회색 */
+    font-size: 16px !important;
 }
 
 .post-attachment a {
-    color: #9ad0ff;
-    text-decoration: none;
+    color: #333333 !important;   /* 파일명: 진회색 */
+    text-decoration: none !important;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+.post-attachment:hover {
+    background-color: #f5f5f5 !important; /* hover: 연한 회색 */
+}
 
+.post-attachment a:hover {
+    color: #111111 !important;   /* hover 시 텍스트 더 진하게 */
+    text-decoration: underline !important;
+}
 /*Review detail*/
-.container { max-width: 720px; margin: 40px auto; }
+.container { max-width: 720px; margin: 40px auto; position: relative;}
 .title { font-weight: bold; margin-top: 20px; }
 .meta { color:#888; font-size:13px; display:flex; gap:12px; }
 .like-btn {
@@ -489,4 +613,90 @@ textarea:disabled {
 .like-wrapper.active {
     background: #ff4d4d;
     color: #fff;
+}
+
+/* ===== 유저 정보 모달 ===== */
+.user-info-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+}
+
+.user-info-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 16px;
+    width: 420px;
+    padding: 24px;
+    z-index: 1000;
+    display: flex;
+    gap: 24px;
+}
+
+/* 왼쪽 아바타 */
+.user-info-left .avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+}
+
+/* 오른쪽 정보 */
+.user-info-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.info-row {
+    display: flex;
+    gap: 16px;
+}
+
+.info-row .label {
+    width: 60px;
+    color: #777;
+    font-weight: 600;
+}
+
+.info-row .value {
+    color: #111;
+    font-weight: 700;
+}
+
+.info-row .value.email {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.modal-footer {
+    margin-top: auto;
+}
+
+.close-btn {
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    background: #f3f4f6;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    background: #e5e7eb;
 }

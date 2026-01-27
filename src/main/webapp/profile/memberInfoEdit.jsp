@@ -148,7 +148,7 @@
         <form id="editForm" enctype="multipart/form-data">
             <!-- 프로필 사진 섹션 -->
             <div class="photo-edit-section">
-                <img id="photoPreview" src="default_profile.png" alt="프로필 사진 미리보기" />
+                <img id="photoPreview" onerror="this.src='${pageContext.request.contextPath}/profile_photo/default_photo.jpg'" src="${pageContext.request.contextPath}/profile_photo/default_photo.jpg" alt="프로필 사진 미리보기" />
                 <div class="mb-3 w-100">
                     <label class="form-label text-gray small">기존 이미지 경로</label>
                     <input type="text" id="memberPhoto" name="photo" class="edit-input mb-2" readonly placeholder="이미지 경로 없음">
@@ -178,7 +178,7 @@
                 </dd>
 
                 <dt>나이</dt>
-                <dd><input type="number" id="memberAge" name="age" class="edit-input" placeholder="나이"></dd>
+                <dd><input type="number" id="memberAge" name="age" class="edit-input" placeholder="나이" min="0" max="120"></dd>
 
                 <dt>전화번호</dt>
                 <dd><input type="text" id="memberHp" name="hp" class="edit-input" placeholder="010-0000-0000"></dd>
@@ -226,7 +226,10 @@
             success: function (data) {
                 if (data && data.isMine) {
                     const contextPath = $('.edit-content-wrapper').data('context-path');
-                    $('#photoPreview').attr('src', contextPath + data.photo);
+                    let imgSrc = (data.photo && data.photo.trim() !== "") 
+                                 ? contextPath + data.photo 
+                                 : contextPath + "/profile_photo/default_photo.jpg";
+                    $('#photoPreview').attr('src', imgSrc);
                     $('#memberPhoto').val(data.photo);
                     $('#memberId').val(data.id);
                     $('#memberNickname').val(data.nickname);

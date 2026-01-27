@@ -28,7 +28,7 @@ public class DBConnect {
 
         // 2. ★ secret2.properties 파일에서 비밀번호 읽어오기
         try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream("secret2.properties");
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config/secret2.properties");
 
             if (input != null) {
                 Properties prop = new Properties();
@@ -51,7 +51,9 @@ public class DBConnect {
         try {
             // ★ "aws비밀번호" 대신 위에서 읽어온 this.dbPassword 변수를 넣습니다.
             conn = DriverManager.getConnection(MYSQL_URL, "adminhee", this.dbPassword);
-
+            Statement stmt = conn.createStatement();
+            stmt.execute("SET time_zone = '+09:00'");
+            stmt.close();            
             System.out.println("#MYSQL 서버연결 성공");
         } catch (SQLException e) {
             System.out.println("#MYSQL 서버연결 실패");

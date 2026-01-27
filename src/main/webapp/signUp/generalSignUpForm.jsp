@@ -258,8 +258,10 @@
             data: $(this).serialize(),
             success: function (res) {
                 if (res.status === 'SUCCESS') {
-                    alert('WHATFLIX 회원이 되신 것을 환영합니다!');
-                    location.href = '../main/mainPage.jsp';
+                    alert('WHATFLIX 회원이 되신 것을 환영합니다!', function() {
+                        if (document.activeElement) document.activeElement.blur();
+                        location.href = '../main/mainPage.jsp';
+                    });
                 } else {
                     submitBtn.disabled = false;
                     submitBtn.innerText = "WHATFLIX 가입 완료";
