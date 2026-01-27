@@ -55,18 +55,18 @@ public class FreeBoardDao {
             conn = db.getDBConnect();
 
             String sql =
-                "SELECT " +
-                " b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
-                " b.readcount, b.create_day, IFNULL(c.cnt, 0) AS comment_count " +
-                "FROM free_board b " +
-                "LEFT JOIN member m ON b.id = m.id " +
-                "LEFT JOIN ( " +
-                "   SELECT board_idx, COUNT(*) AS cnt " +
-                "   FROM free_comment " +
-                "   WHERE is_deleted = 0 " +
-                "   GROUP BY board_idx " +
-                ") c ON b.board_idx = c.board_idx " +
-                "WHERE b.is_deleted = 0 ";
+        	    "SELECT " +
+        	    " b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
+        	    " b.readcount, b.create_day, IFNULL(c.cnt, 0) AS comment_count " +
+        	    "FROM free_board b " +
+        	    "JOIN member m ON b.id = m.id " +
+        	    "LEFT JOIN ( " +
+        	    "   SELECT board_idx, COUNT(*) AS cnt " +
+        	    "   FROM free_comment " +
+        	    "   WHERE is_deleted = 0 " +
+        	    "   GROUP BY board_idx " +
+        	    ") c ON b.board_idx = c.board_idx " +
+        	    "WHERE b.is_deleted = 0 ";
 
             if (!"all".equals(category)) {
                 sql += "AND b.category_type = ? ";
@@ -184,10 +184,11 @@ public class FreeBoardDao {
         ResultSet rs = null;
 
         String sql =
-        	    "SELECT board_idx, title, readcount " +
-        	    "FROM free_board " +
-        	    "WHERE (is_deleted = 0 OR is_deleted IS NULL) " +
-        	    "ORDER BY readcount DESC " +
+        	    "SELECT b.board_idx, b.title, b.readcount " +
+        	    "FROM free_board b " +
+        	    "JOIN member m ON b.id = m.id " +
+        	    "WHERE b.is_deleted = 0 " +
+        	    "ORDER BY b.readcount DESC " +
         	    "LIMIT 10";
 
         try {
