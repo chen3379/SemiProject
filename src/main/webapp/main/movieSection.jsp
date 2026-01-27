@@ -386,7 +386,7 @@ to {
 <section class="content-section">
 	<div class="section-header">
 		<h2 class="section-title">새로 올라온 작품</h2>
-		<a href="../movie/movieList.jsp" class="more-link">전체보기 <i
+		<a href="../movie/movieList.jsp" class="more-link">더보기 <i
 			class="bi bi-chevron-right"></i></a>
 	</div>
 	<div class="swiper movie-swiper new-swiper">

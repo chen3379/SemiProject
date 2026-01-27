@@ -67,6 +67,9 @@ if (isLogin) {
 }
 
 SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+// 세션 roleType 가져오기
+String roleType=(String)session.getAttribute("roleType");
 %>
 <!DOCTYPE html>
 <html>
@@ -325,6 +328,13 @@ h1.fw-bold small {
 .adminDiv {
 	transition: opacity 0.3s ease;
 }
+
+    /* 스크롤바 커스텀 (Webkit) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    
 </style>
 </head>
 
@@ -529,8 +539,8 @@ h1.fw-bold small {
 							<div class="d-flex align-items-center gap-2">
 								<span class="text-muted small"><%=sdf.format(r.getCreateDay())%></span>
 
-								<%
-								if (isLogin && id.equals(r.getId())) {
+								<% // 한줄평 작성자 + 관리자(3,9) 수정, 삭제 가능
+								if (isLogin && id.equals(r.getId()) || "3".equals(roleType) || "9".equals(roleType) ) {
 								%>
 								<button type="button" class="btn btn-sm btn-outline-primary"
 									onclick="openReviewEdit(<%=r.getReviewIdx()%>, '<%=String.format("%.1f", score)%>', '<%=r.getContent().replace("'", "\\'")%>')">수정</button>
@@ -902,8 +912,6 @@ h1.fw-bold small {
 	
 	
 	 <%if (id != null) {
-
-		String roleType = (String) session.getAttribute("roleType");
 		//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
 		//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
 		if ("3".equals(roleType) || "9".equals(roleType)) {%>

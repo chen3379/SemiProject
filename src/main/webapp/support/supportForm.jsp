@@ -61,7 +61,7 @@ history.back();
 
     <!-- 헤더 -->
     <div class="support-header">
-        <h2>고객지원 문의</h2>
+        <h2 style="font-weight: bold;">1:1 문의하기</h2>
         <span>문의 내용을 자세히 작성해주세요</span>
     </div>
 
@@ -78,13 +78,13 @@ history.back();
             <div class="form-group">
                 <label>문의 유형</label>
                 <select name="categoryType" id="categoryType" class="form-select">
-                    <option value="0" <%= (isUpdate && "0".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                    <option value="0" <%= (!isUpdate || "0".equals(dto.getCategoryType())) ? "selected" : "" %>>
                         회원정보
                     </option>
                     <option value="1" <%= (isUpdate && "1".equals(dto.getCategoryType())) ? "selected" : "" %>>
                         신고
                     </option>
-                    <option value="2" <%= (!isUpdate || "2".equals(dto.getCategoryType())) ? "selected" : "" %>>
+                    <option value="2" <%= (isUpdate && "2".equals(dto.getCategoryType())) ? "selected" : "" %>>
                         기타
                     </option>
                 </select>

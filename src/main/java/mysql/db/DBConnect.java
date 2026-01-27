@@ -28,7 +28,7 @@ public class DBConnect {
 
         // 2. ★ secret2.properties 파일에서 비밀번호 읽어오기
         try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream("secret2.properties");
+            InputStream input = getClass().getClassLoader().getResourceAsStream("config/secret2.properties");
 
             if (input != null) {
                 Properties prop = new Properties();
