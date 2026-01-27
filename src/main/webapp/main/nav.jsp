@@ -202,10 +202,15 @@ if (!"true".equals(loginStatus)) {
 			</ul>
 		</div>
 		<ul class="nav-actions">
+			<%
+			if ("3".equals(roleType)||"8".equals(roleType)||"9".equals(roleType)) {
+			%>
 			<li><a
 				href="<%=request.getContextPath()%>/main/sessionCheck.jsp"
 				class="nav-item" style="font-size: 0.8rem; opacity: 0.5;">Dev:세션</a></li>
-
+			<%
+			}
+			%>
 			<% if ("true".equals(loginStatus)) { %>
 			<li><a href="#" id="openProfile" data-bs-toggle="modal"
 				data-bs-target="#profileModal" class="nav-item"> <i
