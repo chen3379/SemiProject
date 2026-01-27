@@ -199,14 +199,14 @@
                     <div class="post-item">
                         <div class="post-info">
                             <span class="post-category"><%=dto.getCategory_type()%></span>
-                            <a href="../board/free/detail.jsp?idx=<%=dto.getBoard_idx()%>" class="post-title"><%=dto.getTitle()%></a>
+                            <a href="../board/free/detail.jsp?board_idx=<%=dto.getBoard_idx()%>" class="post-title"><%=dto.getTitle()%></a>
                             <div class="post-meta">
                                 <span>조회 <%=dto.getReadcount()%></span> • 
                                 <span>작성일 <%=sdf.format(dto.getCreate_day())%></span>
                             </div>
                         </div>
                         <div class="post-actions">
-                            <a href="../board/free/update.jsp?idx=<%=dto.getBoard_idx()%>" class="btn-action btn-edit">수정</a>
+                            <a href="../board/free/update.jsp?board_idx=<%=dto.getBoard_idx()%>" class="btn-action btn-edit">수정</a>
                             <button onclick="deletePost('free', <%=dto.getBoard_idx()%>)" class="btn-action btn-delete">삭제</button>
                         </div>
                     </div>
@@ -224,14 +224,14 @@
                     <div class="post-item">
                         <div class="post-info">
                             <span class="post-category">[<%=dto.getGenre_type()%>]</span>
-                            <a href="../board/review/detail.jsp?idx=<%=dto.getBoard_idx()%>" class="post-title"><%=dto.getTitle()%></a>
+                            <a href="../board/review/detail.jsp?board_idx=<%=dto.getBoard_idx()%>" class="post-title"><%=dto.getTitle()%></a>
                             <div class="post-meta">
                                 <span>조회 <%=dto.getReadcount()%></span> • 
                                 <span>작성일 <%=sdf.format(dto.getCreate_day())%></span>
                             </div>
                         </div>
                         <div class="post-actions">
-                            <a href="../board/review/update.jsp?idx=<%=dto.getBoard_idx()%>" class="btn-action btn-edit">수정</a>
+                            <a href="../board/review/update.jsp?board_idx=<%=dto.getBoard_idx()%>" class="btn-action btn-edit">수정</a>
                             <button onclick="deletePost('review', <%=dto.getBoard_idx()%>)" class="btn-action btn-delete">삭제</button>
                         </div>
                     </div>

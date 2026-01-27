@@ -238,14 +238,7 @@ public class FreeBoardDao {
     public FreeBoardDto getBoard(int board_idx) {
         FreeBoardDto dto = null;
 
-        String sql =
-            "SELECT b.*, m.nickname " +
-            "FROM free_board b " +
-            "JOIN member m ON b.id = m.id " +
-            "WHERE b.board_idx = ?";
-
-        try (Connection conn = db.getDBConnect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String sql = "SELECT * FROM free_board WHERE board_idx = ?";
 
             pstmt.setInt(1, board_idx);
             ResultSet rs = pstmt.executeQuery();

@@ -167,8 +167,8 @@
         <div class="sort-buttons">
             <button type="button" class="sort-btn <%= "latest".equals(sortOrder) ? "active" : "" %>"
                     data-sort="latest">최신순</button>
-            <button type="button" class="sort-btn <%= "high".equals(sortOrder) ? "active" : "" %>"
-                    data-sort="high">평점순</button>
+            <button type="button" class="sort-btn <%= "rating".equals(sortOrder) ? "active" : "" %>"
+                    data-sort="rating">평점순</button>
         </div>
     </div>
 

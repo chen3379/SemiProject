@@ -20,23 +20,29 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 	        
-	        String sql ="select * from support";
+	        String sql ="select " +
+	                " s.support_idx, s.category_type, s.title, s.id, s.secret_type, s.delete_type, " +
+	                " s.status_type, s.readcount, s.create_day as support_create_day, " +
+	                " m.nickname as writer_nickname " +
+	                "from support s " +
+	                "left join member m on s.id = m.id " +
+	                "where 1=1 ";
 
 	        // 문의유형 필터
 	        if (categoryType != null && !categoryType.equals("")) {
-	            sql += " where category_type = ?";
+	            sql += " and s.category_type = ? ";
 	        }
 	        
 	        // 답변상태 필터
 	        if(status != null && !status.isEmpty()){
-	            sql += " and status_type=? ";
+	            sql += " and s.status_type = ? ";
 	        }
 	        
 	        // 정렬
 	        if("old".equals(order)){
-	            sql += " order by support_idx asc";
+	            sql += " order by s.support_idx asc";
 	        } else {
-	            sql += " order by support_idx desc";
+	            sql += " order by s.support_idx desc";
 	        }
 
 	        try {
@@ -66,7 +72,9 @@ public class SupportDao {
 	                dto.setDeleteType(rs.getString("delete_type"));
 	                dto.setStatusType(rs.getString("status_type"));
 	                dto.setReadcount(rs.getInt("readcount"));
-	                dto.setCreateDay(rs.getTimestamp("create_day"));
+	                dto.setCreateDay(rs.getTimestamp("support_create_day")); // 충돌 방지
+	                dto.setNickname(rs.getString("writer_nickname"));        // 닉네임
+
 	                
 	                list.add(dto);
 	                
@@ -88,7 +96,14 @@ public class SupportDao {
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
 
-	        String sql="select * from support where support_idx=?";
+	        String sql="select " +
+	                " s.support_idx, s.category_type, s.title, s.content, s.id, " +
+	                " s.secret_type, s.delete_type, s.status_type, s.readcount, " +
+	                " s.create_day as support_create_day, " +
+	                " m.nickname as writer_nickname " +
+	                "from support s " +
+	                "left join member m on s.id = m.id " +
+	                "where s.support_idx=?";
 
 	        try {
 	            pstmt = conn.prepareStatement(sql);
@@ -108,7 +123,8 @@ public class SupportDao {
 	                dto.setDeleteType(rs.getString("delete_type"));
 	                dto.setStatusType(rs.getString("status_type"));
 	                dto.setReadcount(rs.getInt("readcount"));
-	                dto.setCreateDay(rs.getTimestamp("create_day"));
+	                dto.setCreateDay(rs.getTimestamp("support_create_day")); // 충돌 방지
+	                dto.setNickname(rs.getString("writer_nickname"));        // 닉네임
 	                
 	            }
 	            
@@ -297,21 +313,26 @@ public class SupportDao {
 	        Connection conn = db.getDBConnect();
 	        PreparedStatement pstmt = null;
 	        ResultSet rs = null;
-
+	        
 	        // 4가지 경우(둘 다 없음 / category만 / status만 / category+status)
-	        String sql;
-
 	        boolean hasCategory = (categoryType != null && !categoryType.trim().isEmpty());
 	        boolean hasStatus = (status != null && !status.trim().isEmpty());
-
+	        
+	        String sql =  "select " +
+	                " s.support_idx, s.category_type, s.title, s.id, s.secret_type, s.status_type, " +
+	                " s.readcount, s.delete_type, s.create_day as support_create_day, " +
+	                " m.nickname as writer_nickname " +
+	                "from support s " +
+	                "left join member m on s.id = m.id ";
+	        
 	        if (!hasCategory && !hasStatus) {
-	            sql = "select * from support order by support_idx desc limit ?, ?";
+	            sql += " order by s.support_idx desc limit ?, ?";
 	        } else if (hasCategory && !hasStatus) {
-	            sql = "select * from support where category_type=? order by support_idx desc limit ?, ?";
+	            sql += " where s.category_type=? order by s.support_idx desc limit ?, ?";
 	        } else if (!hasCategory && hasStatus) {
-	            sql = "select * from support where status_type=? order by support_idx desc limit ?, ?";
+	            sql += " where s.status_type=? order by s.support_idx desc limit ?, ?";
 	        } else {
-	            sql = "select * from support where category_type=? and status_type=? order by support_idx desc limit ?, ?";
+	            sql += " where s.category_type=? and s.status_type=? order by s.support_idx desc limit ?, ?";
 	        }
 
 	        try {
@@ -335,8 +356,9 @@ public class SupportDao {
 	                dto.setSecretType(rs.getString("secret_type"));
 	                dto.setStatusType(rs.getString("status_type"));
 	                dto.setReadcount(rs.getInt("readcount"));
-	                dto.setCreateDay(rs.getTimestamp("create_day"));
 	                dto.setDeleteType(rs.getString("delete_type"));
+	                dto.setCreateDay(rs.getTimestamp("support_create_day")); // 충돌 방지
+	                dto.setNickname(rs.getString("writer_nickname"));        // 닉네임
 
 	                list.add(dto);
 	            }

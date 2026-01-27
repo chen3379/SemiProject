@@ -156,8 +156,6 @@ public class MovieReviewDao {
 
     // 한줄평 delete
     public boolean deleteReview(int reviewIdx, String id) {
-        boolean ok = false;
-
         Connection conn = db.getDBConnect();
         PreparedStatement pstmt = null;
 
@@ -167,17 +165,13 @@ public class MovieReviewDao {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, reviewIdx);
             pstmt.setString(2, id);
-
-            int n = pstmt.executeUpdate();
-            ok = (n > 0);
-
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         } finally {
             db.dbClose(null, pstmt, conn);
         }
-
-        return ok;
     }
 
     // 한줄평 관리자 delete

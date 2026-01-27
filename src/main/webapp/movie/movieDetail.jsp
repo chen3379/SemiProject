@@ -325,6 +325,13 @@ h1.fw-bold small {
 .adminDiv {
 	transition: opacity 0.3s ease;
 }
+
+    /* 스크롤바 커스텀 (Webkit) */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    
 </style>
 </head>
 
@@ -560,9 +567,10 @@ h1.fw-bold small {
 	<script type="text/javascript">
 	// 영화 삭제
 	function delMovie(idx) {
-		if (confirm("정말 이 영화 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
-			location.href = "movieDeleteAction.jsp?movie_idx=" + idx;
-		}
+	  openCustomConfirm("정말 이 영화 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.", function(confirmed){
+	    if(!confirmed) return;
+	    location.href = "movieDeleteAction.jsp?movie_idx=" + encodeURIComponent(idx);
+	  });
 	}
 
 	// 유튜브 URL -> Embed
@@ -623,12 +631,16 @@ h1.fw-bold small {
 	/* ===== 작성하기 버튼 ===== */
 	$(document).on("click", "#btnReviewWrite", function(){
 	  if(!isLogin){
+		alert("로그인이 필요합니다.");
 	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
-            modal.show();
+        modal.show();
+        return;	
 	  }
-	
+	  
 	  $("#reviewBox").hide();
 	  $("#reviewSecondBox").removeClass("d-none");
+	
+
 	
 	  // 작성모드 초기화
 	  setFormMode("insert");
@@ -678,7 +690,6 @@ h1.fw-bold small {
 	
 	/* ===== 취소 버튼 ===== */
 	$(document).on("click", "#btnReviewCancel", function(){
-	  // 수정 취소하면 그냥 작성모드로 돌림(원하면 폼 숨김으로 바꿔도 됨)
 	  setFormMode("insert");
 	  $("#reviewContent").val("");
 	  $("#reviewLen").text("0");
@@ -729,7 +740,7 @@ h1.fw-bold small {
 	        // 2) 별점 수정(※ update용 action이 있어야 함)
 	        $.ajax({
 	          type: "post",
-	          url: "movieRatingUpdateAction.jsp",   // ✅ 이 파일 있어야 함
+	          url: "movieRatingUpdateAction.jsp",
 	          data: { movie_idx: movieIdx, score: score },
 	          dataType: "json",
 	          success: function(res2){
@@ -792,7 +803,7 @@ h1.fw-bold small {
 	  });
 	});
 	
-	/* ===== 리뷰 수정(이제 prompt X, 폼으로 열기) ===== */
+	/* ===== 한줄평 수정 ===== */
 	function openReviewEdit(reviewIdx, oldScore, oldContent) {
 	  if(!isLogin){
 	    alert("로그인이 필요합니다.");
@@ -813,66 +824,104 @@ h1.fw-bold small {
 	  $("#reviewContent").focus();
 	}
 	
+	/* ===== 한줄평 삭제 ===== */
+	function deleteReview(reviewIdx){
+	  if(!isLogin){
+	    alert("로그인이 필요합니다.");
+	    location.href = "../login/loginModal.jsp";
+	    return;
+	  }
+	
+	  var movieIdx = $("#movieIdxHidden").val();
+	
+	  openCustomConfirm("한줄평을 삭제할까요?\n삭제 후 복구할 수 없습니다.", function(confirmed){
+	    if(!confirmed) return;
+	
+	    $.ajax({
+	      type: "post",
+	      url: "movieReviewDeleteAction.jsp",
+	      data: { review_idx: reviewIdx, movie_idx: movieIdx },
+	      dataType: "json",
+	      success: function(res){
+	        if(res.status === "OK"){
+	          alert("삭제 완료");
+	          location.reload();
+	        }else{
+	          alert(res.message || "삭제 실패");
+	        }
+	      },
+	      error: function(xhr){
+	        console.log(xhr.status, xhr.responseText);
+	        alert("서버 오류(삭제)");
+	      }
+	    });
+	  });
+	}
+
+	
 	/* ===== 위시 추가/삭제 ===== */
-$("#wishBtn").on("click", function(e){    
-    // ... 기존 코드 ...
-    if(!isLogin){
-        alert("로그인이 필요합니다.", function(){
-            // [수정]
-            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
-            modal.show();
-        });
-        return; 
-    }
-
-	var movieIdx = $("#movieIdx").val();
-    var wished = $(this).data("wished");
-    var url = wished ? "movieWishDeleteAction.jsp" : "movieWishInsertAction.jsp";
-
-    $.ajax({
-        type: "post",
-        url: url,
-        data: { movie_idx: movieIdx },
-        dataType: "json",
-        success: function(res){
-          if(res.status === "OK"){
-
-            // 성공했을 때만 UI 변경
-            if(!wished){
-              $("#wishIcon").removeClass("bi-heart").addClass("bi-heart-fill active");
-              $("#wishText").removeClass("text-muted").addClass("text-danger").text("위시");
-              $("#wishBtn").data("wished", true);
-            }else{
-              $("#wishIcon").removeClass("bi-heart-fill active").addClass("bi-heart");
-              $("#wishText").removeClass("text-danger").addClass("text-muted").text("위시");
-              $("#wishBtn").data("wished", false);
-            }
-
-          }else{
-            alert(res.message || "처리 실패");
-          }
-        },
-        error: function(xhr){
-          console.log(xhr.status, xhr.responseText);
-          alert("서버 오류");
-        }
-      });
-    
-    
-	});
+	$("#wishBtn").on("click", function(e){    
+	    
+	    if(!isLogin){
+	        alert("로그인이 필요합니다.", function(){
+	            
+	            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+	            modal.show();
+	        });
+	        return; 
+	    }
+	
+		var movieIdx = $("#movieIdx").val();
+	    var wished = $(this).data("wished");
+	    var url = wished ? "movieWishDeleteAction.jsp" : "movieWishInsertAction.jsp";
+	
+	    $.ajax({
+	        type: "post",
+	        url: url,
+	        data: { movie_idx: movieIdx },
+	        dataType: "json",
+	        success: function(res){
+	          if(res.status === "OK"){
+	
+	            // 성공했을 때만 UI 변경
+	            if(!wished){
+	              $("#wishIcon").removeClass("bi-heart").addClass("bi-heart-fill active");
+	              $("#wishText").removeClass("text-muted").addClass("text-danger").text("위시");
+	              $("#wishBtn").data("wished", true);
+	            }else{
+	              $("#wishIcon").removeClass("bi-heart-fill active").addClass("bi-heart");
+	              $("#wishText").removeClass("text-danger").addClass("text-muted").text("위시");
+	              $("#wishBtn").data("wished", false);
+	            }
+	
+	          }else{
+	            alert(res.message || "처리 실패");
+	          }
+	        },
+	        error: function(xhr){
+	          console.log(xhr.status, xhr.responseText);
+	          alert("서버 오류");
+	        }
+	      });
+	    
+	    
+		});
+	
+	
 	 <%if (id != null) {
 
-	String roleType = (String) session.getAttribute("roleType");
-	//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
-	//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
-	if ("3".equals(roleType) || "9".equals(roleType)) {%>
-	        $(".adminDiv").css("visibility","visible");              
-	    <%}
-}%> 
+		String roleType = (String) session.getAttribute("roleType");
+		//roleType.equals("")로 사용하게 되면 roleType이 null일 때 null.equals가 되어
+		//nullpointerexception 에러가 발생 가능하기 때문에 확실한 값(상수)를 왼쪽에 두는 것이 좋다 - Null Safety(에러 방어)
+		if ("3".equals(roleType) || "9".equals(roleType)) {%>
+		        $(".adminDiv").css("visibility","visible");              
+		    <%}
+	}%> 
 	
 	
 </script>
 
 <jsp:include page="../main/footer.jsp" />
+<jsp:include page="../common/customConfirm.jsp" />
 </body>
 </html>
