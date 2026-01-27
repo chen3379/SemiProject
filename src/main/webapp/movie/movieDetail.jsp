@@ -631,6 +631,14 @@ h1.fw-bold small {
 	  }
 	}
 	
+	// reviewSecondBox 초기화 Form
+	function resetReviewForm(){
+	  setFormMode("insert");
+	  $("#reviewContent").val("");
+	  $("#reviewLen").text("0");
+	  setRating(0.0);
+	}
+	
 	/* ===== 작성하기 버튼 ===== */
 	$(document).on("click", "#btnReviewWrite", function(){
 	  if(!isLogin){
@@ -703,8 +711,9 @@ h1.fw-bold small {
 	$(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
 	
 	  if(!isLogin){
-	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
-            modal.show();
+	    var modal = new bootstrap.Modal(document.getElementById('loginModal'));
+        modal.show();
+        return;
 	  }
 	
 	  var movieIdx = $("#movieIdxHidden").val();
@@ -777,7 +786,14 @@ h1.fw-bold small {
 	    dataType: "json",
 	    success: function (r1) {
 	      if (r1.status !== "OK") {
-	        alert(r1.message || "한줄평 등록 실패");
+	    	var msg = r1.message || "한줄평 등록 실패";
+	        alert(msg);
+	        
+	     	// 중복 작성이면 secondBox 안을 '처음 상태'로 리셋
+	        if (msg.indexOf("이미 이 영화에 한줄평을 작성") > -1) {
+	            resetReviewForm();
+	            $("#reviewContent").focus();
+	          }
 	        return;
 	      }
 	
