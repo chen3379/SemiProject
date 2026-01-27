@@ -26,7 +26,7 @@ public class GeminiApi {
         String key = "";
         try {
             // secret.properties 파일을 찾아서 연다
-            InputStream input = GeminiApi.class.getClassLoader().getResourceAsStream("secret2.properties");
+            InputStream input = GeminiApi.class.getClassLoader().getResourceAsStream("config/secret2.properties");
 
             if (input == null) {
                 System.out.println("💥 오류: secret.properties 파일을 찾을 수 없습니다!");
