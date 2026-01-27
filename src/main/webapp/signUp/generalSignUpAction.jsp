@@ -38,6 +38,7 @@ String result = memberDao.insertMember(memberDto);
 if ("SUCCESS".equals(result)) {
      // [추가] 자동 로그인 처리
      MemberDto loggedMember = memberDao.selectOneMemberbyId(inputId);
+     session.setAttribute("loginid", inputId);
      session.setAttribute("id", inputId);
      session.setAttribute("loginStatus", true);
      session.setAttribute("memberInfo", loggedMember);

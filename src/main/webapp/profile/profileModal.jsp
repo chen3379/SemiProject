@@ -101,13 +101,13 @@
 
                 <!-- 메뉴 리스트 -->
                 <div class="profile-menu-list">
-                    <a href="../profile/profilePage.jsp?id=${sessionScope.memberInfo.id}" class="profile-menu-item">
+                    <a href="<%= request.getContextPath() %>/profile/profilePage.jsp?id=${sessionScope.memberInfo.id}" class="profile-menu-item">
                         <i class="bi bi-person-circle me-2"></i>내 프로필 관리
                     </a>
                 </div>
 
                 <!-- 로그아웃 폼 -->
-                <form action="../login/logoutAction.jsp" method="post">
+                <form action="<%= request.getContextPath() %>/login/logoutAction.jsp" method="post">
                     <button type="submit" id="modalLogoutBtn">
                         <i class="bi bi-box-arrow-right me-2"></i>로그아웃
                     </button>
