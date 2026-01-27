@@ -74,6 +74,16 @@ SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <style>
+:root {
+  --primary-red: #E50914;
+  --primary-red-hover: #B20710;
+  --bg-main: #141414;
+  --bg-surface: #181818;
+  --text-white: #FFFFFF;
+  --text-gray: #BCBCBC;
+  --text-muted: #aaaaaa;
+  --border-glass: rgba(255, 255, 255, 0.08);
+}
 body {
 	background: #141414;
 	color: #fff;
