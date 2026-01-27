@@ -13,26 +13,31 @@
 <%
 request.setCharacterEncoding("UTF-8");
 
-// 1️⃣ 인가 코드
 String code = request.getParameter("code");
 
 if (code == null) {
-    out.println("<script>alert('카카오 로그인에 실패했습니다.'); location.href='/WHATFLIX';</script>");
+    out.println("<script>alert('카카오 로그인에 실패했습니다.'); location.href='" 
+        + request.getContextPath() + "/main/mainPage.jsp';</script>");
     return;
 }
 
-// 2️⃣ 설정값
 String REST_API_KEY = SecretConfig.get("kakao.rest.key");
 String REDIRECT_URI = SecretConfig.get("kakao.redirect.uri");
-
-// 3️⃣ 토큰 요청
+String CLIENT_SECRET = SecretConfig.get("kakao.client.secret");
+//Client Secret 확인
+if (CLIENT_SECRET == null || CLIENT_SECRET.isEmpty()) {
+ out.println("<script>alert('Client Secret이 설정되지 않았습니다.'); location.href='" 
+     + request.getContextPath() + "/main/mainPage.jsp';</script>");
+ return;
+}
 String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
 String tokenParams =
       "grant_type=authorization_code"
     + "&client_id=" + REST_API_KEY
     + "&redirect_uri=" + URLEncoder.encode(REDIRECT_URI, "UTF-8")
-    + "&code=" + code;
+    + "&code=" + code
+    + "&client_secret=" + URLEncoder.encode(CLIENT_SECRET, "UTF-8");
 
 HttpURLConnection conn = (HttpURLConnection) new URL(tokenUrl).openConnection();
 conn.setRequestMethod("POST");
@@ -44,12 +49,9 @@ try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutpu
 }
 
 // 응답 처리
-BufferedReader br;
-if (conn.getResponseCode() == 200) {
-    br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-} else {
-    br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-}
+BufferedReader br = (conn.getResponseCode() == 200)
+    ? new BufferedReader(new InputStreamReader(conn.getInputStream()))
+    : new BufferedReader(new InputStreamReader(conn.getErrorStream()));
 
 StringBuilder sb = new StringBuilder();
 String line;
@@ -58,17 +60,16 @@ while ((line = br.readLine()) != null) {
 }
 br.close();
 
-// 4️⃣ 토큰 파싱
 JSONParser parser = new JSONParser();
 JSONObject tokenJson = (JSONObject) parser.parse(new StringReader(sb.toString()));
 String accessToken = (String) tokenJson.get("access_token");
 
 if (accessToken == null) {
-    out.println("<script>alert('토큰 발급 실패'); location.href='/WHATFLIX';</script>");
+    out.println("<script>alert('토큰 발급 실패'); location.href='" 
+        + request.getContextPath() + "/main/mainPage.jsp';</script>");
     return;
 }
 
-// 5️⃣ 사용자 정보 요청
 HttpURLConnection userConn =
     (HttpURLConnection) new URL("https://kapi.kakao.com/v2/user/me").openConnection();
 userConn.setRequestMethod("GET");
@@ -83,7 +84,6 @@ userBr.close();
 
 JSONObject userJson = (JSONObject) parser.parse(new StringReader(userSb.toString()));
 
-// 6️⃣ 사용자 정보 추출 (안전)
 Long kakaoId = (Long) userJson.get("id");
 JSONObject kakaoAccount = (JSONObject) userJson.get("kakao_account");
 
@@ -98,7 +98,6 @@ if (kakaoAccount != null) {
 // 내부용 ID
 String kakaoLoginId = "kakao_" + kakaoId;
 
-// 7️⃣ DB 처리
 MemberDao memberDao = new MemberDao();
 MemberDto member = memberDao.selectOneMemberbyId(kakaoLoginId);
 
@@ -115,13 +114,13 @@ if (member == null) {
     member = memberDao.selectOneMemberbyId(kakaoLoginId);
 }
 
-// 8️⃣ 세션
 session.setAttribute("loginid", member.getId());
 session.setAttribute("memberInfo", member);
 session.setAttribute("roleType", member.getRoleType());
 session.setAttribute("loginStatus", true);
 session.setMaxInactiveInterval(60 * 60 * 8);
 
-// 9️⃣ 이동
-response.sendRedirect(request.getContextPath() + "/");
+response.sendRedirect(
+    request.getContextPath() + "/main/mainPage.jsp"
+);
 %>

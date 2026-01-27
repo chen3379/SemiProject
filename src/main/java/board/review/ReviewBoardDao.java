@@ -157,7 +157,7 @@ public class ReviewBoardDao {
 	    String sql =
 	    	    "SELECT board_idx, genre_type, title, readcount, is_spoiler " +
 	    	    "FROM review_board " +
-	    	    "WHERE is_deleted = 0 " +
+	    	    "WHERE (is_deleted = 0 OR is_deleted IS NULL) " +
 	    	    "ORDER BY readcount DESC " +
 	    	    "LIMIT 10";	   
 	    
