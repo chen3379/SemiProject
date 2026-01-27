@@ -1,6 +1,9 @@
+<%@page import="config.SecretConfig"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="ko">
+<%@page import="config.SecretConfig"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +13,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
+	
     <style>
         /* [Core System] WHATFLIX Design Tokens */
         :root {
@@ -161,9 +164,10 @@
                     <button class="btn-load-form btn-google" data-type="google">
                         <i class="bi bi-google"></i>구글
                     </button>
-                    <button class="btn-load-form btn-kakao" data-type="kakao">
-                        <i class="bi bi-chat-fill"></i>카카오
-                    </button>
+                  	<a href="<%=request.getContextPath()%>/login/kakaoLogin.jsp"
+					   class="btn-load-form btn-kakao">
+					   <i class="bi bi-chat-fill"></i>카카오
+					</a>
                     <button class="btn-load-form btn-naver" data-type="naver">
                         <i class="bi bi-bootstrap-reboot"></i>네이버
                     </button>
