@@ -20,18 +20,22 @@ public class ReviewBoardDao {
 	    List<ReviewBoardDto> list = new ArrayList<>();
 
 	    String sql =
-	        "SELECT r.board_idx, r.genre_type, r.title, r.id, r.readcount, " +
-	        "       r.create_day, r.is_spoiler, m.nickname, " +
-	        "       COUNT(c.comment_idx) AS comment_count " +
-	        "FROM review_board r " +
-	        "JOIN member m ON r.id = m.id " +
-	        "LEFT JOIN review_comment c " +
-	        "  ON r.board_idx = c.board_idx AND c.is_deleted = 0 " +
-	        "WHERE r.is_deleted = 0 " +
-	        "GROUP BY r.board_idx " +
-	        "ORDER BY r.board_idx DESC " +
-	        "LIMIT ?, ?";
-
+    	    "SELECT " +
+    	    " r.board_idx, r.genre_type, r.title, r.id, r.readcount, " +
+    	    " r.create_day, r.is_spoiler, m.nickname, " +
+    	    " IFNULL(c.cnt, 0) AS comment_count " +
+    	    "FROM review_board r " +
+    	    "JOIN member m ON r.id = m.id " +
+    	    "LEFT JOIN ( " +
+    	    "   SELECT board_idx, COUNT(*) AS cnt " +
+    	    "   FROM review_comment " +
+    	    "   WHERE is_deleted = 0 " +
+    	    "   GROUP BY board_idx " +
+    	    ") c ON r.board_idx = c.board_idx " +
+    	    "WHERE r.is_deleted = 0 " +
+    	    "ORDER BY r.board_idx DESC " +
+    	    "LIMIT ?, ?";
+	    
 	    try (Connection conn = db.getDBConnect();
 	         PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -155,12 +159,13 @@ public class ReviewBoardDao {
 	    ResultSet rs = null;
 	    
 	    String sql =
-	    	    "SELECT board_idx, genre_type, title, readcount, is_spoiler " +
-	    	    "FROM review_board " +
-	    	    "WHERE (is_deleted = 0 OR is_deleted IS NULL) " +
-	    	    "ORDER BY readcount DESC " +
-	    	    "LIMIT 10";	   
-	    
+            "SELECT r.board_idx, r.genre_type, r.title, r.readcount, r.is_spoiler " +
+            "FROM review_board r " +
+            "JOIN member m ON r.id = m.id " +
+            "WHERE r.is_deleted = 0 " +
+            "ORDER BY r.readcount DESC " +
+            "LIMIT 10";
+
 	    try {
 	        conn = db.getDBConnect();
 	        pstmt = conn.prepareStatement(sql);
