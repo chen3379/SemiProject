@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+.global-nav {
+    background-color: black;
+}
 .post-wrapper {
   display: flex;
   justify-content: center;
@@ -8,7 +11,7 @@
 .post-container {
   max-width: 720px;
   width: 100%;
-  padding: 70px 16px 0;
+  padding: 100px 16px 0;
 }
 
 .global-footer{

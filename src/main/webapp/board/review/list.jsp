@@ -340,7 +340,7 @@ td.title {
 						
 						        <a href="javascript:void(0);"
 						           class="review-link"
-						           data-url="detail.jsp?board_idx=<%=dto.getBoard_idx()%>"
+						           data-url="detail.jsp?board_idx=<%=dto.getBoard_idx()%>&page=<%=currentPage%>"
 						           data-spoiler="<%= isSpoiler ? 1 : 0 %>">
 						            <%= dto.getTitle() %>
 						        </a>
@@ -522,6 +522,14 @@ document.querySelectorAll('.review-link').forEach(link => {
     );
   });
 });
+</script>
+<script>
+	window.addEventListener("pageshow", function (event) {
+	    if (event.persisted) {
+	        // 뒤로가기(bfcache)로 복원된 경우
+	        location.reload();
+	    }
+	});
 </script>
 </body>
 <footer>
