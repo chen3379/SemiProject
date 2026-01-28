@@ -260,7 +260,7 @@ List<ReviewBoardDto> reviewTop10 = reviewDao.getTop10ByReadcount();
 		});
 	</script>
 </body>
-<footer>
+<%-- <footer>
 	<jsp:include page="/main/footer.jsp"/>
-</footer>
+</footer> --%>
 </html>

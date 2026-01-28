@@ -105,6 +105,7 @@
         .sidebar-container { display: none; } /* 모바일에서 사이드바 숨김 (또는 햄버거 메뉴로 변경) */
         .main-content { padding: 20px; }
     }
+    
 </style>
 </head>
 
@@ -123,9 +124,8 @@
             <jsp:include page="communitySection.jsp" />
         </main>
     </div>
-
-    <footer>
-        <jsp:include page="footer.jsp"></jsp:include>
-    </footer>
+<footer>
+	<jsp:include page="/main/footer.jsp"/>
+</footer>
 </body>
 </html>
