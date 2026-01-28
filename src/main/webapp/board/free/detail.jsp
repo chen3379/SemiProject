@@ -26,47 +26,84 @@
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 </head>
 <%
-String boardIdxParam = request.getParameter("board_idx");
-if (boardIdxParam == null || boardIdxParam.isEmpty()) {
-	response.sendRedirect("list.jsp");
-	return;
-}
-int board_idx = Integer.parseInt(boardIdxParam);
-FreeBoardDao dao = new FreeBoardDao();
 
-/* 1️⃣ 먼저 게시글 조회 */
-FreeBoardDto dto = dao.getBoard(board_idx);
-if (dto == null) {
-	out.println("<script>alert('존재하지 않는 게시글입니다.'); location.href='list.jsp';</script>");
-	return;
+String boardIdxParam = request.getParameter("board_idx");
+String pageParam = request.getParameter("page");
+String categoryParam = request.getParameter("category");
+
+if (pageParam == null || pageParam.trim().isEmpty()) {
+    pageParam = "1";
 }
-/* 2️⃣ 권한 정보 */
+
+if (categoryParam == null || categoryParam.trim().isEmpty()) {
+    categoryParam = "all";
+}
+
+int board_idx = 0;
+
+if (boardIdxParam == null || boardIdxParam.trim().isEmpty()) {
+    response.sendRedirect("list.jsp?page=" + pageParam + "&category=" + categoryParam);
+    return;
+}
+
+try {
+    board_idx = Integer.parseInt(boardIdxParam.trim());
+} catch (NumberFormatException e) {
+    response.sendRedirect("list.jsp?page=" + pageParam + "&category=" + categoryParam);
+    return;
+}
+
+FreeBoardDao dao = new FreeBoardDao();
+FreeBoardDto dto = dao.getBoard(board_idx);
+
+if (dto == null) {
+    out.println("<script>alert('존재하지 않는 게시글입니다.'); location.href='list.jsp?page="
+        + pageParam + "&category=" + categoryParam + "';</script>");
+    return;
+}
+
 String roleType = (String) session.getAttribute("roleType");
 boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
+
 String loginId = (String) session.getAttribute("loginid");
-boolean isOwner = loginId != null && loginId.equals(dto.getId());
-/* 3️⃣ 숨김 글 접근 차단 */
+boolean isOwner = (loginId != null && loginId.equals(dto.getId()));
+
+
 if (dto.getIs_deleted() == 1 && !(isAdmin || isOwner)) {
-	out.println("<script>alert('삭제되었거나 숨김 처리된 글입니다.'); history.back();</script>");
-	return;
+    out.println("<script>alert('삭제되었거나 숨김 처리된 글입니다.'); history.back();</script>");
+    return;
 }
-/* 4️⃣ 조회수 증가 */
+
 dao.updateReadCount(board_idx);
-/* 5️⃣ 조회수 증가된 값 다시 조회 */
+
+
 dto = dao.getBoard(board_idx);
-/* 6️⃣ 이후 데이터 로딩 */
+
+
 FreeLikeDao likeDao = new FreeLikeDao();
 int likeCount = likeDao.getLikeCount(board_idx);
+
 FreeCommentDao cdao = new FreeCommentDao();
 List<FreeCommentDto> clist = cdao.getCommentList(board_idx);
 int commentCount = cdao.getCommentCount(board_idx);
+
 List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 %>
-<jsp:include page="/main/nav.jsp" />
+
+
 <body>
+	<header class="global-nav">
+		<jsp:include page="/main/nav.jsp" />
+	</header>
 	<main class="post-wrapper">
 		<div class="post-container">
 			<!-- 작성자 영역 -->
+			<div class="d-flex justify-content-end mb-3">
+			    <a href="list.jsp?page=<%=pageParam%>&category=<%=categoryParam%>"
+				   class="btn btn-sm btn-outline-secondary">
+				    목록
+				</a>
+			</div>
 			<div class="post-header">
 				<div class="profile user-profile" data-user-id="<%=dto.getId()%>"
 					data-nickname="<%=dto.getNickname()%>">
@@ -281,8 +318,8 @@ List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 						for (FreeBoardDto b : bottomList) {
 						%>
 						<li class="related-item"><a
-							href="detail.jsp?board_idx=<%=b.getBoard_idx()%>"
-							class="post-title-more"> <%=b.getTitle()%>
+						  href="detail.jsp?board_idx=<%=b.getBoard_idx()%>&page=<%=pageParam%>&category=<%=categoryParam%>"
+						  class="post-title-more"> <%=b.getTitle()%>
 						</a>
 							<div class="post-meta">
 								<span class="writer"><%=b.getNickname()%></span> <span

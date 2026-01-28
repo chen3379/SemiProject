@@ -183,7 +183,7 @@
 
 <div class="qna-management-section">
     <div class="qna-header">
-        <h2 class="qna-title">내 QnA 관리</h2>
+        <h2 class="qna-title">내 문의글 관리</h2>
     </div>
 
     <div class="qna-list">

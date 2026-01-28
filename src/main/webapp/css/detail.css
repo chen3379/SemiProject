@@ -1,5 +1,8 @@
 @charset "UTF-8";
 
+.global-nav {
+    background-color: black;
+}
 .post-wrapper {
   display: flex;
   justify-content: center;

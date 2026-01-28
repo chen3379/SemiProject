@@ -445,7 +445,7 @@ h1.fw-bold small {
 				<h5 class="text-muted">아직 등록된 한줄평이 없습니다.</h5>
 				<p class="text-muted small">첫 번째로 별점과 코멘트를 남겨보세요!</p>
 				<button class="btn btn-warning text-white fw-bold mt-2"
-					id="btnReviewWrite">한줄평 작성하기</button>
+					id="btnReviewWrite" onclick="savePrevPage()">한줄평 작성하기</button>
 			</div>
 			<%
 			}
@@ -591,6 +591,11 @@ h1.fw-bold small {
 			return (match && match[2].length === 11) ? match[2] : null;
 		}
 	});
+	
+	/* 로그인 > 현재페이지 유지 */
+	var savePrevPage = () => {
+	    sessionStorage.setItem("prevPage", location.href);
+	};
 
 	
 	 /* ===== (reviewCount==0일 때) 작성하기 버튼 ===== */
@@ -642,6 +647,7 @@ h1.fw-bold small {
 	/* ===== 작성하기 버튼 ===== */
 	$(document).on("click", "#btnReviewWrite", function(){
 	  if(!isLogin){
+		savePrevPage();
 		alert("로그인이 필요합니다.");
 	    const modal = new bootstrap.Modal(document.getElementById('loginModal'));
         modal.show();
@@ -699,6 +705,8 @@ h1.fw-bold small {
 	  });
 	})();
 	
+
+	
 	/* ===== 취소 버튼 ===== */
 	$(document).on("click", "#btnReviewCancel", function(){
 	  setFormMode("insert");
@@ -711,6 +719,7 @@ h1.fw-bold small {
 	$(document).off("click", "#btnReviewSubmit").on("click", "#btnReviewSubmit", function () {
 	
 	  if(!isLogin){
+		savePrevPage();  
 	    var modal = new bootstrap.Modal(document.getElementById('loginModal'));
         modal.show();
         return;
@@ -760,8 +769,9 @@ h1.fw-bold small {
 	              alert(res2.message || "별점 수정 실패");
 	              return;
 	            }
-	            alert("수정 완료");
-	            location.reload();
+	            alert("수정 완료", function(){
+            	  location.reload();
+            	});
 	          },
 	          error: function(xhr){
 	            console.log(xhr.status, xhr.responseText);
@@ -863,8 +873,9 @@ h1.fw-bold small {
 	      dataType: "json",
 	      success: function(res){
 	        if(res.status === "OK"){
-	          alert("삭제 완료");
-	          location.reload();
+	          alert("삭제 완료", function(){
+	        	  location.reload();
+	          });
 	        }else{
 	          alert(res.message || "삭제 실패");
 	        }
@@ -883,8 +894,8 @@ h1.fw-bold small {
 	    
 	    if(!isLogin){
 	        alert("로그인이 필요합니다.", function(){
-	            
-	            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+	        	savePrevPage();
+	            var modal = new bootstrap.Modal(document.getElementById('loginModal'));
 	            modal.show();
 	        });
 	        return; 

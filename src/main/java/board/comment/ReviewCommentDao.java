@@ -19,6 +19,7 @@ public class ReviewCommentDao {
         String sql =
         	    "SELECT * FROM review_comment " +
         	    "WHERE board_idx = ? " +
+    			"AND is_deleted = 0"+
         	    "ORDER BY parent_comment_idx ASC, comment_idx ASC";
 
 
@@ -34,12 +35,12 @@ public class ReviewCommentDao {
         	    dto.setBoard_idx(rs.getInt("board_idx"));
         	    dto.setWriter_id(rs.getString("writer_id"));
         	    dto.setContent(rs.getString("content"));
-        	    dto.setParent_comment_idx(rs.getInt("parent_comment_idx")); // ⭐
+        	    dto.setParent_comment_idx(rs.getInt("parent_comment_idx")); 
         	    dto.setCreate_day(rs.getTimestamp("create_day"));
         	    dto.setUpdate_day(rs.getTimestamp("update_day"));
         	    dto.setCreate_id(rs.getString("create_id"));
         	    dto.setUpdate_id(rs.getString("update_id"));
-        	    dto.setIs_deleted(rs.getInt("is_deleted"));                 // ⭐
+        	    dto.setIs_deleted(rs.getInt("is_deleted"));               
 
                 list.add(dto);
             }
@@ -55,7 +56,12 @@ public class ReviewCommentDao {
     public int getCommentCount(int board_idx) {
 
         int count = 0;
-        String sql = "SELECT COUNT(*) FROM review_comment WHERE board_idx = ?";
+        String sql =
+    	    "SELECT * FROM review_comment " +
+    	    "WHERE board_idx = ? " +
+    	    "AND is_deleted = 0 " +
+    	    "ORDER BY parent_comment_idx ASC, comment_idx ASC";
+
 
         try (Connection conn = db.getDBConnect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

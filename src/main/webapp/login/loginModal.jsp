@@ -125,6 +125,9 @@
             </div>
 
             <form action="../login/loginAction.jsp" method="post" id="loginForm">
+            
+            	<input type="hidden" name="prevPage" id="prevPage">
+            	
                 <div class="form-group">
                     <label for="loginId">이메일 주소</label>
                     <input type="email" class="form-control" id="loginId" name="id" placeholder="email@example.com" required>
@@ -189,7 +192,15 @@
                         var modalEl = document.getElementById('loginModal');
                         var modal = bootstrap.Modal.getInstance(modalEl);
                         if (modal) modal.hide();
-                        location.replace('../main/mainPage.jsp');
+                        
+                        //로그인 완료 > 현재페이지로
+                        var prevPage = sessionStorage.getItem("prevPage");
+                        if (prevPage) {
+                            location.replace(prevPage);
+                        } else {
+                            location.replace('../main/mainPage.jsp');
+                        }
+                        
                     } else if (res.status === "FAIL") {
                         alert(res.message || "로그인 정보가 일치하지 않습니다.");
                     } else {
@@ -205,5 +216,12 @@
                 }
             });
         });
+        
+        var prevPage = sessionStorage.getItem("prevPage");
+        sessionStorage.removeItem("prevPage");
+        
+        if (prevPage) {
+            document.getElementById("prevPage").value = prevPage;
+        }
     });
 </script>
