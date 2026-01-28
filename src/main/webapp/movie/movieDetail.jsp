@@ -769,8 +769,9 @@ h1.fw-bold small {
 	              alert(res2.message || "별점 수정 실패");
 	              return;
 	            }
-	            alert("수정 완료");
-	            location.reload();
+	            alert("수정 완료", function(){
+            	  location.reload();
+            	});
 	          },
 	          error: function(xhr){
 	            console.log(xhr.status, xhr.responseText);
@@ -872,8 +873,9 @@ h1.fw-bold small {
 	      dataType: "json",
 	      success: function(res){
 	        if(res.status === "OK"){
-	          alert("삭제 완료");
-	          location.reload();
+	          alert("삭제 완료", function(){
+	        	  location.reload();
+	          });
 	        }else{
 	          alert(res.message || "삭제 실패");
 	        }
