@@ -133,6 +133,52 @@
         font-size: 0.95rem;
         margin-bottom: 0;
     }
+
+    /* 수정/삭제 버튼 스타일 */
+    .qna-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px dotted rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-qna-action {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 4px;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+    }
+
+    .btn-qna-edit {
+        background: rgba(255, 255, 255, 0.05);
+        color: #ddd;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-qna-edit:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-qna-delete {
+        background: rgba(229, 9, 20, 0.08);
+        color: #ee5d5d;
+        border: 1px solid rgba(229, 9, 20, 0.15);
+    }
+
+    .btn-qna-delete:hover {
+        background: rgba(229, 9, 20, 0.15);
+        color: #ff7676;
+        border-color: rgba(229, 9, 20, 0.3);
+    }
 </style>
 
 <div class="qna-management-section">
@@ -192,6 +238,18 @@
                             <pre><%=answer.getContent()%></pre>
                         </div>
                     <% } %>
+
+                    <%-- 수정/삭제 버튼 추가 --%>
+                    <div class="qna-actions">
+                        <button type="button" class="btn-qna-action btn-qna-edit" 
+                                onclick="editQna(<%=dto.getSupportIdx()%>)">
+                            <i class="bi bi-pencil-square"></i>수정
+                        </button>
+                        <button type="button" class="btn-qna-action btn-qna-delete" 
+                                onclick="deleteQna(<%=dto.getSupportIdx()%>)">
+                            <i class="bi bi-trash3"></i>삭제
+                        </button>
+                    </div>
                 </div>
             </div>
         <% } } %>
@@ -216,5 +274,19 @@
             
             // 조회수 증가 (필요시 AJAX)
         }
+    }
+
+    function editQna(idx) {
+        openCustomConfirm('이 문의글을 수정하시겠습니까?', function(confirmed){
+            if(!confirmed) return;
+            location.href = '<%= request.getContextPath() %>/support/supportForm.jsp?supportIdx=' + idx;
+        });
+    }
+
+    function deleteQna(idx) {
+        openCustomConfirm('정말 이 문의글을 삭제하시겠습니까?', function(confirmed){
+            if(!confirmed) return;
+            location.href = '<%= request.getContextPath() %>/support/supportDeleteAction.jsp?supportIdx=' + idx;
+        });
     }
 </script>

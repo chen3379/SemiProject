@@ -325,9 +325,10 @@ $(document).ready(function () {
 
     // 4. 취소 버튼 로직
     $('#cancelBtn').on('click', function () {
-        if(confirm('수정을 취소하고 목록으로 돌아가시겠습니까?')) {
+        openCustomConfirm('수정을 취소하고 목록으로 돌아가시겠습니까?', function(confirmed){
+            if(!confirmed) return;
             $('.ajax-nav-link[data-url="adminMember.jsp"]').trigger('click');
-        }
+        });
     });
 });
 

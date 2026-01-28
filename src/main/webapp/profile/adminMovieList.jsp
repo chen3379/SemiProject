@@ -199,17 +199,12 @@
         $('#content-area').load("adminMovieEditForm.jsp?movie_idx=" + idx);
     }
 
-    function deleteMovie(idx) {
-        if(confirm("정말 삭제하시겠습니까?")) {
-            $.post("adminMovieDeleteAction.jsp", { movie_idx: idx }, function() {
-                alert("삭제되었습니다.");
-                moveAdminPage(<%=currentPage%>);
-            });
-        }
-    }
-    function delMovie(idx) {
-		if (confirm("정말 이 영화 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.")) {
-			location.href = "../movie/movieDeleteAction.jsp?movie_idx=" + idx;
-		}
+	function delMovie(idx) {
+	  openCustomConfirm("정말 이 영화 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.", function(confirmed){
+	    if(!confirmed) return;
+	    location.href = "movieDeleteAction.jsp?movie_idx=" + encodeURIComponent(idx);
+	  });
 	}
 </script>
+
+

@@ -266,6 +266,7 @@
                 success: function (res) {
                     if (res.status === "SUCCESS") {
                         alert('회원정보가 성공적으로 수정되었습니다.');
+                        
                         location.href = "profilePage.jsp?id=" + targetId;
                     } else {
                         alert('수정 실패: ' + (res.message || '알 수 없는 오류'));

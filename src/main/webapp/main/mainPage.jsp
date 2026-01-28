@@ -95,7 +95,7 @@
     
     /* Scrollbar Customization */
     ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrtllbar-track { background: var(--bg-main); }
     ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #555; }
 

@@ -257,7 +257,8 @@
 
     // 삭제 함수
     function deleteAdminPost(type, idx) {
-        if(!confirm('관리자 권한으로 이 게시글을 강제 삭제하시겠습니까?')) return;
+        openCustomConfirm('관리자 권한으로 이 게시글을 강제 삭제하시겠습니까?', function(confirmed){
+            if(!confirmed) return;
         
         $.ajax({
             url: 'adminCommunityDeleteAction.jsp',

@@ -256,25 +256,27 @@
 
     // 삭제 함수
     function deletePost(type, idx) {
-        if(!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
-        
-        $.ajax({
-            url: 'memberBoardDeleteAction.jsp',
-            type: 'post',
-            data: { type: type, idx: idx },
-            dataType: 'json',
-            success: function(res) {
-                if(res.status === 'SUCCESS') {
-                    alert('게시글이 삭제되었습니다.');
-                    // 현재 페이지 새로고침 (AJAX 방식)
-                    searchPosts();
-                } else {
-                    alert('삭제 실패: ' + res.message);
+        openCustomConfirm('정말 이 게시글을 삭제하시겠습니까?', function(confirmed){
+            if(!confirmed) return;
+            $.ajax({
+                url: 'memberBoardDeleteAction.jsp',
+                type: 'post',
+                data: { type: type, idx: idx },
+                dataType: 'json',
+                success: function(res) {
+                    if(res.status === 'SUCCESS') {
+                        alert('게시글이 삭제되었습니다.');
+                        // 현재 페이지 새로고침 (AJAX 방식)
+                        searchPosts();
+                    } else {
+                        alert('삭제 실패: ' + res.message);
+                    }
+                },
+                error: function() {
+                    alert('서버 통신 중 오류가 발생했습니다.');
                 }
-            },
-            error: function() {
-                alert('서버 통신 중 오류가 발생했습니다.');
-            }
+            });
         });
+        
     }
 </script>

@@ -278,10 +278,11 @@
                 return;
             }
             
-            if (confirm("정말 WHATFLIX를 떠나시겠습니까? 모든 정보가 삭제되며 복구할 수 없습니다.")) {
+            openCustomConfirm("정말 WHATFLIX를 떠나시겠습니까? 모든 정보가 삭제되며 복구할 수 없습니다.", function(confirmed){
+                if(!confirmed) return;  
                 $('#deletePassword').val(pw);
                 $('#deleteForm').submit();
-            }
+            });
         });
     });
 
