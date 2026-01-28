@@ -28,6 +28,10 @@
 </head>
 <%
 String boardIdxParam = request.getParameter("board_idx");
+String pageParam = request.getParameter("page");
+if (pageParam == null || pageParam.trim().isEmpty()) {
+    pageParam = "1";
+}
 if (boardIdxParam == null || boardIdxParam.isEmpty()) {
     out.println("<script>alert('잘못된 접근입니다.'); location.href='list.jsp';</script>");
     return;
@@ -84,8 +88,8 @@ List<ReviewBoardDto> otherList = dao.getOtherBoards(board_idx, 5);
     <main class="post-wrapper">
         <div class="post-container">
 		<div class="d-flex justify-content-end mb-3">
-		    <a href="list.jsp?page=1"
-		       class="btn btn-sm btn-outline-secondary">
+		    <a href="list.jsp?page=<%=pageParam%>"
+  			 	class="btn btn-sm btn-outline-secondary">
 		        목록
 		    </a>
 		</div>

@@ -174,6 +174,7 @@ public class FreeBoardDao {
     }
 
     // community.jsp 하단 – 자유게시판 TOP 10
+ // community.jsp 하단 – 자유게시판 TOP 10 (조회수 기준)
     public List<FreeBoardDto> getTop10ByReadcount() {
 
         List<FreeBoardDto> list = new ArrayList<>();
@@ -183,12 +184,14 @@ public class FreeBoardDao {
         ResultSet rs = null;
 
         String sql =
-    	    "SELECT r.board_idx, r.genre_type, r.title, r.readcount, r.is_spoiler " +
-    	    "FROM review_board r " +
-    	    "JOIN member m ON r.id = m.id " +
-    	    "WHERE r.is_deleted = 0 " +
-    	    "ORDER BY r.readcount DESC " +
-    	    "LIMIT 10";
+            "SELECT " +
+            "  b.board_idx, b.category_type, b.title, b.id, m.nickname, " +
+            "  b.readcount, b.create_day " +
+            "FROM free_board b " +
+            "JOIN member m ON b.id = m.id " +
+            "WHERE b.is_deleted = 0 " +
+            "ORDER BY b.readcount DESC, b.board_idx DESC " +
+            "LIMIT 10";
 
         try {
             conn = db.getDBConnect();
@@ -198,8 +201,12 @@ public class FreeBoardDao {
             while (rs.next()) {
                 FreeBoardDto dto = new FreeBoardDto();
                 dto.setBoard_idx(rs.getInt("board_idx"));
+                dto.setCategory_type(rs.getString("category_type"));
                 dto.setTitle(rs.getString("title"));
+                dto.setId(rs.getString("id"));
+                dto.setNickname(rs.getString("nickname"));
                 dto.setReadcount(rs.getInt("readcount"));
+                dto.setCreate_day(rs.getTimestamp("create_day"));
 
                 list.add(dto);
             }

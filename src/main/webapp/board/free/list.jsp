@@ -34,7 +34,16 @@ if (category == null) category = "all";
 String pageParam = request.getParameter("page");
 
 int pageSize = 5;
-int currentPage = (pageParam == null) ? 1 : Integer.parseInt(pageParam);
+int currentPage = 1;
+
+if (pageParam != null) {
+    try {
+        currentPage = Integer.parseInt(pageParam.trim());
+    } catch (NumberFormatException e) {
+        currentPage = 1;
+    }
+}
+
 int start = (currentPage - 1) * pageSize;
 
 String loginId = (String) session.getAttribute("loginid");
@@ -391,10 +400,9 @@ td.title {
 						        </span>
 						    <% } else { %>
 						        <span class="title-wrap">
-						            <a href="detail.jsp?board_idx=<%= dto.getBoard_idx() %>">
+						        <a href="detail.jsp?board_idx=<%=dto.getBoard_idx()%>&page=<%=currentPage%>&category=<%=category%>">
 						                <%= dto.getTitle() %>
 						            </a>
-						
 						            <% if (dto.getCommentCount() > 0) { %>
 						                <span class="comment-count">
 						                    [<%= dto.getCommentCount() %>]

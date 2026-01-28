@@ -16,10 +16,21 @@ public class FreeCommentDao {
     public List<FreeCommentDto> getCommentList(int board_idx) {
 
         List<FreeCommentDto> list = new ArrayList<>();
-        String sql = " SELECT f.*, m.nickname FROM free_comment f join member m on f.writer_id=m.id WHERE board_idx = ?  ORDER BY parent_comment_idx ASC, comment_idx ASC";
 
-        try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String sql =
+            "SELECT f.comment_idx, f.board_idx, f.writer_id, f.content, " +
+            "       f.parent_comment_idx, f.create_day, f.update_day, " +
+            "       f.create_id, f.update_id, f.is_deleted, m.nickname " +
+            "FROM free_comment f " +
+            "JOIN member m ON f.writer_id = m.id " +
+            "WHERE f.board_idx = ? " +
+            "AND f.is_deleted = 0 " +
+            "ORDER BY f.parent_comment_idx ASC, f.comment_idx ASC";
 
+        try (
+            Connection conn = db.getDBConnect();
+            PreparedStatement pstmt = conn.prepareStatement(sql)
+        ) {
             pstmt.setInt(1, board_idx);
             ResultSet rs = pstmt.executeQuery();
 
@@ -35,6 +46,7 @@ public class FreeCommentDao {
                 dto.setCreate_id(rs.getString("create_id"));
                 dto.setUpdate_id(rs.getString("update_id"));
                 dto.setIs_deleted(rs.getInt("is_deleted"));
+                dto.setNickname(rs.getString("nickname"));
 
                 list.add(dto);
             }
@@ -45,6 +57,7 @@ public class FreeCommentDao {
 
         return list;
     }
+
 
     // 댓글 등록
     public void insertComment(FreeCommentDto dto) {
@@ -75,7 +88,7 @@ public class FreeCommentDao {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
 
-        String sql = "SELECT COUNT(*) FROM free_comment WHERE board_idx=?";
+        String sql = "SELECT COUNT(*) FROM free_comment WHERE board_idx=? AND is_deleted = 0";
 
         try {
             pstmt = conn.prepareStatement(sql);
@@ -96,13 +109,16 @@ public class FreeCommentDao {
     // 댓글 삭제 (소프트 삭제)
     public void deleteComment(int comment_idx, String loginId) {
 
-        String sql = "UPDATE free_comment " + "SET is_deleted = 1, update_day = NOW(), update_id = ? "
-                + "WHERE comment_idx = ?";
+    	String sql = "UPDATE free_comment "
+    	           + "SET is_deleted = 1, update_day = NOW(), update_id = ? "
+    	           + "WHERE comment_idx = ? "
+    	           + "AND writer_id = ?";
 
         try (Connection conn = db.getDBConnect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, loginId);
             pstmt.setInt(2, comment_idx);
+            pstmt.setString(3, loginId);
             pstmt.executeUpdate();
 
         } catch (Exception e) {
