@@ -83,8 +83,10 @@ int commentCount = cdao.getCommentCount(board_idx);
 
 List<ReviewBoardDto> otherList = dao.getOtherBoards(board_idx, 5);
 %>
-<jsp:include page="/main/nav.jsp" />
 <body>
+	<header class="global-nav">
+		<jsp:include page="/main/nav.jsp" />
+	</header>
     <main class="post-wrapper">
         <div class="post-container">
 		<div class="d-flex justify-content-end mb-3">

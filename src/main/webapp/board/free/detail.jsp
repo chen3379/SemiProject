@@ -90,8 +90,11 @@ int commentCount = cdao.getCommentCount(board_idx);
 List<FreeBoardDto> bottomList = dao.getBottomBoardList(board_idx, 5);
 %>
 
-<jsp:include page="/main/nav.jsp" />
+
 <body>
+	<header class="global-nav">
+		<jsp:include page="/main/nav.jsp" />
+	</header>
 	<main class="post-wrapper">
 		<div class="post-container">
 			<!-- 작성자 영역 -->

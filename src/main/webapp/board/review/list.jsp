@@ -523,6 +523,14 @@ document.querySelectorAll('.review-link').forEach(link => {
   });
 });
 </script>
+<script>
+	window.addEventListener("pageshow", function (event) {
+	    if (event.persisted) {
+	        // 뒤로가기(bfcache)로 복원된 경우
+	        location.reload();
+	    }
+	});
+</script>
 </body>
 <footer>
 	<jsp:include page="/main/footer.jsp"/>
