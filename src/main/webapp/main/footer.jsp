@@ -1,5 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@page import="config.SecretConfig"%>
+<%
+	// 카카오 지도 JavaScript 키
+	String kakaoJsKey = SecretConfig.get("kakao.js.key");
+	if (kakaoJsKey == null) kakaoJsKey = "";
+
+	// 지도에 표시할 주소 
+	String mapAddress = "서울특별시 강남구 테헤란로70길 12 왓플릭스 타워";
+%>
 
 <style>
 /* Footer 기본 스타일 (기존 유지) */
@@ -79,6 +88,13 @@ footer .bi {
 	border-radius: 4px;
 }
 
+/* 카카오 지도 컨테이너 */
+#kakao-map {
+	width: 100%;
+	height: 450px;
+	border-radius: 4px;
+}
+
 .map-trigger i {
 	color: #E50914 !important; /* 넷플릭스 레드 */
 	font-size: 1.1rem; /* 아이콘 크기 살짝 키움 */
@@ -154,16 +170,83 @@ footer .bi {
 					data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<iframe class="map-iframe"
-					src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3165.134301625626!2d127.05059697654754!3d37.50475047205476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x357ca1c32408f9b7%3A0x4e3761a4f356d1eb!2z7IyN7Jqp6rWQ7Jyh7IS87YSw!5e0!3m2!1sko!2skr!4v1768183729313!5m2!1sko!2skr"
-					allowfullscreen="" loading="lazy"
-					referrerpolicy="no-referrer-when-downgrade"> </iframe>
+				<div id="kakao-map"></div>
 				<div
 					style="margin-top: 15px; text-align: center; font-size: 0.9rem; color: #ccc;">
-					<i class="bi bi-geo-alt"></i> 서울특별시 강남구 테헤란로 123 왓플릭스 타워
+					<i class="bi bi-geo-alt"></i> <%=mapAddress%>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
+
+<!-- 카카오 지도 SDK (주소검색을 위한 services 라이브러리 포함) -->
+<script
+	type="text/javascript"
+	src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=<%=kakaoJsKey%>&libraries=services&autoload=false"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	const mapModal = document.getElementById('mapModal');
+	const address = "<%=mapAddress%>";
+	let map = null;
+	let marker = null;
+	let geocoder = null;
+
+	const showError = (msg) => {
+		const container = document.getElementById('kakao-map');
+		if (container) {
+			container.innerHTML =
+				'<div style="padding:16px; background:#222; color:#fff; border-radius:4px;">' +
+				msg +
+				'</div>';
+		}
+	};
+
+	const relayoutAndCenter = (latLng) => {
+		setTimeout(() => {
+			if (!map) return;
+			map.relayout();
+			if (latLng) map.setCenter(latLng);
+		}, 50);
+	};
+
+	mapModal.addEventListener('shown.bs.modal', function () {
+		if (!window.kakao || !kakao.maps) {
+			showError('카카오 지도 로딩에 실패했습니다. (앱키/도메인 등록을 확인해주세요)');
+			return;
+		}
+
+		kakao.maps.load(function () {
+			const container = document.getElementById('kakao-map');
+			if (!container) return;
+
+			// 최초 1회만 생성
+			if (!map) {
+				const defaultCenter = new kakao.maps.LatLng(37.5665, 126.9780); // 임시(서울시청)
+				map = new kakao.maps.Map(container, { center: defaultCenter, level: 3 });
+				marker = new kakao.maps.Marker({ position: defaultCenter });
+				marker.setMap(map);
+				geocoder = new kakao.maps.services.Geocoder();
+			}
+
+			// 주소 -> 좌표 변환
+			geocoder.addressSearch(address, function (result, status) {
+				if (status !== kakao.maps.services.Status.OK || !result || !result[0]) {
+					showError('주소를 찾을 수 없습니다: ' + address);
+					relayoutAndCenter();
+					return;
+				}
+
+				const lat = parseFloat(result[0].y);
+				const lng = parseFloat(result[0].x);
+				const latLng = new kakao.maps.LatLng(lat, lng);
+
+				map.setCenter(latLng);
+				marker.setPosition(latLng);
+				relayoutAndCenter(latLng);
+			});
+		});
+	});
+});
+</script>
 <jsp:include page="../common/customAlert.jsp" />
