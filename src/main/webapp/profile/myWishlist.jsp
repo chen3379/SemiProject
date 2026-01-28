@@ -297,3 +297,4 @@
         window.location.href = '../movie/movieDetail.jsp?movie_idx=' + movieIdx;
     }
 </script>
+<jsp:include page="../common/customConfirm.jsp" />

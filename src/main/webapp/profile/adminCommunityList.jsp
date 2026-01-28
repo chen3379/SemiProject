@@ -166,7 +166,7 @@
         color: #666;
     }
 </style>
-
+<jsp:include page="../common/customConfirm.jsp" />
 <div class="board-management-section">
     <div class="board-header">
         <h2 class="board-title">커뮤니티 관리 (관리자)</h2>
@@ -200,7 +200,7 @@
                     <div class="post-item">
                         <div class="post-info">
                             <span class="post-category"><%=dto.getCategory_type()%></span>
-                            <a href="../board/free/detail.jsp?idx=<%=dto.getBoard_idx()%>" target="_blank" class="post-title"><%=dto.getTitle()%></a>
+                            <a href="../board/free/detail.jsp?board_idx=<%=dto.getBoard_idx()%>" target="_blank" class="post-title"><%=dto.getTitle()%></a>
                             <span class="author-badge"><%=dto.getId()%></span>
                             <div class="post-meta">
                                 <span>조회 <%=dto.getReadcount()%></span> • 
@@ -225,7 +225,7 @@
                     <div class="post-item">
                         <div class="post-info">
                             <span class="post-category">[<%=dto.getGenre_type()%>]</span>
-                            <a href="../board/review/detail.jsp?idx=<%=dto.getBoard_idx()%>" target="_blank" class="post-title"><%=dto.getTitle()%></a>
+                            <a href="../board/review/detail.jsp?board_idx=<%=dto.getBoard_idx()%>" target="_blank" class="post-title"><%=dto.getTitle()%></a>
                             <span class="author-badge"><%=dto.getId()%></span>
                             <div class="post-meta">
                                 <span>조회 <%=dto.getReadcount()%></span> • 
@@ -260,22 +260,24 @@
         openCustomConfirm('관리자 권한으로 이 게시글을 강제 삭제하시겠습니까?', function(confirmed){
             if(!confirmed) return;
         
-        $.ajax({
-            url: 'adminCommunityDeleteAction.jsp',
-            type: 'post',
-            data: { type: type, idx: idx },
-            dataType: 'json',
-            success: function(res) {
-                if(res.status === 'SUCCESS') {
-                    alert('게시글이 삭제되었습니다.');
-                    searchAdminPosts();
-                } else {
-                    alert('삭제 실패: ' + res.message);
+            $.ajax({
+                url: 'adminCommunityDeleteAction.jsp',
+                type: 'post',
+                data: { type: type, idx: idx },
+                dataType: 'json',
+                success: function(res) {
+                    if(res.status === 'SUCCESS') {
+                        alert('게시글이 삭제되었습니다.');
+                        searchAdminPosts();
+                    } else {
+                        alert('삭제 실패: ' + res.message);
+                    }
+                },
+                error: function() {
+                    alert('서버 통신 중 오류가 발생했습니다.');
                 }
-            },
-            error: function() {
-                alert('서버 통신 중 오류가 발생했습니다.');
-            }
+            });
         });
     }
 </script>
+

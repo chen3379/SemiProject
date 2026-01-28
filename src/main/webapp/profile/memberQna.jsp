@@ -290,3 +290,4 @@
         });
     }
 </script>
+<jsp:include page="../common/customConfirm.jsp" />
