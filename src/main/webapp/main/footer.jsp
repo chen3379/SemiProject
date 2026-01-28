@@ -10,6 +10,12 @@
 	border-top: 1px solid #222;
 	color: var(--text-muted);
 	font-size: 0.85rem;
+	/* [Fix] Full Width Break-out */
+	width: 100vw;
+	margin-left: calc(-50vw + 50%);
+	margin-right: calc(-50vw + 50%);
+	position: relative;
+	left: 0;
 }
 
 .footer-content {
