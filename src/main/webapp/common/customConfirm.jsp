@@ -146,7 +146,7 @@ function openCustomConfirm(msg, callback){
   setTimeout(function(){
     var okBtn = document.querySelector("#custom-confirm-overlay .btn-confirm-ok");
     if(okBtn) okBtn.focus();
-  }, 100);
+  }, 300);
 }
 
 function closeCustomConfirm(isOk){

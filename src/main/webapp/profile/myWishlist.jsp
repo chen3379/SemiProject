@@ -222,6 +222,13 @@
 </div>
 
 <script>
+    window.addEventListener('pageshow', function(event) {
+    // event.persisted가 true이면 뒤로가기로 온 상태입니다.
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        // 여기에 데이터를 다시 불러오거나 화면을 갱신하는 로직을 넣으세요.
+        location.reload(); // 간단하게 페이지를 새로고침해서 반영할 수도 있습니다.
+    }
+});
     $(function() {
         /* 정렬 버튼 클릭 이벤트 */
         $('.sort-btn').on('click', function() {
@@ -261,7 +268,8 @@
     function removeWish(event, movieIdx) {
         event.stopPropagation(); // 카드 클릭 상세 이동 방지
 
-        if (confirm("찜 목록에서 삭제하시겠습니까?")) {
+        openCustomConfirm("찜 목록에서 삭제하시겠습니까?", function(confirmed){
+            if(!confirmed) return;
             const currentSort = $('.section-header').data('sort-order');
             
             $.ajax({
@@ -281,7 +289,7 @@
                     alert("서버와 통신 중 오류가 발생했습니다.");
                 }
             });
-        }
+        });
     }
 
     /* 상세 페이지 이동 */

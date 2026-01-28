@@ -277,14 +277,16 @@
     }
 
     function editQna(idx) {
-        if(confirm('이 문의글을 수정하시겠습니까?')) {
+        openCustomConfirm('이 문의글을 수정하시겠습니까?', function(confirmed){
+            if(!confirmed) return;
             location.href = '<%= request.getContextPath() %>/support/supportForm.jsp?supportIdx=' + idx;
-        }
+        });
     }
 
     function deleteQna(idx) {
-        if(confirm('정말 이 문의글을 삭제하시겠습니까?')) {
+        openCustomConfirm('정말 이 문의글을 삭제하시겠습니까?', function(confirmed){
+            if(!confirmed) return;
             location.href = '<%= request.getContextPath() %>/support/supportDeleteAction.jsp?supportIdx=' + idx;
-        }
+        });
     }
 </script>
