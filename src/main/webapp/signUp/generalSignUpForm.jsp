@@ -259,8 +259,12 @@
             success: function (res) {
                 if (res.status === 'SUCCESS') {
                     alert('WHATFLIX 회원이 되신 것을 환영합니다!', function() {
-                        if (document.activeElement) document.activeElement.blur();
-                        location.href = '../main/mainPage.jsp';
+                        // [Fix] 성공 모달 닫힌 후 즉시 화면을 숨겨 기존 모달이 보이거나 깜빡이는 현상 방지
+                        document.body.style.opacity = '0';
+                        document.body.style.pointerEvents = 'none'; // 클릭 방지
+                        
+                        // replace로 이동하여 뒤로가기 방지 및 깔끔한 전환
+                        location.replace('../main/mainPage.jsp');
                     });
                 } else {
                     submitBtn.disabled = false;

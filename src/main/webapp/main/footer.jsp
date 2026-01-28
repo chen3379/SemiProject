@@ -17,8 +17,8 @@
 	margin: 0 auto;
 	padding: 0 40px;
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 40px;
+	grid-template-columns: repeat(4, 1fr) auto;
+	gap: 15px;
 }
 
 .footer-col h4 {
@@ -119,13 +119,19 @@ footer .bi {
 		</div>
 		<div class="footer-col">
 			<h4>소셜 미디어</h4>
-			<div style="display: flex; gap: 15px; font-size: 1.2rem;">
-				<a href="#"><i class="bi bi-instagram"></i></a> <a href="#"><i
-					class="bi bi-youtube"></i></a> <a href="#"><i
-					class="bi bi-twitter-x"></i></a> <a href="#"><i
-					class="bi bi-facebook"></i></a>
+			<div style="display: flex; gap: 15px; font-size: 1.2rem; align-items: center;">
+				<a href="#"><i class="bi bi-instagram"></i></a> 
+				<a href="#"><i class="bi bi-youtube"></i></a> 
+				<a href="#"><i class="bi bi-twitter-x"></i></a> 
+				<a href="#"><i class="bi bi-facebook"></i></a>
 			</div>
-
+		</div>
+		<div class="footer-col" style="display: flex; align-items: flex-start; justify-content: flex-start;">
+			<a href="javascript:void(0)" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Top" style="text-decoration: none;">
+					<h4 style="color: var(--primary-red); margin-bottom: 0; display: flex; align-items: center; gap: 4px;">
+						TOP <i class="bi bi-chevron-up"></i>
+					</h4> 
+			</a>
 		</div>
 	</div>
 	<div class="footer-bottom">&copy; 2026 WHATFLIX Inc. All rights
