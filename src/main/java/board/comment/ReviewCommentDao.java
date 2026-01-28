@@ -17,10 +17,10 @@ public class ReviewCommentDao {
         List<ReviewCommentDto> list = new ArrayList<>();
 
         String sql =
-        	    "SELECT * FROM review_comment " +
-        	    "WHERE board_idx = ? " +
-    			"AND is_deleted = 0"+
-        	    "ORDER BY parent_comment_idx ASC, comment_idx ASC";
+            "SELECT * FROM review_comment " +
+            "WHERE board_idx = ? " +
+            "AND is_deleted = 0 " +
+            "ORDER BY parent_comment_idx ASC, comment_idx ASC";
 
 
         try (Connection conn = db.getDBConnect();
@@ -57,10 +57,10 @@ public class ReviewCommentDao {
 
         int count = 0;
         String sql =
-    	    "SELECT * FROM review_comment " +
-    	    "WHERE board_idx = ? " +
-    	    "AND is_deleted = 0 " +
-    	    "ORDER BY parent_comment_idx ASC, comment_idx ASC";
+            "SELECT COUNT(*) AS cnt " +
+            "FROM review_comment " +
+            "WHERE board_idx = ? " +
+            "AND is_deleted = 0";
 
 
         try (Connection conn = db.getDBConnect();
@@ -68,9 +68,8 @@ public class ReviewCommentDao {
 
             pstmt.setInt(1, board_idx);
             ResultSet rs = pstmt.executeQuery();
-
             if (rs.next()) {
-                count = rs.getInt(1);
+                count = rs.getInt("cnt");
             }
 
         } catch (Exception e) {
@@ -85,8 +84,8 @@ public class ReviewCommentDao {
 
         String sql =
             "INSERT INTO review_comment " +
-            "(board_idx, writer_id, content, parent_comment_idx, create_day, create_id) " +
-            "VALUES (?, ?, ?, ?, NOW(), ?)";
+            "(board_idx, writer_id, content, parent_comment_idx, is_deleted, create_day, create_id) " +
+            "VALUES (?, ?, ?, ?, 0, NOW(), ?)";
 
         try (Connection conn = db.getDBConnect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
