@@ -333,3 +333,4 @@ $(document).ready(function () {
 });
 
 </script>
+<jsp:include page="../common/customConfirm.jsp" />
