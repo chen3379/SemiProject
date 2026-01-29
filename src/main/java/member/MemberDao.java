@@ -11,6 +11,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.mindrot.jbcrypt.BCrypt;
 import board.free.FreeBoardDto;
 import board.review.ReviewBoardDto;
 
@@ -150,26 +151,18 @@ public class MemberDao {
 
     // checkPassword 비밀번호 확인
     public boolean checkPassword(String id, String password) {
-        Connection conn = db.getDBConnect();
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        String sql = "select count(*) from member where id = ? and password = ?";
+        String hashedPassword = getHashedPassword(id);
+        if (hashedPassword == null) {
+            return false;
+        }
 
         try {
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, id);
-            pstmt.setString(2, password);
-            rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            db.dbClose(rs, pstmt, conn);
+            // BCrypt.checkpw(pw, hashedPw) : 입력된 비밀번호와 데이터베이스에 저장된 해시된 비밀번호가 일치하는지 확인
+            return BCrypt.checkpw(password, hashedPassword);
+        } catch (Exception e) {
+            // 소셜 로그인 회원의 경우 "KAKAO_LOGIN" 등이 저장되어 있어 BCrypt check 시 예외가 발생할 수 있음
+            return false;
         }
-        return false;
     }
 
     // deleteMember 회원삭제

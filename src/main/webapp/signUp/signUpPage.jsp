@@ -33,7 +33,13 @@
             font-family: 'Pretendard', sans-serif;
             margin: 0;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
+
+        main {
+            flex: 1;        }
+
 
         /* [Layout] 회원가입 전용 컨테이너 */
         .signup-container {
