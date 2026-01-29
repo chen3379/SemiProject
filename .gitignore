@@ -35,7 +35,12 @@ local.properties
 .settings/
 .loadpath
 .recommenders/
+src/main/java/config/secret2.properties
+src/main/java/config/SecretConfig.java
 
 # --- Project Specific ---
 .project
 .classpath
+/build/
+!*.jar
+
