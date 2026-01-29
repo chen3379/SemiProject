@@ -303,6 +303,7 @@ td.title {
 </style>
 </head>
 <body>
+	<jsp:include page="../common/customAlert.jsp" />
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
 	<jsp:include page="/profile/profileModal.jsp" />
@@ -438,11 +439,11 @@ function hideReviewBoard(boardIdx) {
     data: { board_idx: boardIdx },
     success(res) {
       res.success
-        ? alert("숨김 처리되었습니다.", reloadReviewList)
-        : alert("숨김 처리에 실패했습니다.");
+        ? openCustomAlert("숨김 처리되었습니다.", reloadReviewList)
+        : openCustomAlert("숨김 처리에 실패했습니다.");
     },
     error() {
-      alert("서버 오류가 발생했습니다.");
+      openCustomAlert("서버 오류가 발생했습니다.");
     }
   });
 }
@@ -455,16 +456,16 @@ function restoreReviewBoard(boardIdx) {
     data: { board_idx: boardIdx },
     success(res) {
       res.success
-        ? alert("복구되었습니다.", reloadReviewList)
-        : alert("복구에 실패했습니다.");
+        ? openCustomAlert("복구되었습니다.", reloadReviewList)
+        : openCustomAlert("복구에 실패했습니다.");
     },
     error() {
-      alert("서버 오류가 발생했습니다.");
+      openCustomAlert("서버 오류가 발생했습니다.");
     }
   });
 }
 function deleteReviewBoardForever(boardIdx) {
-  alert(
+  openCustomAlert(
     "이 게시글은 완전히 삭제됩니다.\n복구할 수 없습니다.\n계속하시겠습니까?",
     function () {
       $.ajax({
@@ -474,11 +475,11 @@ function deleteReviewBoardForever(boardIdx) {
         data: { board_idx: boardIdx },
         success(res) {
           res.success
-            ? alert("완전히 삭제되었습니다.", reloadReviewList)
-            : alert("삭제에 실패했습니다.");
+            ? openCustomAlert("완전히 삭제되었습니다.", reloadReviewList)
+            : openCustomAlert("삭제에 실패했습니다.");
         },
         error() {
-          alert("서버 오류가 발생했습니다.");
+          openCustomAlert("서버 오류가 발생했습니다.");
         }
       });
     }
@@ -487,7 +488,7 @@ function deleteReviewBoardForever(boardIdx) {
 </script>
 <script>
 function needLoginAlert() {
-    alert("로그인이 필요합니다.", function() {
+    openCustomAlert("로그인이 필요합니다.", function() {
         // [수정] Bootstrap 5 표준 방식으로 모달 띄우기
         const modalEl = document.getElementById('loginModal');
         if (modalEl) {
@@ -514,7 +515,7 @@ document.querySelectorAll('.review-link').forEach(link => {
       location.href = url;
       return;
     }
-    alert(
+    openCustomAlert(
       '스포일러가 포함된 게시글입니다.\n그래도 열람하시겠습니까?',
       function () {
         location.href = url;
@@ -533,6 +534,7 @@ document.querySelectorAll('.review-link').forEach(link => {
 </script>
 </body>
 <footer>
+	
 	<jsp:include page="/main/footer.jsp"/>
 </footer>
 </html>

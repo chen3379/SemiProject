@@ -12,8 +12,9 @@ String loginId = (String)session.getAttribute("id");
 if(loginId == null){
 %>
 <script>
-alert("로그인 후 이용 가능합니다");
-location.href = "../login/loginForm.jsp";
+openCustomAlert("로그인 후 이용 가능합니다", function() {
+    location.href = "../login/loginForm.jsp";
+});
 </script>
 <%
 return;
@@ -28,8 +29,9 @@ SupportDto dto = dao.getOneData(supportIdx);
 if("1".equals(dto.getDeleteType())){
 %>
 <script>
-alert("이미 삭제된 글입니다");
-location.href = "supportList.jsp";
+openCustomAlert("이미 삭제된 글입니다", function() {
+    location.href = "supportList.jsp";
+});
 </script>
 <%
 return;
@@ -42,8 +44,9 @@ boolean isAdmin = ("3".equals(roleType) || "9".equals(roleType));
 if(!isAdmin && !loginId.equals(dto.getId())){
 %>
 <script>
-alert("삭제 권한이 없습니다");
-history.back();
+openCustomAlert("삭제 권한이 없습니다", function() {
+    history.back();
+});
 </script>
 <%
 return;
@@ -54,6 +57,7 @@ dao.deleteSupport(supportIdx);
 %>
 
 <script>
-alert("삭제되었습니다");
-location.href = "supportList.jsp";
+openCustomAlert("삭제되었습니다", function() {
+    location.href = "supportList.jsp";
+});
 </script>

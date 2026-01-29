@@ -165,19 +165,22 @@ history.back();
 	    	
 	    	console.log("서버응답:", res);
 	    	  if(res.result === "OK"){
-	    	    alert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다");
-
-	    	    if(isUpdate){
-	    	      location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
-	    	    } else {
-	    	      location.href = "supportList.jsp";
-	    	    }
+	    	    openCustomAlert(isUpdate ? "문의글이 수정되었습니다" : "문의글이 등록되었습니다", function() {
+	    	      if(isUpdate){
+	    	        location.href = "supportDetail.jsp?supportIdx=" + supportIdx;
+	    	      } else {
+	    	        location.href = "supportList.jsp";
+	    	      }
+	    	    });
 
 	    	  } else if(res.result === "NO_LOGIN"){
-	    	    alert("로그인이 필요합니다");
-	    	    location.href = "../login/loginForm.jsp";
+	    	    openCustomAlert("로그인이 필요합니다", function() {
+	    	      location.href = "../login/loginForm.jsp";
+	    	    });
 	    	  } else {
-	    	    alert("처리에 실패했습니다");
+	    	    openCustomAlert("처리에 실패했습니다", function() {
+	    	      history.back();
+	    	    });
 	    	  }
 	    	}
 	  });
