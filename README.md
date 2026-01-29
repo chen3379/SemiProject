@@ -30,7 +30,7 @@
 | Layer | Technology |
 | :--- | :--- |
 | **Frontend** | HTML5, CSS3, JavaScript(ES6), jQuery, Bootstrap 5 |
-| **Backend** | Java 17, JSP & Servlet (Jakarta EE 10) |
+| **Backend** | Java 11, JSP & Servlet (Jakarta EE 10) |
 | **Database** | MySQL (AWS RDS), JDBC (Custom DBConnect) |
 | **API/AI** | Google Gemini API, TMDB API |
 | **DevOps** | AWS RDS, Git/GitHub |
