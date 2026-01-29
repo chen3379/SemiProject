@@ -339,6 +339,7 @@ td.title {
 </style>
 </head>
 <body>
+	<jsp:include page="../common/customAlert.jsp" />
 	<jsp:include page="/main/nav.jsp" />
 	<jsp:include page="/login/loginModal.jsp" />
 	<jsp:include page="/profile/profileModal.jsp" />
