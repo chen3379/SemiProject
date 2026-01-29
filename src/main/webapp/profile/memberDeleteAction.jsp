@@ -32,8 +32,11 @@
         return; 
     }
 
-    // 2. 비밀번호 확인
-    if (!dao.checkPassword(sessionId, password)) {
+    // 2. 비밀번호 확인 (소셜 로그인 사용자가 아닐 경우에만)
+    String joinType = dto.getJoinType();
+    boolean isSocial = (joinType != null && !joinType.isEmpty());
+
+    if (!isSocial && !dao.checkPassword(sessionId, password)) {
 %>
         <script>
             // 비밀번호 불일치 시 알림 후 뒤로가기 (콜백 사용)
